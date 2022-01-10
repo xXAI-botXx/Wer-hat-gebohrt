@@ -1,0 +1,144 @@
+--------
+--------
+Versuch 0:
+    - Persons = ['tippolit', 'vkorzev']
+    - Extraction-Method = extraction_mode.MANUEL
+    - Selection-Method = selection_mode.NONE
+    - Number of Selections = 1
+    - Selected Features = ['voltage_max']
+    - Accuracy = 100.0
+    - Test-Size = 0.3
+    - Python-Version = 3.9.7
+
+--------
+--------
+Versuch 1:
+    - Persons = ['tippolit', 'vkorzev']
+    - Extraction-Method = extraction_mode.MANUEL
+    - Selection-Method = selection_mode.NONE
+    - Number of Selections = 2
+    - Selected Features = ['voltage_max', 'voltage_mean']
+    - Accuracy = 100.0
+    - Test-Size = 0.3
+    - Python-Version = 3.9.7
+
+--------
+--------
+Versuch 2:
+    - Persons = ['tippolit', 'vkorzev']
+    - Extraction-Method = extraction_mode.MANUEL
+    - Selection-Method = selection_mode.NONE
+    - Number of Selections = 3
+    - Selected Features = ['voltage_max', 'voltage_mean', 'voltage_median']
+    - Accuracy = 100.0
+    - Test-Size = 0.3
+    - Python-Version = 3.9.7
+
+--------
+--------
+Versuch 3:
+    - Persons = ['tippolit', 'vkorzev']
+    - Extraction-Method = extraction_mode.MANUEL
+    - Selection-Method = selection_mode.NONE
+    - Number of Selections = 4
+    - Selected Features = ['voltage_max', 'voltage_mean', 'voltage_median', 'audio_median']
+    - Accuracy = 100.0
+    - Test-Size = 0.3
+    - Python-Version = 3.9.7
+
+--------
+--------
+Versuch 4:
+    - Persons = ['vkorzev', 'skadkade']
+    - Extraction-Method = extraction_mode.MANUEL
+    - Selection-Method = selection_mode.NONE
+    - Number of Selections = 1
+    - Selected Features = ['voltage_max']
+    - Accuracy = 100.0
+    - Test-Size = 0.3
+    - Python-Version = 3.9.7
+
+--------
+--------
+Versuch 5:
+    - Persons = ['vkorzev', 'skadkade']
+    - Extraction-Method = extraction_mode.MANUEL
+    - Selection-Method = selection_mode.NONE
+    - Number of Selections = 2
+    - Selected Features = ['voltage_max', 'voltage_mean']
+    - Accuracy = 93.33333333333333
+    - Test-Size = 0.3
+    - Python-Version = 3.9.7
+
+--------
+--------
+Versuch 6:
+    - Persons = ['vkorzev', 'skadkade']
+    - Extraction-Method = extraction_mode.MANUEL
+    - Selection-Method = selection_mode.NONE
+    - Number of Selections = 3
+    - Selected Features = ['voltage_max', 'voltage_mean', 'voltage_median']
+    - Accuracy = 93.33333333333333
+    - Test-Size = 0.3
+    - Python-Version = 3.9.7
+
+--------
+--------
+Versuch 7:
+    - Persons = ['vkorzev', 'skadkade']
+    - Extraction-Method = extraction_mode.MANUEL
+    - Selection-Method = selection_mode.NONE
+    - Number of Selections = 4
+    - Selected Features = ['voltage_max', 'voltage_mean', 'voltage_median', 'audio_median']
+    - Accuracy = 100.0
+    - Test-Size = 0.3
+    - Python-Version = 3.9.7
+
+--------
+--------
+Versuch 8:
+    - Persons = ['tippolit', 'skadkade']
+    - Extraction-Method = extraction_mode.MANUEL
+    - Selection-Method = selection_mode.NONE
+    - Number of Selections = 1
+    - Selected Features = ['voltage_max']
+    - Accuracy = 100.0
+    - Test-Size = 0.3
+    - Python-Version = 3.9.7
+
+--------
+--------
+Versuch 9:
+    - Persons = ['tippolit', 'skadkade']
+    - Extraction-Method = extraction_mode.MANUEL
+    - Selection-Method = selection_mode.NONE
+    - Number of Selections = 2
+    - Selected Features = ['voltage_max', 'voltage_mean']
+    - Accuracy = 93.33333333333333
+    - Test-Size = 0.3
+    - Python-Version = 3.9.7
+
+--------
+--------
+Versuch 10:
+    - Persons = ['tippolit', 'skadkade']
+    - Extraction-Method = extraction_mode.MANUEL
+    - Selection-Method = selection_mode.NONE
+    - Number of Selections = 3
+    - Selected Features = ['voltage_max', 'voltage_mean', 'voltage_median']
+    - Accuracy = 100.0
+    - Test-Size = 0.3
+    - Python-Version = 3.9.7
+
+--------
+--------
+Versuch 11:
+    - Persons = ['tippolit', 'skadkade']
+    - Extraction-Method = extraction_mode.MANUEL
+    - Selection-Method = selection_mode.NONE
+    - Number of Selections = 4
+    - Selected Features = ['voltage_max', 'voltage_mean', 'voltage_median', 'audio_median']
+    - Accuracy = 100.0
+    - Test-Size = 0.3
+    - Python-Version = 3.9.7
+

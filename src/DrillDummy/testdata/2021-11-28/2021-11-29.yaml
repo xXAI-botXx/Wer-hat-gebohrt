@@ -1,0 +1,7 @@
+configurations:
+- amount: 0
+  template: skadkade/eiche.yaml
+- amount: 1
+  template: vkorzev/eiche.yaml
+- amount: 1
+  template: tippolit/eiche.yaml

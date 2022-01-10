@@ -1,0 +1,5 @@
+configurations:
+- amount: 10
+  template: Person1/meta.yaml
+- amount: 5
+  template: Person2/meta.yaml

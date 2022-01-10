@@ -1,0 +1,18 @@
+###### Requirements without Version Specifiers ######
+pandas
+matplotlib
+sklearn
+ttkthemes
+pyyaml
+tsfresh
+pillow
+
+###### Requirements with Version Specifiers ######
+numpy <= 1.20
+
+###### Linux System need to install ######
+# Tkinter
+# sudo apt-get install python3-tk 
+
+# And Pillow Tk
+# sudo apt-get install python3-pil.imagetk

@@ -1,0 +1,38 @@
+Diese Datei dient als Dummy, um einen Merge Conlflict zu simulieren.
+Falls du trainieren/experimentieren willst, nur zu...
+
+Solved Conflicts: 1
+--------------------------------------------------------------------
+public class Complex {
+	private double re; 
+	private double im;
+	private String complex_name;
+
+	private void Complex(double re, double im, String name) {
+		this.re = re;
+		this.im = im;
+		this.complex_name = name;
+	}
+	
+	public Complex addition(Complex another_n) {
+		return new Complex(this.re + another_n.re(), this.im + another_n.im());
+	}
+	
+	public Complex substraction(Complex another_n) {
+		return new Complex(this.re - another_n.re(), this.im - another_n.im());
+	}
+	
+	public Complex multiplication(Complex another_n) {
+		double re = this.re*another_n.re()  - this.im*another_n.im();
+		double im = this.re*another_n.im() + this.im*another_n.re();
+		return new Complex(re, im);
+	}
+	
+	public Complex division(Complex another_n) {
+		double divisor = Math.pow(another_n.re(), 2) + Math.pow(another_n.im(), 2);
+		double re = (this.re*another_n.re() + this.im*another_n.im()) / divisor;
+		double im = (this.im*another_n.re() - this.re*another_n.im()) / divisor;
+		return new Complex(re, im);
+	}
+	
+}
