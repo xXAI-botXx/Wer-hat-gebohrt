@@ -1,4 +1,0 @@
-Traceback (most recent call last):
-  File "drillcapture.py", line 102, in <module>
-EOFError: EOF when reading a line
-[8252] Failed to execute script drillcapture

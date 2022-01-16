@@ -131,7 +131,7 @@ def load_single_data(person, data_path:str) -> pd.DataFrame:
     while os.path.isfile(f"{data_path}/{person}/{latest_drill}"):
         if i*-1 > len(measurements):
             # no dir
-            return None
+            raise FileNotFoundError(f"No Files in Directory{data_path}/{person}/{latest_drill}")
         i -= 1
         latest_drill = measurements[i]
 

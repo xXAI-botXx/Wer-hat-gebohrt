@@ -107,10 +107,13 @@ def load_single_data(person_id,
     data = io.load_single_data(person, data_path)
     if type(data) == None:
         # Case: no directory
-        return None
+        raise ValueError(f"Dataentry is None! Loaded from {data_path}")
 
     # Override ID
     data['ID'] = drill_id
+
+    if data.empty:
+        return data
 
     data = resampling(data)
 
@@ -335,7 +338,7 @@ def feature_selection(X, y, mode, data_path) -> pd.DataFrame:
 
 def split_data(X, y, test_size_in_percent=0.3, should_split=False) -> list:
     if should_split:
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size_in_percent)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size_in_percent, stratify=y) 
         return [[X_train, y_train], [X_test, y_test]]
     else:
         return [[X, y]]

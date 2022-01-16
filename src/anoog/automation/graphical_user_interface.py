@@ -8,11 +8,14 @@ from PIL import Image, ImageTk
 from .controller import Terminal
 from .py_exe_interface import op
 from .bg_booster import Color_Gradient_Booster
+from .event import Eventsystem_Component
 
 import tkinter as tk
 from tkinter import font
 from tkinter import ttk
 from ttkthemes import ThemedStyle
+
+import webbrowser
 
 
 THEMES = ['smog', 'ubuntu', 'scidgrey', 'scidblue', 
@@ -26,9 +29,10 @@ THEMES = ['smog', 'ubuntu', 'scidgrey', 'scidblue',
 
 # ladet die verschiedenen Widgets
 # ein Main-Wudget = Zustand
-class GUI_App(tk.Tk):
+class GUI_App(tk.Tk, Eventsystem_Component):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        Eventsystem_Component.__init__(self)
         self.bg_img = None
         self.cur_screen = None
 
@@ -39,7 +43,6 @@ class GUI_App(tk.Tk):
 
         # alle Main-Widgets erszeugen...
         self.screen_main_menu = Menu(self)
-        self.screen_configuration = Configuration(self)
         self.screen_train = Train_Window(self)
         self.screen_predict = Predict_Window(self)
         self.screen_credits = Credits_Window(self)
@@ -67,7 +70,7 @@ class GUI_App(tk.Tk):
         self.events = Queue()
         self.EVENT = {'drill-person':self.screen_train.change_train_person, 'drill-starts':self.screen_train.drill_starts, 
                         'drill-ends':self.screen_train.drill_ends, 'delete-last':self.screen_train.delete_last_btn_change,
-                        'drill-amount-change':self.screen_train.drill_amount_change, 'block':self.block, 'stop-time':self.stop_time,
+                        'drill-amount-change':self.screen_train.drill_amount_change, 'stop-time':self.stop_time,
                         'start-change':self.start_button,
                         'set-amount-predict':self.screen_predict.set_amount, 'predict-drill-starts':self.screen_predict.drill_starts,
                         'predict-drill-ends':self.screen_predict.drill_ends, 'delete-last-predict':self.screen_predict.delete_last_btn_change,
@@ -78,27 +81,23 @@ class GUI_App(tk.Tk):
             self.style.theme_use(name)
             self.set_min()
         
-    def run(self, data_path, drillcapture_path, drilldriver_path, op):
+    def run(self, data_path, drillcapture_path, drilldriver_path, op, path_to_project):
+        self.path_to_project = path_to_project
         self.terminal = Terminal(self, data_path=data_path, drillcapture_path=drillcapture_path, drilldriver_path=drilldriver_path, op=op)
         self.thread_terminal = Thread(target=self.terminal.run)
         self.thread_terminal.start()
 
+        self.check_events()
         # GUI starting
         self.mainloop()
 
-    def close(self):
-        self.terminal.add_event('exit', '')
-        self.quit()
+    def check_events(self):
+        self.run_event()
+        self.after(50, self.check_events)
 
-    # kann hierbei direkt ausgeführt werden!
-    def add_event(self, event_name, *additions):
-        print("Event is by GUI")
-        #event = (event_name, *additions)
-        #self.events.put(event)
-        if len(additions) > 0:
-            self.EVENT[event_name](*additions)
-        else:
-            self.EVENT[event_name]()
+    def close(self):
+        self.terminal.add_event('exit')
+        self.quit()
 
     def load_theme(self, name):
         if name in THEMES:
@@ -111,18 +110,11 @@ class GUI_App(tk.Tk):
         # set new minimum
         self.set_min()
 
-    def load_screen_configuration(self, from_widget):
-        self.cur_screen = self.screen_configuration
-        from_widget.hide()
-        self.screen_configuration.show()
-        self.set_min()
-
     def load_screen_train(self, from_widget):
         self.cur_screen = self.screen_train
         from_widget.hide()
         self.screen_train.show()
         self.set_min()
-        self.terminal.add_event('start-drilldriver')
 
     def load_screen_predict(self, from_widget):
         self.cur_screen = self.screen_predict
@@ -179,7 +171,6 @@ class GUI_App(tk.Tk):
     def event_resize_bg(self, event):
         size_changed = self.old_size[0] != self.winfo_width() or self.old_size[1] != self.winfo_height()
         if self.bg_img != None and self.bg_img != "" and size_changed and self.mouse_not_hold:
-            print("HOOOOOOOHOOO")
             self.old_size = (self.winfo_width(), self.winfo_height())
             self.image = Image.open(self.bg_img)
             self.image = self.image.resize((self.winfo_width(), self.winfo_height()), Image.ANTIALIAS)
@@ -198,7 +189,7 @@ class GUI_App(tk.Tk):
     def event_left_mouse_released(self, event):
         self.mouse_not_hold = True
 
-    def event_space(self):
+    def event_space(self, event):
         if self.cur_screen == self.screen_train:
             self.screen_train.event_start_button()
         elif self.cur_screen == self.screen_predict:
@@ -215,15 +206,6 @@ class GUI_App(tk.Tk):
             self.screen_train.start_button_change(state)
         elif self.cur_screen == self.screen_predict:
             self.screen_predict.start_button_change(state)
-
-    def block(self, state:bool):
-        # not implemented yet
-        if self.cur_screen == self.screen_train:
-            pass
-            #self.screen_train.block(state)
-        elif self.cur_screen == self.screen_predict:
-            pass
-            #self.screen_predict.block(state)
 
 
 ###############################################
@@ -256,42 +238,84 @@ class Screen(ttk.Frame, abc.ABC):
 class Menu(Screen):
     def __init__(self, root, **kwargs):
         super().__init__(root, **kwargs)
-        self.min = (500, 400)
+        self.min = (1200, 700)
 
-        self.max_rows = 4+1
-        self.max_columns = 1+2
+        self.max_rows = 1+3+1
+        self.max_columns = 1+3+1
         self.widget_list = {}
         self.create_widgets()
         self.weighting()
         #self.hide()
 
     def create_widgets(self):
+        # Color Background
+        self.color_label = ttk.Label(self)
+        self.color_label.place(relx=0, rely=0, relwidth=1, relheight=1)
+        self.color_frame_bg = Color_Gradient_Booster(root=self.root, parent=self.color_label, 
+                                                    mode='VERTICAL', should_change_color=True,
+                                                    color_chain=('#05ffa1', '#b967ff'))
+        self.color_frame_bg.place(relx=0, rely=0, relwidth=1, relheight=1)
+        #self.color_frame_bg.set_fav_color()
+        # Spacing Frames to hide the color
+        self.show_frame_1 = ttk.Frame(self.color_label)
+        self.show_frame_1.place(relx=0, rely=0, relwidth=0.3, relheight=0.21)
+        self.show_frame_2 = ttk.Frame(self.color_label)
+        self.show_frame_2.place(relx=0, rely=0.22, relwidth=0.2, relheight=0.2)
+        self.show_frame_3 = ttk.Frame(self.color_label)
+        self.show_frame_3.place(relx=0.35, rely=0.0, relwidth=0.55, relheight=0.1)
+        self.show_frame_4 = ttk.Frame(self.color_label)
+                                            #11
+        self.show_frame_4.place(relx=0.35, rely=0.105, relwidth=0.55, relheight=0.2)
+        self.show_frame_5 = ttk.Frame(self.color_label)
+        self.show_frame_5.place(relx=0.2, rely=0.0, relwidth=0.15, relheight=0.3)
+        self.show_frame_6 = ttk.Frame(self.color_label)
+        self.show_frame_6.place(relx=0.9, rely=0.0, relwidth=0.5, relheight=0.4)
+        self.show_frame_7 = ttk.Frame(self.color_label)
+        self.show_frame_7.place(relx=0.0, rely=0.3, relwidth=1.1, relheight=0.2)
+        self.show_frame_8 = ttk.Frame(self.color_label)
+        self.show_frame_8.place(relx=0.4, rely=0.5, relwidth=0.04, relheight=0.4)
+        self.show_frame_9 = ttk.Frame(self.color_label)
+        self.show_frame_9.place(relx=0.7, rely=0.5, relwidth=0.4, relheight=0.4)
+        self.show_frame_10 = ttk.Frame(self.color_label)
+        self.show_frame_10.place(relx=0.4, rely=0.51, relwidth=0.4, relheight=0.4)
+        self.show_frame_11 = ttk.Frame(self.color_label)
+        self.show_frame_11.place(relx=0, rely=0.5, relwidth=0.4, relheight=0.4)
+        self.show_frame_12 = ttk.Frame(self.color_label)
+        self.show_frame_12.place(relx=0, rely=0.905, relwidth=0.8, relheight=0.4)
+        self.show_frame_13 = ttk.Frame(self.color_label)
+        self.show_frame_13.place(relx=0, rely=0.9, relwidth=0.1, relheight=0.4)
+        self.show_frame_14 = ttk.Frame(self.color_label)
+        self.show_frame_14.place(relx=0.8, rely=0.9, relwidth=0.3, relheight=0.05)
+        self.show_frame_15 = ttk.Frame(self.color_label)
+                                                #96
+        self.show_frame_15.place(relx=0.8, rely=0.955, relwidth=0.3, relheight=0.2)
+
         # Create Title Label
         self.label_title = ttk.Label(self, text="Wer hat gebohrt?", anchor='center')
-        self.label_title.grid(row=0, column=1, sticky='NESW')
+        self.label_title.grid(row=1, column=1, columnspan=3, sticky='NESW')
         self.widget_list['lable_title'] = self.label_title
         self.label_title.bind('<Configure>', self.event_resize_label)
 
         # Create Start Button
-        self.button_start = ttk.Button(self, text="Start", command=self.event_button_start, takefocus = 0)
-        self.button_start.grid(row=1, column=1, sticky='NESW')
+        self.button_start = ttk.Button(self, text="Start", command=self.event_button_start, takefocus=0)
+        self.button_start.grid(row=3, column=1, sticky='NESW')
         self.widget_list['button_start'] = self.button_start
 
-        # Create Information Button
+        # Create Credit Button
         self.button_credits = ttk.Button(self, text="Credits", command=self.event_button_credits, takefocus = 0)
-        self.button_credits.grid(row=2, column=1, sticky='NESW')
+        self.button_credits.grid(row=3, column=3, sticky='NESW')
         self.widget_list['button_credits'] = self.button_credits
 
-        # Create Credit Button
-        self.button_config = ttk.Button(self, text="Einstellungen", command=self.event_button_config, takefocus = 0)
-        self.button_config.grid(row=3, column=1, sticky='NESW')
-        self.widget_list['button_config'] = self.button_config
+        # Create Information Button
+        self.button_info= ttk.Button(self, text="Informationen", command=self.event_button_info, takefocus = 0)
+        self.button_info.grid(row=3, column=2, sticky='NESW')
+        self.widget_list['button_info'] = self.button_info
 
         self.add_padding()
 
     def add_padding(self):
         for child in self.winfo_children():
-            child.grid_configure(padx=70, pady=10)
+            child.grid_configure(padx=40, pady=10)
         self.label_title.grid_configure(padx=10, pady=10)
         #self.grid_rowconfigure(5, minsize=20)
 
@@ -313,9 +337,13 @@ class Menu(Screen):
     def show(self):
         self.pack(expand=True, fill='both', side='top')
         self.label_bg.place(x=0, y=0, relwidth=1, relheight=1)
+        self.color_frame_bg.start()
+        self.color_label.place_forget()
+        self.color_label.place(relx=0, rely=0, relwidth=1, relheight=1)
 
     def hide(self):
         self.pack_forget()
+        self.color_frame_bg.stop()
 
     def event_button_start(self):
         self.root.load_screen_train(self)
@@ -324,13 +352,13 @@ class Menu(Screen):
         #self.hide()
         self.root.load_screen_credits(self)
 
-    def event_button_config(self):
-        self.root.load_screen_configuration(self)
+    def event_button_info(self):
+        webbrowser.open_new("https://github.com/xXAI-botXx/Wer-hat-gebohrt/blob/main/README.md")
 
     def event_resize_label(self, event):
         width = event.widget.winfo_width()
         height = event.widget.winfo_height()
-        event.widget.configure(font=font.Font(size=height//5))
+        event.widget.configure(font=font.Font(size=height//3))
 
 
 ###############################################
@@ -532,30 +560,30 @@ class Train_Window(Screen):
         self.train_drill_next_name.grid(row=3, column=3)
 
         self.train_spacing = ttk.Frame(self.train_frame)
-        self.train_spacing.grid(row=6, column=1, columnspan=3)
+        self.train_spacing.grid(row=7, column=1, columnspan=3)
 
         self.train_drill_start = ttk.Button(self.train_frame, text="Start", command=self.event_start_button, takefocus = 0)
-        self.train_drill_start.grid(row=7, column=3)
+        self.train_drill_start.grid(row=7+1, column=3)
         self.train_drill_start.configure(state='disabled')
 
         self.train_delete_last = ttk.Button(self.train_frame, text="Lösche letzte Bohraufnahme", command=self.event_delete_last_button, takefocus = 0)
-        self.train_delete_last.grid(row=8, column=2, columnspan=2, sticky="e")
+        self.train_delete_last.grid(row=8+1, column=2, columnspan=2, sticky="e")
         self.train_delete_last.configure(state='disabled')
 
         self.train_reset = ttk.Button(self.train_frame, text="Reset", command=self.event_reset_button, takefocus = 0)
-        self.train_reset.grid(row=7, column=1)
+        self.train_reset.grid(row=7+1, column=1)
         self.train_reset.configure(state='disabled')
 
         self.train_predict = ttk.Button(self.train_frame, text="Predict", command=self.event_predict_button, takefocus = 0)
-        self.train_predict.grid(row=7, column=2)
+        self.train_predict.grid(row=7+1, column=2)
         self.train_predict.configure(state='disabled')
 
         self.train_runtime = ttk.Label(self.train_frame, text="Zeit: -", anchor='center', font='Helvetica 10 bold')
-        self.train_runtime.grid(row=6, column=3)
+        self.train_runtime.grid(row=6+1, column=3)
 
         # Drill Amount Adding
         self.drill_amount_adding_frame = ttk.Frame(self.train_frame)
-        self.drill_amount_adding_frame.grid(row=10, column=1, columnspan=2)
+        self.drill_amount_adding_frame.grid(row=6, column=1, columnspan=2, sticky="w")#10
 
         self.drill_add_amounts_label = ttk.Label(self.drill_amount_adding_frame, text="Weitere Bohrungen:", anchor='w', font='Helvetica 11 bold')
         self.drill_add_amounts_label.grid(row=0, column=0, columnspan=2)
@@ -580,7 +608,7 @@ class Train_Window(Screen):
         self.confirm_add_frame.grid(row=3, column=1, sticky="e")
         self.add_confirm = ttk.Button(self.confirm_add_frame, text="bestätigen", command=self.event_confirm_add, takefocus = 0)
         self.add_confirm.grid(row=0, column=0)
-        self.add_confirm.configure(state='disabled')
+        self.add_confirm.configure(state='enabled')
 
         # adding
         self.train_frame.grid(row=1, column=3, columnspan=2)
@@ -592,12 +620,8 @@ class Train_Window(Screen):
                                                     mode='HORIZONTAL', should_change_color=True, change_time=0.5, 
                                                     width=None, height=None, shiny_flow_effect=False, color_chain=("#ff4040", "#5757ff"))
         self.cg_booster_borderline.set_on_screen()
-        # FIXME
-        #self.cg_booster_borderline.set_fav_colors()
 
     def add_padding(self):
-        #for child in self.winfo_children():
-        #    child.grid_configure(padx=10, pady=10)
      
         #self.init_frame.grid_configure(ipady=100, ipadx=100)
         self.init_spacing.grid_configure(pady=20)
@@ -613,7 +637,7 @@ class Train_Window(Screen):
         self.train_predict.grid_configure(ipady=15, ipadx=30)    
         self.train_reset.grid_configure(ipady=15, ipadx=30) 
 
-        #self.train_spacing.grid_configure(pady=50)
+        self.train_spacing.grid_configure(pady=50)
 
         # Adding Amounts
         self.drill_add_amounts_label.grid_configure(pady=10)
@@ -637,7 +661,7 @@ class Train_Window(Screen):
 
         self.train_frame.grid_columnconfigure(0, minsize=50)
         self.train_frame.grid_columnconfigure(5, minsize=50)  #4
-        self.train_frame.grid_rowconfigure(7, minsize=50)
+        self.train_frame.grid_rowconfigure(7+2, minsize=50)
 
         # spacing betrween two names
         self.train_frame.grid_rowconfigure(3, weight=1, minsize=20)
@@ -808,7 +832,7 @@ class Train_Window(Screen):
     def drill_amount_change(self, amount_person_1, amount_person_2):
         self.train_drill_amount_person1.configure(text=f"{self.var_person1_name.get()}: {amount_person_1}")
         self.train_drill_amount_person2.configure(text=f"{self.var_person2_name.get()}: {amount_person_2}")
-        if f"{amount_person_1}" != "0" and f"{amount_person_2}" != "0":
+        if f"{amount_person_1}" != "0" or f"{amount_person_2}" != "0":
             self.train_drill_start.configure(state='enabled')
 
     def drill_starts(self):
@@ -839,12 +863,6 @@ class Train_Window(Screen):
         color = self.frame_spacing['bg']
         self.root.after(1000, self.change_frame_color)
 
-    def block(self, state:bool):
-        if state:
-            state = "disabled"
-        else:
-            state = "enabled"
-
         #self.train_drill_start.configure(state=state)
         #self.train_predict.configure(state=state)
         self.train_delete_last.configure(state=state)
@@ -867,7 +885,7 @@ class Predict_Window(Screen):
 
         self.is_drilling = False
         self.start_time = None
-        self.models = ["SVC", "RandomForest", "KNN"]
+        self.models = ["RandomForest", "Voting Classifier", "Naive Bayes", "KNN", "SVC", "Ada Boost", "Logistic Regression"]
         self.model_params = ["predefined", "auto"]
         self.model_norm = ["normalize", "not normalize"]
 
@@ -1132,10 +1150,21 @@ class Credits_Window(Screen):
         self.add_padding()
         self.hide()
 
+        self.startpoint = 0.0
+
     def create_widgets(self):
         # Back Button
         self.button_back = ttk.Button(self, text="<", command=self.event_back, takefocus = 0)
         self.button_back.grid(row=0, column=0, sticky="nw")
+
+        self.entwickler = ttk.Label(self, text="Entwickler", anchor='n', font='Helvetica 36 bold')
+
+        self.tobia = ttk.Label(self, text="Tobia Ippolito", anchor='n', font='Helvetica 18 bold')
+
+        self.syon = ttk.Label(self, text="Syon kadkade", anchor='n', font='Helvetica 18 bold')
+
+        self.vadim = ttk.Label(self, text="Vadim Korzev", anchor='n', font='Helvetica 18 bold')
+
 
     def add_padding(self):
         for child in self.winfo_children():
@@ -1151,9 +1180,26 @@ class Credits_Window(Screen):
     def show(self):
         self.pack(expand=True, fill='both', side='top')
         self.label_bg.place(x=0, y=0, relwidth=1, relheight=1)
+        self.should_run = True
+        self.startpoint = 1.3
+        self.update_show()
+
+    def update_show(self):
+        self.startpoint -= 0.0005
+        self.entwickler.place_forget()
+        self.tobia.place_forget()
+        self.syon.place_forget()
+        self.vadim.place_forget()
+        self.entwickler.place(relx=0.42, rely=self.startpoint-0.37)
+        self.tobia.place(relx=0.45, rely=self.startpoint-0.2)
+        self.syon.place(relx=0.45, rely=self.startpoint-0.1)
+        self.vadim.place(relx=0.45, rely=self.startpoint)
+        if self.should_run:
+            self.root.after(10, self.update_show)
 
     def hide(self):
         self.pack_forget()
+        self.should_run = False
 
     def event_back(self):
         self.root.load_screen_main_menu(self)
@@ -1163,340 +1209,11 @@ class Credits_Window(Screen):
 
 
 ###############################################
-#########   Configuration_Screen    ###########
-###############################################
-class Configuration(Screen):
-    def __init__(self, root, **kwargs):
-        super().__init__(root, **kwargs)
-        self.min = (800, 600)
-
-        self.max_rows = 2+2+1
-        self.max_columns = 1+2+1
-
-        self.cur_theme = "equilux"
-        self.cur_screen = "configure_menu"
-        self.buttons = {}
-        self.bg_rbuttons = []
-
-        self.create_widgets()
-        self.configure_menu_wighting() 
-        self.add_configure_padding()
-
-    def create_widgets(self):
-        # --- Configure MENU ---
-        # Back Button
-        self.button_back = ttk.Button(self, text="<", command=self.event_back, takefocus = 0)
-        self.button_back.grid(row=0, column=0, sticky="nesw")
-
-        # Create Start Button
-        self.button_theme = ttk.Button(self, text="Thema", command=self.switch_to_theme, takefocus = 0)
-        self.button_theme.grid(row=2, column=2, sticky='NESW')
-
-        # Create Information Button
-        self.button_bg = ttk.Button(self, text="Hintergrund", command=self.switch_to_bg, takefocus = 0)
-        self.button_bg.grid(row=3, column=2, sticky='NESW')
-
-        # --- Theme ---
-        # First row
-        self.buttons[THEMES[0]] = ttk.Button(self, text=THEMES[0], command=lambda:self.event_button(THEMES[0]), takefocus = 0)
-
-        self.buttons[THEMES[1]] = ttk.Button(self, text=THEMES[1], command=lambda:self.event_button(THEMES[1]), takefocus = 0)
-
-        self.buttons[THEMES[2]] = ttk.Button(self, text=THEMES[2], command=lambda:self.event_button(THEMES[2]), takefocus = 0)
-
-        self.buttons[THEMES[3]] = ttk.Button(self, text=THEMES[3], command=lambda:self.event_button(THEMES[3]), takefocus = 0)
-
-        # Second Row
-        self.buttons[THEMES[4]] = ttk.Button(self, text=THEMES[4], command=lambda:self.event_button(THEMES[4]), takefocus = 0)
-
-        self.buttons[THEMES[5]] = ttk.Button(self, text=THEMES[5], command=lambda:self.event_button(THEMES[5]), takefocus = 0)
-
-        self.buttons[THEMES[6]] = ttk.Button(self, text=THEMES[6], command=lambda:self.event_button(THEMES[6]), takefocus = 0)
-
-        self.buttons[THEMES[7]] = ttk.Button(self, text=THEMES[7], command=lambda:self.event_button(THEMES[7]), takefocus = 0)
-
-        # Third Row
-        self.buttons[THEMES[8]] = ttk.Button(self, text=THEMES[8], command=lambda:self.event_button(THEMES[8]), takefocus = 0)
-
-        self.buttons[THEMES[9]] = ttk.Button(self, text=THEMES[9], command=lambda:self.event_button(THEMES[9]), takefocus = 0)
-
-        self.buttons[THEMES[10]] = ttk.Button(self, text=THEMES[10], command=lambda:self.event_button(THEMES[10]), takefocus = 0)
-
-        self.buttons[THEMES[11]] = ttk.Button(self, text=THEMES[11], command=lambda:self.event_button(THEMES[11]), takefocus = 0)
-
-        # Fourth Row
-        self.buttons[THEMES[12]] = ttk.Button(self, text=THEMES[12], command=lambda:self.event_button(THEMES[12]), takefocus = 0)
-
-        self.buttons[THEMES[13]] = ttk.Button(self, text=THEMES[13], command=lambda:self.event_button(THEMES[13]), takefocus = 0)
-
-        self.buttons[THEMES[14]] = ttk.Button(self, text=THEMES[14], command=lambda:self.event_button(THEMES[14]), takefocus = 0)
-
-        self.buttons[THEMES[15]] = ttk.Button(self, text=THEMES[15], command=lambda:self.event_button(THEMES[15]), takefocus = 0)
-
-        # Fifth Row
-        self.buttons[THEMES[16]] = ttk.Button(self, text=THEMES[16], command=lambda:self.event_button(THEMES[16]), takefocus = 0)
-
-        self.buttons[THEMES[17]] = ttk.Button(self, text=THEMES[17], command=lambda:self.event_button(THEMES[17]), takefocus = 0)
-
-        self.buttons[THEMES[18]] = ttk.Button(self, text=THEMES[18], command=lambda:self.event_button(THEMES[18]), takefocus = 0)
-
-        self.buttons[THEMES[19]] = ttk.Button(self, text=THEMES[19], command=lambda:self.event_button(THEMES[19]), takefocus = 0)
-        
-        # Sixth Row
-        self.buttons[THEMES[20]] = ttk.Button(self, text=THEMES[20], command=lambda:self.event_button(THEMES[20]), takefocus = 0)
-
-        self.buttons[THEMES[21]] = ttk.Button(self, text=THEMES[21], command=lambda:self.event_button(THEMES[21]), takefocus = 0)
-
-        self.buttons[THEMES[22]] = ttk.Button(self, text=THEMES[22], command=lambda:self.event_button(THEMES[22]), takefocus = 0)
-
-        self.buttons[THEMES[23]] = ttk.Button(self, text=THEMES[23], command=lambda:self.event_button(THEMES[23]), takefocus = 0)
-
-        # Seventh Row
-        self.buttons[THEMES[24]] = ttk.Button(self, text=THEMES[24], command=lambda:self.event_button(THEMES[24]), takefocus = 0)
-
-        self.buttons[THEMES[25]] = ttk.Button(self, text=THEMES[25], command=lambda:self.event_button(THEMES[25]), takefocus = 0)
-
-        self.buttons[THEMES[26]] = ttk.Button(self, text=THEMES[26], command=lambda:self.event_button(THEMES[26]), takefocus = 0)
-
-        self.buttons[THEMES[27]] = ttk.Button(self, text=THEMES[27], command=lambda:self.event_button(THEMES[27]), takefocus = 0)
-
-        # Eighth Row
-        self.buttons[THEMES[28]] = ttk.Button(self, text=THEMES[28], command=lambda:self.event_button(THEMES[28]), takefocus = 0)
-
-        self.buttons[THEMES[29]] = ttk.Button(self, text=THEMES[29], command=lambda:self.event_button(THEMES[29]), takefocus = 0)
-
-        self.buttons[THEMES[30]] = ttk.Button(self, text=THEMES[30], command=lambda:self.event_button(THEMES[30]), takefocus = 0)
-
-        self.buttons[THEMES[31]] = ttk.Button(self, text=THEMES[31], command=lambda:self.event_button(THEMES[31]), takefocus = 0)
-
-        
-
-        # --- Background ---
-        self.bg_nr = tk.IntVar()
-        self.bg_nr.set(0)
-
-        self.bg_rbuttons += [ttk.Radiobutton(self, text="Kein Hintergrund", variable=self.bg_nr, command=self.change_bg, value=0, takefocus = 0)]
-        self.bg_rbuttons += [ttk.Radiobutton(self, text="Herbst Hintergrund", variable=self.bg_nr, command=self.change_bg, value=1, takefocus = 0)]
-        self.bg_rbuttons += [ttk.Radiobutton(self, text="Oktopus Hintergrund", variable=self.bg_nr, command=self.change_bg, value=2, takefocus = 0)]
-        self.bg_rbuttons += [ttk.Radiobutton(self, text="Galaxie Hintergrund", variable=self.bg_nr, command=self.change_bg, value=3, takefocus = 0)]
-        
-
-    def configure_menu_wighting(self):
-        for n in range(self.max_rows):
-            self.grid_rowconfigure(n, weight=1, minsize=50)
-        
-        for n in range(self.max_columns):
-            self.grid_columnconfigure(n, weight=1, minsize=100)
-
-        self.grid_rowconfigure(0, weight=0, minsize=50)
-        self.grid_columnconfigure(0, weight=0, minsize=50)
-        self.grid_rowconfigure(1, weight=1, minsize=10)
-        self.grid_columnconfigure(1, weight=1, minsize=10)
-
-    def theme_weighting(self):
-        self.grid_columnconfigure(0, weight=1, minsize=100)
-        self.grid_columnconfigure(5, weight=1, minsize=100)
-        self.grid_rowconfigure(0, weight=1, minsize=50)
-        self.grid_rowconfigure(9, weight=1, minsize=50)
-
-        for n in range(1, self.max_rows-1):
-            self.grid_rowconfigure(n, weight=1, minsize=50)
-        
-        for n in range(1, self.max_columns-1):
-            self.grid_columnconfigure(n, weight=1, minsize=100)
-
-    def bg_weighting(self):
-        for n in range(self.max_rows):
-            self.grid_rowconfigure(n, weight=1, minsize=50)
-        
-        for n in range(self.max_columns):
-            self.grid_columnconfigure(n, weight=1, minsize=100)
-
-        self.grid_rowconfigure(0, weight=0, minsize=50)
-        self.grid_columnconfigure(0, weight=0, minsize=50)
-
-    def reset_weighting(self):
-        for n in range(0, self.max_rows):
-            self.grid_rowconfigure(n, weight=0, minsize=0)
-        
-        for n in range(0, self.max_columns):
-            self.grid_columnconfigure(n, weight=0, minsize=0)
-
-    def switch_to_theme(self):
-        self.reset_weighting()
-        self.max_rows = 1 + 8 + 1
-        self.max_columns = 4 + 2
-        self.cur_screen = "theme_screen"
-
-        self.hide_configure_menu()
-        self.show_theme_screen()
-        self.add_theme_padding()
-        self.theme_weighting()
-        self.root.set_min()
-
-    def switch_to_configure_menu(self, from_screen):
-        self.reset_weighting()
-        self.max_rows = 2 + 2 + 1
-        self.max_columns = 1 + 2 + 1
-
-        if from_screen == "theme_screen":
-            self.hide_theme_screen()
-        elif from_screen == "bg_screen":
-            self.hide_bg_screen()
-
-        self.show_configure_menu()
-        self.configure_menu_wighting()
-        self.add_configure_padding()
-        self.root.set_min()
-
-    def switch_to_bg(self):
-        self.reset_weighting()
-        self.max_rows = 4+2+1
-        self.max_columns = 1+2+1
-        self.cur_screen = "bg_screen"
-
-        self.hide_configure_menu()
-        self.show_bg_screen()
-        self.add_bg_padding()
-        self.bg_weighting()
-        self.root.set_min()
-
-    def add_configure_padding(self):
-        self.button_bg.grid_configure(padx=20, pady=20)
-        self.button_back.grid_configure(padx=20, pady=20)
-        self.button_theme.grid_configure(padx=20, pady=20)
-
-    def add_theme_padding(self):
-        for button in self.buttons.values():
-            button.grid_configure(padx=10, pady=10)
-        
-    def add_bg_padding(self):
-        for rbutton in self.bg_rbuttons:
-            rbutton.grid_configure(padx=10, pady=10)
-        #self.button_back.grid_configure(ipady=30)
-
-    def show_configure_menu(self):
-        self.button_theme.grid(row=2, column=2, sticky='NESW')
-        self.button_bg.grid(row=3, column=2, sticky='NESW')
-
-    def hide_configure_menu(self):
-        self.button_bg.grid_forget()
-        self.button_theme.grid_forget()
-
-    def show_theme_screen(self):
-        # First row
-        self.buttons[THEMES[0]].grid(row=1, column=1, sticky="nesw")
-        self.buttons[THEMES[1]].grid(row=1, column=2, sticky="nesw")
-        self.buttons[THEMES[2]].grid(row=1, column=3, sticky="nesw")
-        self.buttons[THEMES[3]].grid(row=1, column=4, sticky="nesw")
-
-        # Second Row
-        self.buttons[THEMES[4]].grid(row=2, column=1, sticky="nesw")
-        self.buttons[THEMES[5]].grid(row=2, column=2, sticky="nesw")
-        self.buttons[THEMES[6]].grid(row=2, column=3, sticky="nesw")
-        self.buttons[THEMES[7]].grid(row=2, column=4, sticky="nesw")
-
-        # Third Row
-        self.buttons[THEMES[8]].grid(row=3, column=1, sticky="nesw")
-        self.buttons[THEMES[9]].grid(row=3, column=2, sticky="nesw")
-        self.buttons[THEMES[10]].grid(row=3, column=3, sticky="nesw")
-        self.buttons[THEMES[11]].grid(row=3, column=4, sticky="nesw")
-
-        # Fourth Row
-        self.buttons[THEMES[12]].grid(row=4, column=1, sticky="nesw")
-        self.buttons[THEMES[13]].grid(row=4, column=2, sticky="nesw")
-        self.buttons[THEMES[14]].grid(row=4, column=3, sticky="nesw")
-        self.buttons[THEMES[15]].grid(row=4, column=4, sticky="nesw")
-
-        # Fifth Row
-        self.buttons[THEMES[16]].grid(row=5, column=1, sticky="nesw")
-        self.buttons[THEMES[17]].grid(row=5, column=2, sticky="nesw")
-        self.buttons[THEMES[18]].grid(row=5, column=3, sticky="nesw")
-        self.buttons[THEMES[19]].grid(row=5, column=4, sticky="nesw")
-
-        # Sixth Row
-        self.buttons[THEMES[20]].grid(row=6, column=1, sticky="nesw")
-        self.buttons[THEMES[21]].grid(row=6, column=2, sticky="nesw")
-        self.buttons[THEMES[22]].grid(row=6, column=3, sticky="nesw")
-        self.buttons[THEMES[23]].grid(row=6, column=4, sticky="nesw")
-        
-        # Seventh Row
-        self.buttons[THEMES[24]].grid(row=7, column=1, sticky="nesw")
-        self.buttons[THEMES[25]].grid(row=7, column=2, sticky="nesw")
-        self.buttons[THEMES[26]].grid(row=7, column=3, sticky="nesw")
-        self.buttons[THEMES[27]].grid(row=7, column=4, sticky="nesw")
-
-        # Eigth Row
-        self.buttons[THEMES[28]].grid(row=8, column=1, sticky="nesw")
-        self.buttons[THEMES[29]].grid(row=8, column=2, sticky="nesw")
-        self.buttons[THEMES[30]].grid(row=8, column=3, sticky="nesw")
-        self.buttons[THEMES[31]].grid(row=8, column=4, sticky="nesw")
-
-    def hide_theme_screen(self):
-        for theme in THEMES:
-            self.buttons[theme].grid_forget()
-
-    def show_bg_screen(self):
-        for i, rbutton in enumerate(self.bg_rbuttons):
-            rbutton.grid(row=i+2, column=2, sticky="w")
-
-    def hide_bg_screen(self):
-        for rbutton in self.bg_rbuttons:
-            rbutton.grid_forget()
-
-    def show(self):
-        self.pack(expand=True, fill='both', side='top')
-        self.label_bg.place(x=0, y=0, relwidth=1, relheight=1)
-
-        self.reset_weighting()
-        self.max_rows = 2 + 2 +1
-        self.max_columns = 1 + 2 + 1
-
-        self.show_configure_menu()
-        self.configure_menu_wighting()
-        self.add_configure_padding()
-        self.root.set_min()
-
-    def hide(self):
-        self.pack_forget()
-
-    def event_back(self):
-        if self.cur_screen == "configure_menu":
-            self.root.load_screen_main_menu(self)
-        else:
-            old_screen = self.cur_screen
-            self.cur_screen = "configure_menu"
-            self.switch_to_configure_menu(old_screen)
-
-    def event_button(self, theme_name):
-        self.cur_theme = theme_name
-        self.root.load_theme(theme_name)
-
-    def change_bg(self):
-        if self.bg_nr.get() == 0:
-            self.root.set_bg('')
-        elif self.bg_nr.get() == 1:
-            #pil_button_image = Image.open("src/anoog/automation/img/01dodw.jpg")
-            #self.bg_image = ImageTk.PhotoImage(pil_button_image)
-            #self.bg_image=tk.PhotoImage(file="src/anoog/automation/img/01dodw.jpg")
-            self.root.set_bg("src/anoog/automation/img/01dodw.jpg")
-        elif self.bg_nr.get() == 2:
-            #pil_button_image = Image.open("src/anoog/automation/img/zxg21w.jpg")
-            #self.bg_image = ImageTk.PhotoImage(pil_button_image)
-            #self.bg_image=tk.PhotoImage(file="src/anoog/automation/img/zxg21w.jpg")
-            self.root.set_bg("src/anoog/automation/img/zxg21w.jpg")
-        elif self.bg_nr.get() == 3:
-            #pil_button_image = Image.open("src/anoog/automation/img/1jole3.jpg")
-            #self.bg_image = ImageTk.PhotoImage(pil_button_image)
-            #self.bg_image=tk.PhotoImage(file="src/anoog/automation/img/1jole3.jpg")
-            self.root.set_bg("src/anoog/automation/img/1jole3.jpg")
-
-
-###############################################
 #################   Run    ####################
 ###############################################
 def run(data_path="src/DrillDummy/testdata", drillcapture_path="src/DrillDummy/drillcapture.exe", 
-                                drilldriver_path="src/DrillDummy/drilldriver.exe", op=op.WINDOWS):
-    GUI_App().run(data_path, drillcapture_path, drilldriver_path, op)
+                                drilldriver_path="src/DrillDummy/drilldriver.exe", op=op.WINDOWS, 
+                                path_to_project="./"):
+    GUI_App().run(data_path, drillcapture_path, drilldriver_path, op, path_to_project)
 
 

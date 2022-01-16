@@ -10,6 +10,8 @@ import abc
 from enum import Enum
 from queue import Queue
 
+from .event import Eventsystem_Component
+
 #from pexpect.popen_spawn import PopenSpawn
 
 # Event = {str:(name, function), str:(name, function), ..} -> str ist die Output Bedingung und name ist das Event, welches dann ausgelöst werden soll
@@ -17,9 +19,10 @@ from queue import Queue
 
 op = Enum('op', 'WINDOWS LINUX')
 
-class Process_Interface(abc.ABC):
+class Process_Interface(abc.ABC, Eventsystem_Component):
     #id = 0
     def __init__(self, absolut_path_to_exe:str, terminal, operating_system=op.WINDOWS):
+        Eventsystem_Component.__init__(self)
         self.path_to_exe = absolut_path_to_exe
         self.terminal = terminal
         self.should_run = False
@@ -62,18 +65,12 @@ class Process_Interface(abc.ABC):
             self.process.stdin.flush()
         except OSError as e:
             pass
-        self.terminal.add_event('wrote-input')
 
     # should run in thread, so that you can write input
     def event_listener(self):
         while self.should_run: #and self.is_alive():
             #print("Process_Interface on work...")
-            if not self.events.empty():
-                event = self.events.get()
-                if len(event) > 1:
-                    self.EVENT[event[0]](*event[1])
-                else:
-                    self.EVENT[event[0]]()
+            self.run_event()
 
             threading.Event().wait(0.2)
 
@@ -105,27 +102,21 @@ class Process_Interface(abc.ABC):
         #if self.is_alive():
         self.should_run = False
         try:
-            self.process.stdin.close()
+            if self.process != None and self.process.stdin != None:
+                self.process.stdin.close()
             #self.process.stdout.close()
             #self.process.stderr.close()
         except OSError:
             pass
-        self.process.terminate()
-        self.process.wait(timeout=0.2)
-        if send_event:
-            pass
-            #self.terminal.add_event("process-ended")
+        #self.process.wait(timeout=1)
+        if self.process != None:
+            self.process.terminate()
 
     
     def save_in_file(self, txt:str, file="log.txt"):
         path = "/".join(self.path_to_exe.split("/")[:-1])
         with open(path+"/"+file, "a") as f:
             f.write(txt)
-
-    def add_event(self, event_name, *additions):
-        print("added event in a Process_Interface")
-        event = (event_name, *additions)
-        self.events.put(event, block=False)
 
 
 class Drilldriver_Interface(Process_Interface):
@@ -138,16 +129,15 @@ class Drilldriver_Interface(Process_Interface):
         else:
             c = [self.path_to_exe]
 
-        self.process = subp.Popen(c, stdin=subp.PIPE, stdout=subp.PIPE, stderr=subp.PIPE, shell=True)
+        self.process = subp.Popen(c,  shell=True)    #  stdin=subp.PIPE, stdout=subp.PIPE, stderr=subp.PIPE,
 
-    #def run(self):
-    #    Process_Interface.run(self)
 
 # adding arguments + predict mode
 class Drillcapture_Interface(Process_Interface):
-    def __init__(self, absolut_path_to_exe:str, path_to_output, terminal, operating_system=op.WINDOWS):
+    def __init__(self, absolut_path_to_exe:str, path_to_output, terminal, operating_system=op.WINDOWS, name=None):
         super().__init__(absolut_path_to_exe, terminal, operating_system)
         self.path_to_output = path_to_output
+        self.name = name
 
     # OVERRIDE
     def run(self, mode="bulk"):
@@ -156,24 +146,25 @@ class Drillcapture_Interface(Process_Interface):
         self.event_listener()
 
     def start_program(self, mode="bulk"):
+        now = datetime.now()
         if mode == 'bulk':
-            now = datetime.now()
             if self.operating_system == op.WINDOWS:
                 c = ["start", '/b', self.path_to_exe, f"-mode=bulk", f"-description={now.year}-{now.month}-{now.day}.yaml"]
             else:
-                c = [self.path_to_exe, f"-mode=bulk", f"-description={now.year}-{now.month}-{now.day}.yaml"]
+                #c = [self.path_to_exe, "-interface=cli", "-module=drill", f"-mode=bulk", f"-description={now.year}-{now.month}-{now.day}.yaml"]
+                #print(__file__)
+                c = [f"{self.path_to_exe} -interface=cli -module=drill -mode=bulk -description=/home/anoog/rec/thema1/{now.year}-{now.month}-{now.day}/{now.year}-{now.month}-{now.day}.yaml"]
+                #print(c)
         elif mode == "single":
             if self.operating_system == op.WINDOWS:
-                c = ["start", '/b', self.path_to_exe, f"-mode=single", f"-description=UNKNOWN/meta.yaml"]
+                c = ["start", '/b', self.path_to_exe, f"-mode=single", f"-description={self.name}/meta.yaml"]
             else:
-                c = [self.path_to_exe, f"-mode=single", f"-description=UNKNOWN/meta.yaml"]
+                #c = [self.path_to_exe, f"-mode=single", f"-description=UNKNOWN/meta.yaml"]
+                c = [f"{self.path_to_exe} -interface=cli -module=drill -mode=single -description=/home/anoog/rec/thema1/{now.year}-{now.month}-{now.day}/{self.name}/meta.yaml"]
 
         #path = "/".join(__file__.split("\\")[:-1])
         with open(f"{self.path_to_output}/stdout.txt","wb") as out, open(f"{self.path_to_output}/stderr.txt","wb") as err:
-            self.process = subp.Popen(c, stdin=subp.PIPE, stdout=out, stderr=err,    #subp.PIPE
+            self.process = subp.Popen(c, stdin=subp.PIPE, stdout=out, stderr=err,    
                                         shell=True)#, env=env, creationflags=subp.CREATE_NEW_CONSOLE)
-
-    #def run(self):
-    #    Process_Interface.run(self)
 
 

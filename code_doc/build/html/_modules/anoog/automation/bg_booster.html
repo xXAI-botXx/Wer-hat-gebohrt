@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>anoog.automation.bg_booster &mdash; Wer hat gebohrt? 21.01.2022 Dokumentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/translations.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="../../../genindex.html" />
+    <link rel="search" title="Suche" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> Wer hat gebohrt?
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">anoog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Wer hat gebohrt?</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Modul-Quellcode</a> &raquo;</li>
+      <li>anoog.automation.bg_booster</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Quellcode für anoog.automation.bg_booster</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+
+<span class="kn">import</span> <span class="nn">tkinter</span> <span class="k">as</span> <span class="nn">tk</span>
+<span class="kn">from</span> <span class="nn">tkinter</span> <span class="kn">import</span> <span class="n">ttk</span>
+
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">ImageDraw</span><span class="p">,</span> <span class="n">ImageTk</span>
+
+<span class="n">COLOR_CHAINS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;pastel&#39;</span><span class="p">:(</span><span class="s1">&#39;#ffb3ba&#39;</span><span class="p">,</span> <span class="s1">&#39;#bae1ff&#39;</span><span class="p">),</span>
+                <span class="s1">&#39;deep_sea&#39;</span><span class="p">:(</span><span class="s1">&#39;#b2d8d8&#39;</span><span class="p">,</span> <span class="s1">&#39;#008080&#39;</span><span class="p">),</span>
+                <span class="s1">&#39;old_times&#39;</span><span class="p">:(</span><span class="s1">&#39;#96ceb4&#39;</span><span class="p">,</span> <span class="s1">&#39;#ffeead&#39;</span><span class="p">,</span> <span class="s1">&#39;#ff6f69&#39;</span><span class="p">,</span> <span class="s1">&#39;#ffcc5c&#39;</span><span class="p">,</span> <span class="s1">&#39;#88d8b0&#39;</span><span class="p">),</span>
+                <span class="s1">&#39;sunset&#39;</span><span class="p">:(</span><span class="s1">&#39;#ff6f69&#39;</span><span class="p">,</span> <span class="s1">&#39;#ffcc5c&#39;</span><span class="p">),</span>
+                <span class="s1">&#39;blue_eyes&#39;</span><span class="p">:(</span><span class="s1">&#39;#011f4b&#39;</span><span class="p">,</span> <span class="s1">&#39;#03396c&#39;</span><span class="p">,</span> <span class="s1">&#39;#005b96&#39;</span><span class="p">,</span> <span class="s1">&#39;#6497b1&#39;</span><span class="p">,</span> <span class="s1">&#39;#b3cde0&#39;</span><span class="p">),</span>
+                <span class="s1">&#39;dune&#39;</span><span class="p">:(</span><span class="s1">&#39;#8d5524&#39;</span><span class="p">,</span> <span class="s1">&#39;#c68642&#39;</span><span class="p">,</span> <span class="s1">&#39;#e0ac69&#39;</span><span class="p">,</span> <span class="s1">&#39;#f1c27d&#39;</span><span class="p">,</span> <span class="s1">&#39;#ffdbac&#39;</span><span class="p">),</span>
+                <span class="s1">&#39;evening_past&#39;</span><span class="p">:(</span><span class="s1">&#39;#66545e&#39;</span><span class="p">,</span> <span class="s1">&#39;#a39193&#39;</span><span class="p">,</span> <span class="s1">&#39;#aa6f73&#39;</span><span class="p">,</span> <span class="s1">&#39;#eea990&#39;</span><span class="p">,</span> <span class="s1">&#39;#f6e0b5&#39;</span><span class="p">),</span>
+                <span class="s1">&#39;light_rain&#39;</span><span class="p">:(</span><span class="s1">&#39;#e1f7d5&#39;</span><span class="p">,</span> <span class="s1">&#39;#ffbdbd&#39;</span><span class="p">,</span> <span class="s1">&#39;#c9c9ff&#39;</span><span class="p">,</span> <span class="s1">&#39;#ffffff&#39;</span><span class="p">,</span> <span class="s1">&#39;#f1cbff&#39;</span><span class="p">),</span>
+                <span class="s1">&#39;generation_zero&#39;</span><span class="p">:(</span><span class="s1">&#39;#ff71ce&#39;</span><span class="p">,</span> <span class="s1">&#39;#01cdfe&#39;</span><span class="p">,</span> <span class="s1">&#39;#05ffa1&#39;</span><span class="p">,</span> <span class="s1">&#39;#b967ff&#39;</span><span class="p">,</span> <span class="s1">&#39;#fffb96&#39;</span><span class="p">),</span>
+                <span class="s1">&#39;dark_times&#39;</span><span class="p">:(</span><span class="s1">&#39;#6e7f80&#39;</span><span class="p">,</span> <span class="s1">&#39;#536872&#39;</span><span class="p">,</span> <span class="s1">&#39;#708090&#39;</span><span class="p">,</span> <span class="s1">&#39;#536878&#39;</span><span class="p">,</span> <span class="s1">&#39;#36454f&#39;</span><span class="p">),</span>
+                <span class="s1">&#39;discord&#39;</span><span class="p">:(</span><span class="s1">&#39;#7289da&#39;</span><span class="p">,</span> <span class="s1">&#39;#424549&#39;</span><span class="p">,</span> <span class="s1">&#39;#36393e&#39;</span><span class="p">,</span> <span class="s1">&#39;#282b30&#39;</span><span class="p">,</span> <span class="s1">&#39;#1e2124&#39;</span><span class="p">),</span>
+                <span class="s1">&#39;lucifer&#39;</span><span class="p">:(</span><span class="s1">&#39;#ff0000&#39;</span><span class="p">,</span> <span class="s1">&#39;#bf0000&#39;</span><span class="p">,</span> <span class="s1">&#39;#800000&#39;</span><span class="p">,</span> <span class="s1">&#39;#400000&#39;</span><span class="p">,</span> <span class="s1">&#39;#000000&#39;</span><span class="p">),</span>
+                <span class="s1">&#39;freeze_nature&#39;</span><span class="p">:(</span><span class="s1">&#39;#a3c1ad&#39;</span><span class="p">,</span> <span class="s1">&#39;#a0d6b4&#39;</span><span class="p">,</span> <span class="s1">&#39;#5f9ea0&#39;</span><span class="p">,</span> <span class="s1">&#39;#317873&#39;</span><span class="p">,</span> <span class="s1">&#39;#49796b&#39;</span><span class="p">),</span>
+                <span class="s1">&#39;sommer_dream&#39;</span><span class="p">:(</span><span class="s1">&#39;#a8e6cf&#39;</span><span class="p">,</span> <span class="s1">&#39;#dcedc1&#39;</span><span class="p">,</span> <span class="s1">&#39;#ffd3b6&#39;</span><span class="p">,</span> <span class="s1">&#39;#ffaaa5&#39;</span><span class="p">,</span> <span class="s1">&#39;#ff8b94&#39;</span><span class="p">),</span>
+                <span class="s1">&#39;sommer&#39;</span><span class="p">:(</span><span class="s1">&#39;#ee4035&#39;</span><span class="p">,</span> <span class="s1">&#39;#f37736&#39;</span><span class="p">,</span> <span class="s1">&#39;#fdf498&#39;</span><span class="p">,</span> <span class="s1">&#39;#7bc043&#39;</span><span class="p">,</span> <span class="s1">&#39;#0392cf&#39;</span><span class="p">),</span>
+                <span class="s1">&#39;cyber_shot&#39;</span><span class="p">:(</span><span class="s1">&#39;#00076f&#39;</span><span class="p">,</span> <span class="s1">&#39;#44008b&#39;</span><span class="p">,</span> <span class="s1">&#39;#9f45b0&#39;</span><span class="p">,</span> <span class="s1">&#39;#e54ed0&#39;</span><span class="p">,</span> <span class="s1">&#39;#ffe4f2&#39;</span><span class="p">),</span>
+                <span class="s1">&#39;from_future&#39;</span><span class="p">:(</span><span class="s1">&#39;#ff00c1&#39;</span><span class="p">,</span> <span class="s1">&#39;#9600ff&#39;</span><span class="p">,</span> <span class="s1">&#39;#4900ff&#39;</span><span class="p">,</span> <span class="s1">&#39;#00b8ff&#39;</span><span class="p">,</span> <span class="s1">&#39;#00fff9&#39;</span><span class="p">),</span>
+                <span class="s1">&#39;cyberpunk&#39;</span><span class="p">:(</span><span class="s1">&#39;#711c91&#39;</span><span class="p">,</span> <span class="s1">&#39;#ea00d9&#39;</span><span class="p">,</span> <span class="s1">&#39;#0abdc6&#39;</span><span class="p">,</span> <span class="s1">&#39;#133e7c&#39;</span><span class="p">,</span> <span class="s1">&#39;#091833&#39;</span><span class="p">),</span>
+                <span class="s1">&#39;sky&#39;</span><span class="p">:(</span><span class="s1">&#39;#f7cac9&#39;</span><span class="p">,</span> <span class="s1">&#39;#dec2cb&#39;</span><span class="p">,</span> <span class="s1">&#39;#c5b9cd&#39;</span><span class="p">,</span> <span class="s1">&#39;#abb1cf&#39;</span><span class="p">,</span> <span class="s1">&#39;#92a8d1&#39;</span><span class="p">),</span>
+                <span class="s1">&#39;gentle_breath&#39;</span><span class="p">:(</span><span class="s1">&#39;#b8dbd3&#39;</span><span class="p">,</span> <span class="s1">&#39;#f7e7b4&#39;</span><span class="p">,</span> <span class="s1">&#39;#68c4af&#39;</span><span class="p">,</span> <span class="s1">&#39;#96ead7&#39;</span><span class="p">,</span> <span class="s1">&#39;#f2f6c3&#39;</span><span class="p">)}</span>
+
+<span class="n">FAV_COLOR_MIX</span> <span class="o">=</span> <span class="p">((</span><span class="s1">&#39;#ff4040&#39;</span><span class="p">,</span><span class="s1">&#39;#5757ff&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;#ffb3ba&#39;</span><span class="p">,</span> <span class="s1">&#39;#bae1ff&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;#ff6f69&#39;</span><span class="p">,</span> <span class="s1">&#39;#ffcc5c&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;#005b96&#39;</span><span class="p">,</span> <span class="s1">&#39;#6497b1&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;#8d5524&#39;</span><span class="p">,</span> <span class="s1">&#39;#f1c27d&#39;</span><span class="p">),</span>
+                 <span class="p">(</span><span class="s1">&#39;#66545e&#39;</span><span class="p">,</span> <span class="s1">&#39;#eea990&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;#ff71ce&#39;</span><span class="p">,</span> <span class="s1">&#39;#01cdfe&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;#05ffa1&#39;</span><span class="p">,</span> <span class="s1">&#39;#b967ff&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;#a3c1ad&#39;</span><span class="p">,</span> <span class="s1">&#39;#5f9ea0&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;#ee4035&#39;</span><span class="p">,</span> <span class="s1">&#39;#0392cf&#39;</span><span class="p">),</span>
+                 <span class="p">(</span><span class="s1">&#39;#ee4035&#39;</span><span class="p">,</span> <span class="s1">&#39;#7bc043&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;#9f45b0&#39;</span><span class="p">,</span> <span class="s1">&#39;#ff801a&#39;</span><span class="p">))</span>
+
+<span class="c1"># flow-direction:</span>
+<span class="c1">#    - pos = nach oben  bzw. links bei Vertikal</span>
+<span class="c1">#    - neg = nach unten bzw. rechts bei vertikal</span>
+
+<span class="c1"># Color-Chains works not very good</span>
+<div class="viewcode-block" id="Color_Gradient_Booster"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster">[Doku]</a><span class="k">class</span> <span class="nc">Color_Gradient_Booster</span><span class="p">(</span><span class="n">tk</span><span class="o">.</span><span class="n">Canvas</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;HORIZONTAL&#39;</span><span class="p">,</span> <span class="n">should_change_color</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">change_time</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> 
+                 <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">shiny_flow_effect</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">color_chain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gradient_size_tendency</span><span class="o">=</span><span class="s1">&#39;neg&#39;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">highlightthickness</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">root</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">height</span>
+
+        <span class="c1"># set height/width of widget and image</span>
+        <span class="k">if</span> <span class="n">width</span> <span class="o">!=</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">height</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">)</span>
+
+        <span class="c1"># transform hex color to rgb</span>
+        <span class="c1">#self.from_color = self.hex2rgb(from_color)</span>
+        <span class="c1">#self.to_color = self.hex2rgb(to_color)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">from_color_increasing</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">color_chain</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">color_chain</span> <span class="o">=</span> <span class="n">color_chain</span>
+        <span class="k">elif</span> <span class="n">color_chain</span> <span class="ow">in</span> <span class="n">COLOR_CHAINS</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">color_chain</span> <span class="o">=</span> <span class="n">COLOR_CHAINS</span><span class="p">[</span><span class="n">color_chain</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">color_chain</span> <span class="o">==</span> <span class="s1">&#39;random&#39;</span><span class="p">:</span>
+            <span class="c1">#self.color_chain = random.choice(list(COLOR_CHAINS.values()))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">color_chain</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">FAV_COLOR_MIX</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">color_chain</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;#ff4040&#39;</span><span class="p">,</span> <span class="s1">&#39;#5757ff&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;random&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">((</span><span class="s1">&#39;HORIZONTAL&#39;</span><span class="p">,</span> <span class="s1">&#39;VERTICAL&#39;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span>
+
+        <span class="k">if</span> <span class="n">gradient_size_tendency</span> <span class="o">==</span> <span class="s1">&#39;random&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size_tendency</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">((</span><span class="s1">&#39;pos&#39;</span><span class="p">,</span> <span class="s1">&#39;neg&#39;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size_tendency</span> <span class="o">=</span> <span class="n">gradient_size_tendency</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_change_color</span> <span class="o">=</span> <span class="n">should_change_color</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">change_time</span> <span class="o">=</span> <span class="n">change_time</span>
+        <span class="c1"># for changing the gradient size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="c1">#self.gradient_size_vario = 0.02</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size_vario</span> <span class="o">=</span> <span class="mf">0.0001</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size_vario_factor</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.0001</span><span class="p">,</span> <span class="mf">0.0001</span><span class="p">)</span>
+        <span class="c1"># for variate the show every time</span>
+        <span class="k">if</span> <span class="n">shiny_flow_effect</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shiny_flow</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shiny_flow</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">color_chain</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">from_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hex2rgb</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">color_chain</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">to_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hex2rgb</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">color_chain</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chain_pointer</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">from_color</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_color</span><span class="p">]</span>
+
+        <span class="c1"># maybe call on some later point (?)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+        <span class="c1">#if should_change_color:</span>
+            <span class="c1">#self.start()</span>
+
+<div class="viewcode-block" id="Color_Gradient_Booster.run"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.run">[Doku]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">should_change_color</span><span class="p">:</span>
+            <span class="c1">#self.variate_color()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">variate_gradient_size</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+            <span class="c1">#threading.Event().wait(self.change_time)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">after</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">change_time</span><span class="o">*</span><span class="mi">1000</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">)</span></div>
+
+    <span class="c1"># don&#39;t works with tkinter</span>
+    <span class="c1">#def update_in_thread(self):</span>
+    <span class="c1">#    self.should_change_color = True</span>
+    <span class="c1">#    self.color_update_thread = threading.Thread(target=self.run)</span>
+    <span class="c1">#    self.color_update_thread.start()</span>
+
+<div class="viewcode-block" id="Color_Gradient_Booster.update"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.update">[Doku]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1">#print(self.color[0][0], self.color[0][1], self.color[0][2])</span>
+        <span class="c1"># get height and width</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">winfo_width</span><span class="p">()</span>
+        <span class="n">height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">winfo_height</span><span class="p">()</span>
+
+        <span class="n">img_width</span> <span class="o">=</span> <span class="n">width</span>
+        <span class="n">img_height</span> <span class="o">=</span> <span class="n">height</span>
+
+        <span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;RGB&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">img_width</span><span class="p">,</span> <span class="n">img_height</span><span class="p">),</span> <span class="s2">&quot;#FFFFFF&quot;</span><span class="p">)</span>
+        <span class="n">draw</span> <span class="o">=</span> <span class="n">ImageDraw</span><span class="o">.</span><span class="n">Draw</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;HORIZONTAL&#39;</span><span class="p">:</span>
+            <span class="n">steps</span> <span class="o">=</span> <span class="n">height</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">steps</span> <span class="o">=</span> <span class="n">width</span>
+
+        <span class="c1"># calc color-stepsize</span>
+        <span class="n">gradient_r</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="n">steps</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">gradient_size</span>
+        <span class="n">gradient_g</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="n">steps</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">gradient_size</span>
+        <span class="n">gradient_b</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span><span class="o">/</span><span class="n">steps</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">gradient_size</span>
+
+        <span class="c1"># update adding</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">from_color_increasing</span> <span class="o">=</span> <span class="p">(</span><span class="n">gradient_r</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">gradient_size</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">gradient_g</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">gradient_size</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">gradient_b</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">gradient_size</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span>
+        <span class="c1"># adding color for complete show of to_color</span>
+        <span class="n">add</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_color_increasing</span>
+        <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">add</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">add</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">+</span><span class="n">add</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
+            <span class="c1"># increase color</span>
+            <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
+            <span class="n">r</span> <span class="o">+=</span> <span class="n">gradient_r</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_shiny_flow_effect</span><span class="p">()</span>
+            <span class="n">g</span> <span class="o">+=</span> <span class="n">gradient_g</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_shiny_flow_effect</span><span class="p">()</span>
+            <span class="n">b</span> <span class="o">+=</span> <span class="n">gradient_b</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_shiny_flow_effect</span><span class="p">()</span>
+            <span class="c1">#print(&quot;\n&quot;,i)</span>
+            <span class="c1">#print(gradient_r, gradient_g, gradient_b)</span>
+            <span class="c1">#print(int(self.color[0][0]), int(self.color[0][1]), int(self.color[0][2]))</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;HORIZONTAL&#39;</span><span class="p">:</span>
+                <span class="n">y0</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">img_height</span> <span class="o">*</span> <span class="n">i</span><span class="p">)</span><span class="o">/</span><span class="n">steps</span><span class="p">)</span>
+                <span class="n">y1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">img_height</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span><span class="o">/</span><span class="n">steps</span><span class="p">)</span>
+                <span class="n">draw</span><span class="o">.</span><span class="n">rectangle</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">img_width</span><span class="p">,</span> <span class="n">y1</span><span class="p">),</span> <span class="n">fill</span><span class="o">=</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">g</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">b</span><span class="p">)))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">x0</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">img_width</span> <span class="o">*</span> <span class="n">i</span><span class="p">)</span><span class="o">/</span><span class="n">steps</span><span class="p">)</span>
+                <span class="n">x1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">img_width</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span><span class="o">/</span><span class="n">steps</span><span class="p">)</span>
+                <span class="n">draw</span><span class="o">.</span><span class="n">rectangle</span><span class="p">((</span><span class="n">x0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">img_height</span><span class="p">),</span> <span class="n">fill</span><span class="o">=</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">g</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">b</span><span class="p">)))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradient_image</span> <span class="o">=</span> <span class="n">ImageTk</span><span class="o">.</span><span class="n">PhotoImage</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_image</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="s2">&quot;nw&quot;</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gradient_image</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Color_Gradient_Booster.start"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.start">[Doku]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1">#self.update_in_thread()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_change_color</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Color_Gradient_Booster.stop"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.stop">[Doku]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_change_color</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+    <span class="c1"># variate colors</span>
+<div class="viewcode-block" id="Color_Gradient_Booster.variate_color"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.variate_color">[Doku]</a>    <span class="k">def</span> <span class="nf">variate_color</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">color</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span><span class="o">%</span><span class="mi">255</span></div>
+
+<div class="viewcode-block" id="Color_Gradient_Booster.variate_gradient_size"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.variate_gradient_size">[Doku]</a>    <span class="k">def</span> <span class="nf">variate_gradient_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size_tendency</span> <span class="o">==</span> <span class="s1">&#39;pos&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size_vario</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size</span> <span class="o">&gt;=</span> <span class="mf">3.0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">color_chain_change</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size_tendency</span> <span class="o">=</span> <span class="s1">&#39;neg&#39;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size_tendency</span> <span class="o">==</span> <span class="s1">&#39;neg&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size_vario</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">color_chain_change</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size_tendency</span> <span class="o">=</span> <span class="s1">&#39;pos&#39;</span>
+
+        <span class="c1"># Variate variation speed -&gt; but not every time</span>
+        <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">variate_gradient_size_speed</span><span class="p">()</span></div>
+
+    <span class="c1"># desto kleiner desto unwahrscheinlicher</span>
+<div class="viewcode-block" id="Color_Gradient_Booster.variate_gradient_size_speed"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.variate_gradient_size_speed">[Doku]</a>    <span class="k">def</span> <span class="nf">variate_gradient_size_speed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="nb">min</span><span class="p">,</span> <span class="nb">max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size_vario_factor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size_vario</span> <span class="o">+=</span> <span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span><span class="o">*</span><span class="p">(</span><span class="nb">max</span><span class="o">-</span><span class="nb">min</span><span class="p">))</span><span class="o">+</span><span class="nb">min</span>
+        <span class="c1"># reset, if value to low or to high</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size_vario</span> <span class="o">&lt;=</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size_vario</span> <span class="o">&gt;=</span> <span class="mf">0.1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size_vario</span> <span class="o">=</span> <span class="mf">0.02</span></div>
+
+<div class="viewcode-block" id="Color_Gradient_Booster.calc_shiny_flow_effect"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.calc_shiny_flow_effect">[Doku]</a>    <span class="k">def</span> <span class="nf">calc_shiny_flow_effect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="nb">min</span><span class="p">,</span> <span class="nb">max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shiny_flow</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span><span class="o">*</span><span class="p">(</span><span class="nb">max</span><span class="o">-</span><span class="nb">min</span><span class="p">))</span><span class="o">+</span><span class="nb">min</span></div>
+
+<div class="viewcode-block" id="Color_Gradient_Booster.color_chain_change"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.color_chain_change">[Doku]</a>    <span class="k">def</span> <span class="nf">color_chain_change</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># change only its over 2</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">color_chain</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="c1"># update pointer</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">chain_pointer</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">color_chain</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">chain_pointer</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">chain_pointer</span> <span class="o">+=</span> <span class="mi">1</span>
+                
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size_tendency</span> <span class="o">==</span> <span class="s1">&#39;pos&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hex2rgb</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">color_chain</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chain_pointer</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size_tendency</span> <span class="o">==</span> <span class="s1">&#39;neg&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hex2rgb</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">color_chain</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chain_pointer</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Color_Gradient_Booster.set_random_colors"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.set_random_colors">[Doku]</a>    <span class="k">def</span> <span class="nf">set_random_colors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_colors</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+        <span class="n">hex_codes</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;9&#39;</span><span class="p">,</span> <span class="s1">&#39;8&#39;</span><span class="p">,</span> <span class="s1">&#39;7&#39;</span><span class="p">,</span> <span class="s1">&#39;6&#39;</span><span class="p">,</span> <span class="s1">&#39;5&#39;</span><span class="p">,</span> <span class="s1">&#39;4&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">)</span>
+     
+        <span class="n">colors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_colors</span><span class="p">):</span>
+            <span class="n">colors</span> <span class="o">+=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">hex_codes</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">)))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">color_chain</span> <span class="o">=</span> <span class="n">colors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">from_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hex2rgb</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">color_chain</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">to_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hex2rgb</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">color_chain</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chain_pointer</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">from_color</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_color</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Color_Gradient_Booster.set_fav_color"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.set_fav_color">[Doku]</a>    <span class="k">def</span> <span class="nf">set_fav_color</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">FAV_COLOR_MIX</span><span class="p">)</span>    <span class="c1">#+tuple(COLOR_CHAINS.values())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">from_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hex2rgb</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">color_chain</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">to_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hex2rgb</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">color_chain</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chain_pointer</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">from_color</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_color</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Color_Gradient_Booster.hex2rgb"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.hex2rgb">[Doku]</a>    <span class="k">def</span> <span class="nf">hex2rgb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">str_hex</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">str_hex</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">):</span>
+            <span class="n">str_hex</span> <span class="o">=</span> <span class="n">str_hex</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">str_hex</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">],</span> <span class="n">str_hex</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">],</span> <span class="n">str_hex</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span>
+
+        <span class="c1"># transform hex in decimal with int(x, 16)</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">hex_num</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span> <span class="k">for</span> <span class="n">hex_num</span> <span class="ow">in</span> <span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Color_Gradient_Booster.set_on_screen"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.set_on_screen">[Doku]</a>    <span class="k">def</span> <span class="nf">set_on_screen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">relx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">rely</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">relwidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">relheight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Color_Gradient_Booster.set_off_screen"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.set_off_screen">[Doku]</a>    <span class="k">def</span> <span class="nf">set_off_screen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">place_forget</span><span class="p">()</span></div></div>
+
+
+<span class="c1"># XXX Testing XXX</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">event_btn_clicked</span><span class="p">(</span><span class="n">booster</span><span class="p">):</span>
+        <span class="k">global</span> <span class="n">change_color_activated</span><span class="p">,</span> <span class="n">start_stop_btn</span>
+        <span class="k">if</span> <span class="n">change_color_activated</span><span class="p">:</span>
+            <span class="n">booster</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+            <span class="n">change_color_activated</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">start_stop_btn</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Start&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">booster</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="n">change_color_activated</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">start_stop_btn</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Stop&#39;</span><span class="p">)</span>
+
+
+    <span class="n">root</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Tk</span><span class="p">()</span>
+    <span class="n">root</span><span class="o">.</span><span class="n">geometry</span><span class="p">(</span><span class="s1">&#39;600x400&#39;</span><span class="p">)</span>
+
+    <span class="n">change_color_activated</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="n">main_window</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Frame</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+    <span class="n">main_window</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">)</span>
+
+    <span class="n">design</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;#05ffa1&#39;</span><span class="p">,</span> <span class="s1">&#39;#b967ff&#39;</span><span class="p">)</span><span class="c1">#&#39;old_times&#39;#[&#39;#ff6f69&#39;, &#39;#ffeead&#39;]#&#39;random&#39;    # None, &#39;cyber_shot&#39;, &#39;dune&#39;, &#39;light_rain&#39;</span>
+    <span class="n">cg_booster</span> <span class="o">=</span> <span class="n">Color_Gradient_Booster</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">main_window</span><span class="p">,</span>  <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;random&#39;</span><span class="p">,</span> 
+                                        <span class="n">should_change_color</span><span class="o">=</span><span class="n">change_color_activated</span><span class="p">,</span> <span class="n">change_time</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> 
+                                        <span class="n">color_chain</span><span class="o">=</span><span class="n">design</span><span class="p">,</span> <span class="n">gradient_size_tendency</span><span class="o">=</span><span class="s1">&#39;neg&#39;</span><span class="p">)</span>
+    <span class="c1">#cg_booster.grid(row=1, column=1, sticky=&quot;nesw&quot;)</span>
+    <span class="n">cg_booster</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">relwidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">relheight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1">#cg_booster.set_random_colors()</span>
+    <span class="c1">#cg_booster.set_fav_color()</span>
+
+    <span class="n">start_stop_btn</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="n">main_window</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Start&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span><span class="n">event_btn_clicked</span><span class="p">(</span><span class="n">cg_booster</span><span class="p">))</span>
+    <span class="n">start_stop_btn</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+        <span class="n">main_window</span><span class="o">.</span><span class="n">grid_rowconfigure</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1">#main_window.grid_rowconfigure(2, weight=1)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+        <span class="n">main_window</span><span class="o">.</span><span class="n">grid_columnconfigure</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">root</span><span class="o">.</span><span class="n">mainloop</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Tobia Ippolito, Syon Kadkade, Vadim Korzev.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

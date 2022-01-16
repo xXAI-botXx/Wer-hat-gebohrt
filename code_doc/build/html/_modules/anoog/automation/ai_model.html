@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>anoog.automation.ai_model &mdash; Wer hat gebohrt? 21.01.2022 Dokumentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/translations.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="../../../genindex.html" />
+    <link rel="search" title="Suche" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> Wer hat gebohrt?
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">anoog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Wer hat gebohrt?</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Modul-Quellcode</a> &raquo;</li>
+      <li>anoog.automation.ai_model</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Quellcode für anoog.automation.ai_model</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">time</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span> 
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span> 
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">..model</span> <span class="kn">import</span> <span class="n">train_random_forest</span><span class="p">,</span> <span class="n">train_svc</span><span class="p">,</span> <span class="n">train_knn</span><span class="p">,</span> <span class="n">train_naive_bayes</span><span class="p">,</span> <span class="n">train_logistic_regression</span><span class="p">,</span> <span class="n">train_adaboost</span><span class="p">,</span> <span class="n">train_voting_classifier</span>
+<span class="kn">from</span> <span class="nn">..model</span> <span class="kn">import</span> <span class="n">predict</span><span class="p">,</span> <span class="n">predict_proba</span> 
+<span class="kn">from</span> <span class="nn">..io</span> <span class="kn">import</span> <span class="n">load_single_data</span><span class="p">,</span> <span class="n">extraction_mode</span><span class="p">,</span> <span class="n">selection_mode</span><span class="p">,</span> <span class="n">X_y_split</span>
+
+<span class="n">ALGORITHM</span> <span class="o">=</span> <span class="n">Enum</span><span class="p">(</span><span class="s1">&#39;ALGORITHM&#39;</span><span class="p">,</span> <span class="s1">&#39;RANDOM_FOREST SVC KNN NAIVE_BAYES LOGISTIC_REGRESSION ADA_BOOST VOTING_CLASSIFIER&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="AI_Model"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.ai_model.AI_Model">[Doku]</a><span class="k">class</span> <span class="nc">AI_Model</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class used to:</span>
+<span class="sd">        - collect train- and predict-data</span>
+<span class="sd">        - train supervised classification ML-Algorithmn</span>
+<span class="sd">        - make prediction with the trained model </span>
+
+<span class="sd">    This class makes an protocoll of it tasks, to understand the progress.</span>
+<span class="sd">    By init or resetting it clears this protocol.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predict_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_normalize</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drill_id</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dir_path</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clean_log</span><span class="p">()</span>
+        <span class="c1"># constant</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cv</span> <span class="o">=</span> <span class="mi">3</span>
+
+<div class="viewcode-block" id="AI_Model.add_train_dataset"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.ai_model.AI_Model.add_train_dataset">[Doku]</a>    <span class="k">def</span> <span class="nf">add_train_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">person_id</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span> <span class="n">person</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">data_path</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load last train-drill-data in DataFrame. Using buffer with 30s timeout (if the data need some time to saving).</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            - person_id as int (to know which person is meaned)</span>
+<span class="sd">            - person as str (||)</span>
+<span class="sd">            - data_path as str (to know where the data is stored)</span>
+<span class="sd">        </span>
+<span class="sd">        --------</span>
+<span class="sd">        Returns None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">date</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">year</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">month</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">day</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">data_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">data_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_log</span><span class="p">(</span><span class="s2">&quot;Load a single train_data&quot;</span><span class="p">)</span>
+        <span class="c1"># load new dataset + buffer</span>
+        <span class="n">begin</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">new_data</span> <span class="o">=</span> <span class="n">load_single_data</span><span class="p">(</span><span class="n">person_id</span><span class="p">,</span>
+                                            <span class="n">person</span><span class="o">=</span><span class="n">person</span><span class="p">,</span>
+                                            <span class="n">data_path</span><span class="o">=</span><span class="n">data_path</span><span class="p">,</span> 
+                                            <span class="n">drill_id</span> <span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">drill_id</span><span class="p">,</span>
+                                            <span class="n">extraction</span><span class="o">=</span><span class="n">extraction_mode</span><span class="o">.</span><span class="n">MANUEL</span><span class="p">,</span>
+                                            <span class="c1">#extraction=extraction_mode.TSFRESH,</span>
+                                            <span class="n">show_extraction</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                            <span class="n">selection</span><span class="o">=</span><span class="n">selection_mode</span><span class="o">.</span><span class="n">NONE</span><span class="p">,</span>
+                                            <span class="n">train_test_split</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                            <span class="n">test_size</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+                                            <span class="n">save_as_csv</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                            <span class="n">csv_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                            <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">new_data</span><span class="o">.</span><span class="n">empty</span> <span class="o">!=</span> <span class="kc">True</span><span class="p">:</span>
+                    <span class="k">break</span>
+            <span class="k">except</span> <span class="ne">FileNotFoundError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;File not found...&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">begin</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">30</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Wait too long for File saving!&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">&quot;While Saving Single Train-Data&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">IndexError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Latest drill not found (Index out of Bounds)...&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">begin</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">30</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Wait too long for File saving!&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;While Saving Single Train-Data&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">new_data</span><span class="p">)</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># add new dataset</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">train_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_data</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Dataentry added:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">new_data</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">drill_id</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_log</span><span class="p">(</span><span class="s2">&quot;Loading a single train_data is finished&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AI_Model.add_predict_dataset"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.ai_model.AI_Model.add_predict_dataset">[Doku]</a>    <span class="k">def</span> <span class="nf">add_predict_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">person_id</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span> <span class="n">person</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">data_path</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load last predict-drill-data in DataFrame. Using buffer with 30s timeout (if the data need some time to saving).</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            - person_id as int (to know which person is meaned)</span>
+<span class="sd">            - person as str (||)</span>
+<span class="sd">            - data_path as str (to know where the data is stored)</span>
+<span class="sd">        </span>
+<span class="sd">        --------</span>
+<span class="sd">        Returns None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">date</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">year</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">month</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">day</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">data_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">data_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_log</span><span class="p">(</span><span class="s2">&quot;Load a single predict_data&quot;</span><span class="p">)</span>
+        <span class="c1"># load new dataset + buffer</span>
+        <span class="n">begin</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">new_data</span> <span class="o">=</span> <span class="n">load_single_data</span><span class="p">(</span><span class="n">person_id</span><span class="p">,</span>
+                                            <span class="n">person</span><span class="o">=</span><span class="n">person</span><span class="p">,</span>
+                                            <span class="n">data_path</span><span class="o">=</span><span class="n">data_path</span><span class="p">,</span> 
+                                            <span class="n">drill_id</span> <span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">drill_id</span><span class="p">,</span>
+                                            <span class="n">extraction</span><span class="o">=</span><span class="n">extraction_mode</span><span class="o">.</span><span class="n">MANUEL</span><span class="p">,</span>
+                                            <span class="n">show_extraction</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                            <span class="n">selection</span><span class="o">=</span><span class="n">selection_mode</span><span class="o">.</span><span class="n">NONE</span><span class="p">,</span>
+                                            <span class="n">train_test_split</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                            <span class="n">test_size</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+                                            <span class="n">save_as_csv</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                            <span class="n">csv_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                            <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">new_data</span><span class="o">.</span><span class="n">empty</span> <span class="o">!=</span> <span class="kc">True</span><span class="p">:</span>
+                    <span class="k">break</span>
+            <span class="k">except</span> <span class="ne">FileNotFoundError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;File not found...&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">begin</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">30</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Wait too long for File saving!&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">&quot;While Saving Single Predict-Data&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">IndexError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Latest drill not found (Index out of Bounds)...&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">begin</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">30</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Wait too long for File saving!&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;While Saving Single Predict-Data&quot;</span><span class="p">)</span>
+                    
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">new_data</span><span class="p">)</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># add new dataset</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">predict_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]))</span>
+            <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">predict_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_data</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">drill_id</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_log</span><span class="p">(</span><span class="s2">&quot;Loading a single predict_data is finished&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AI_Model.remove_last_train_dataset"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.ai_model.AI_Model.remove_last_train_dataset">[Doku]</a>    <span class="k">def</span> <span class="nf">remove_last_train_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Removes last train-data-entry from DataFrame.</span>
+
+<span class="sd">        --------</span>
+<span class="sd">        Return None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_data</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_log</span><span class="p">(</span><span class="s2">&quot;Removed Last Train Dataset&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AI_Model.remove_last_predict_dataset"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.ai_model.AI_Model.remove_last_predict_dataset">[Doku]</a>    <span class="k">def</span> <span class="nf">remove_last_predict_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Removes last predict-data-entry from DataFrame.</span>
+
+<span class="sd">        --------</span>
+<span class="sd">        Return None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predict_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict_data</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">predict_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_log</span><span class="p">(</span><span class="s2">&quot;Removed Last Predict Dataset&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AI_Model.remove_predict_dataset"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.ai_model.AI_Model.remove_predict_dataset">[Doku]</a>    <span class="k">def</span> <span class="nf">remove_predict_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Removes complete predict-data from DataFrame.</span>
+
+<span class="sd">        --------</span>
+<span class="sd">        Return None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predict_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_log</span><span class="p">(</span><span class="s2">&quot;Removed Complete Predict Dataset&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AI_Model.train"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.ai_model.AI_Model.train">[Doku]</a>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="n">ALGORITHM</span><span class="o">.</span><span class="n">RANDOM_FOREST</span><span class="p">,</span> <span class="n">auto_params</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Train a model of choice. The Hyperparameters can choose as predefined or searched with GridSearchCV.</span>
+<span class="sd">        And the data can be normalized if needed.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">        If there are not enough data-entries, GridSearchCV don&#39;t be choosen. </span>
+<span class="sd">        There have to be more than 5 entries.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            - algorithm (Enum) (to which ML-Algorithmn to choose)</span>
+<span class="sd">            - auto_params (bool) (to know if Hyperparameter choose predefined or GridSearchCV)</span>
+<span class="sd">            - normalize (bool) (to know if the data should be normalized)</span>
+<span class="sd">        --------</span>
+<span class="sd">        Return None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># auto-params only if greater than CV*2</span>
+        <span class="k">if</span> <span class="n">auto_params</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_data</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">cv</span><span class="o">*</span><span class="mi">2</span><span class="p">:</span>
+                <span class="n">auto_params</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_log</span><span class="p">(</span><span class="s2">&quot;Start train&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_normalize</span> <span class="o">=</span> <span class="n">normalize</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove_unused_columns</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_data</span><span class="p">)</span>
+        <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">X_y_split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">algorithm</span> <span class="o">==</span> <span class="n">ALGORITHM</span><span class="o">.</span><span class="n">RANDOM_FOREST</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">train_random_forest</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">auto_params</span><span class="o">=</span><span class="n">auto_params</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cv</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">algorithm</span> <span class="o">==</span> <span class="n">ALGORITHM</span><span class="o">.</span><span class="n">SVC</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">train_svc</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">auto_params</span><span class="o">=</span><span class="n">auto_params</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cv</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">algorithm</span> <span class="o">==</span> <span class="n">ALGORITHM</span><span class="o">.</span><span class="n">KNN</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">train_knn</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">auto_params</span><span class="o">=</span><span class="n">auto_params</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cv</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">algorithm</span> <span class="o">==</span> <span class="n">ALGORITHM</span><span class="o">.</span><span class="n">NAIVE_BAYES</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">train_naive_bayes</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">auto_params</span><span class="o">=</span><span class="n">auto_params</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cv</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">algorithm</span> <span class="o">==</span> <span class="n">ALGORITHM</span><span class="o">.</span><span class="n">LOGISTIC_REGRESSION</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">train_logistic_regression</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">auto_params</span><span class="o">=</span><span class="n">auto_params</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cv</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">algorithm</span> <span class="o">==</span> <span class="n">ALGORITHM</span><span class="o">.</span><span class="n">ADA_BOOST</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">train_adaboost</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">auto_params</span><span class="o">=</span><span class="n">auto_params</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cv</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">algorithm</span> <span class="o">==</span> <span class="n">ALGORITHM</span><span class="o">.</span><span class="n">VOTING_CLASSIFIER</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">train_voting_classifier</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">auto_params</span><span class="o">=</span><span class="n">auto_params</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cv</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_log</span><span class="p">(</span><span class="s2">&quot;End train&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AI_Model.predict"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.ai_model.AI_Model.predict">[Doku]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Predicts the predict-data with the trained model.</span>
+<span class="sd">        If the train-data was normalize, the predict-data also do. Normalization is working with train-data,</span>
+<span class="sd">        to have the same scale.</span>
+
+<span class="sd">        If there are more than one predict-data-entry. Every Entry going to predict </span>
+<span class="sd">        and the probabilities are stacked (soft voting) and scaled to 100%.</span>
+
+<span class="sd">        --------</span>
+<span class="sd">        Returns tuple of 2 floats -&gt; result of prediction (proba)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_log</span><span class="p">(</span><span class="s2">&quot;Start Predict&quot;</span><span class="p">)</span>
+        <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">X_y_split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_data</span><span class="p">)</span>    <span class="c1"># for normalization</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predict_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove_unused_columns</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">predict_data</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict_data</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">should_normalize</span><span class="p">)</span>
+        <span class="c1"># If more then one drill -&gt; we would like to add the votes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Predict Result: </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1">#print(result)</span>
+        <span class="n">votes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">votes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">votes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">votes</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="nb">all</span> <span class="o">=</span> <span class="n">votes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">votes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">proba_result</span> <span class="o">=</span> <span class="p">[</span><span class="n">votes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="nb">all</span><span class="p">,</span> <span class="n">votes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="nb">all</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_log</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Voted: </span><span class="si">{</span><span class="n">proba_result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_log</span><span class="p">(</span><span class="s2">&quot;End Predict&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">proba_result</span></div>
+
+<div class="viewcode-block" id="AI_Model.remove_unused_columns"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.ai_model.AI_Model.remove_unused_columns">[Doku]</a>    <span class="k">def</span> <span class="nf">remove_unused_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tries to remove some irrelevant Features, which shouldn&#39;t exist anymore.</span>
+<span class="sd">        It&#39;s no problem, if they don&#39;t exist.</span>
+
+<span class="sd">        Arguments: </span>
+<span class="sd">            - data (data which will be trimmed)</span>
+<span class="sd">        --------</span>
+<span class="sd">        Return new trimmed DataFrame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s1">&#39;Audio&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">new_data</span> <span class="o">=</span> <span class="n">new_data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Audio&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s1">&#39;Current&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">new_data</span> <span class="o">=</span> <span class="n">new_data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Current&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s1">&#39;Voltage&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">new_data</span> <span class="o">=</span> <span class="n">new_data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Voltage&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s1">&#39;ID&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">new_data</span> <span class="o">=</span> <span class="n">new_data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">new_data</span></div>
+
+<div class="viewcode-block" id="AI_Model.draw_result"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.ai_model.AI_Model.draw_result">[Doku]</a>    <span class="k">def</span> <span class="nf">draw_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">person1_name</span><span class="p">,</span> <span class="n">person1_proba</span><span class="p">,</span> <span class="n">person2_name</span><span class="p">,</span> <span class="n">person2_proba</span><span class="p">,</span> <span class="n">save_path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plots the result of probability classification as bar-chart with 2 charts.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            - person1_name as str (to plot the name)</span>
+<span class="sd">            - person1_proba as int (to plot the probability)</span>
+<span class="sd">            - person2_name as str (to plot the name)</span>
+<span class="sd">            - person2_proba as int (to plot the probability)</span>
+<span class="sd">            - save_path as str (to know where to save the plot)</span>
+<span class="sd">        --------</span>
+<span class="sd">        Returns None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;seaborn-whitegrid&#39;</span><span class="p">)</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axes</span><span class="p">()</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="n">person1_name</span><span class="p">,</span> <span class="n">person2_name</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="p">[</span><span class="n">person1_proba</span><span class="p">,</span> <span class="n">person2_proba</span><span class="p">])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Prediction&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Candidates&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Probability&#39;</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">save_path</span><span class="p">,</span> <span class="n">transparent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AI_Model.clean_log"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.ai_model.AI_Model.clean_log">[Doku]</a>    <span class="k">def</span> <span class="nf">clean_log</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clears the protocol of the AI-Model.</span>
+
+<span class="sd">        Should be called once at the beinning of the program.</span>
+
+<span class="sd">        --------</span>
+<span class="sd">        Returns None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dir_path</span><span class="si">}</span><span class="s2">/output/AI-Model-log.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AI_Model.reset"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.ai_model.AI_Model.reset">[Doku]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the variables (like the train and predict-DataFrame) to initial values.</span>
+<span class="sd">        (Clears also the protocol)</span>
+
+<span class="sd">        --------</span>
+<span class="sd">        Returns None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predict_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drill_id</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dir_path</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clean_log</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="AI_Model.write_log"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.ai_model.AI_Model.write_log">[Doku]</a>    <span class="k">def</span> <span class="nf">write_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Writes a String in the protocol-file.</span>
+
+<span class="sd">        This method should be used to add a entry to the protocoll.</span>
+
+<span class="sd">        --------</span>
+<span class="sd">        Returns None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">date_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">hour</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">minute</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">second</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dir_path</span><span class="si">}</span><span class="s2">/output/AI-Model-log.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">- log entry at </span><span class="si">{</span><span class="n">date_str</span><span class="si">}</span><span class="s2">:: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Tobia Ippolito, Syon Kadkade, Vadim Korzev.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

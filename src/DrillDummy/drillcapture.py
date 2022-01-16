@@ -64,11 +64,13 @@ else:
     print("ERROR OCCUR BY LOADING")
     mode = "NONE"
 
+data_path = 'C:/Users/tobia/Karriere/Studium/3. Semester/Module/Projekt_1/wer/src/DrillDummy/testdata'
 if mode == 'bulk':
     yaml_path = description
     file_path = os.path.abspath(__file__).replace("\\", "/")
     #data_path = f"{'/'.join(file_path.split('/')[:-1])}/testdata"    # don't works in program, but why?
-    data_path = 'D:/Karriere/Studium/3. Semester/Module/Projekt_1/wer/src/DrillDummy/testdata'
+    #data_path = 'D:/Karriere/Studium/3. Semester/Module/Projekt_1/wer/src/DrillDummy/testdata'
+    data_path = 'C:/Users/tobia/Karriere/Studium/3. Semester/Module/Projekt_1/wer/src/DrillDummy/testdata'
     #data_path = "/home/mustermann/rec/thema1"
 
 
@@ -140,7 +142,7 @@ elif mode == 'single':
     person_folder = description.split("/")[0]
     file_path = os.path.abspath(__file__).replace("\\", "/")
     #data_path = f"{'/'.join(file_path.split('/')[:-1])}/testdata"    # don't works in program, but why?
-    data_path = 'D:/Karriere/Studium/3. Semester/Module/Projekt_1/wer/src/DrillDummy/testdata'
+    #data_path = 'D:/Karriere/Studium/3. Semester/Module/Projekt_1/wer/src/DrillDummy/testdata'
 
     folder = f"{now.year}-{now.month}-{now.day}"
 

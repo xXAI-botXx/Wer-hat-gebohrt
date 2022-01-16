@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>anoog.automation.event &mdash; Wer hat gebohrt? 21.01.2022 Dokumentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/translations.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="../../../genindex.html" />
+    <link rel="search" title="Suche" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> Wer hat gebohrt?
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">anoog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Wer hat gebohrt?</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Modul-Quellcode</a> &raquo;</li>
+      <li>anoog.automation.event</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Quellcode für anoog.automation.event</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">from</span> <span class="nn">queue</span> <span class="kn">import</span> <span class="n">Queue</span><span class="p">,</span> <span class="n">Empty</span>
+
+<div class="viewcode-block" id="Eventsystem_Component"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.event.Eventsystem_Component">[Doku]</a><span class="k">class</span> <span class="nc">Eventsystem_Component</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A member in the eventsystem should inherite from this class.</span>
+<span class="sd">    --------</span>
+<span class="sd">    Funtionality:</span>
+<span class="sd">    Other objectes/methods can call add_event() to add a new Event. Now the spicific Eventmember</span>
+<span class="sd">    can process this event in his Thread by calling run_event. The given event in the queue is</span>
+<span class="sd">    a key in the EVENT HashMap. The value should be a method, which will be called in run_event.</span>
+
+<span class="sd">    The Event should be a String (the eventname/key in EVENT) and can add multi-params in a tuple.</span>
+<span class="sd">    For one param you should call as follow: add_Event(eventname, (param1, ))</span>
+<span class="sd">    --------</span>
+<span class="sd">    Notice following points:</span>
+<span class="sd">    - The variable EVENT (HashMap/dictionary) should be implemented in the specific Eventmember class.</span>
+<span class="sd">    - Don&#39;t forget to call: EventSystem_Component.__init__(self)</span>
+<span class="sd">    - call run_event (maybe in ja while-loop or in a observer method)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">events</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">EVENT</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Eventsystem_Component.run_event"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.event.Eventsystem_Component.run_event">[Doku]</a>    <span class="k">def</span> <span class="nf">run_event</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks the event-queue and runs a event, if there is one.</span>
+
+<span class="sd">        The eventname used as key in the EVENT HashMap. </span>
+<span class="sd">        The value should be a callable and this function/method is called.</span>
+<span class="sd">        If there were params (in a tuple) then they will handed over.</span>
+
+<span class="sd">        --------</span>
+<span class="sd">        Returns None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+            <span class="n">event</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="c1">#print(&quot;Got Event: &quot;, event)</span>
+            <span class="c1"># event = &#39;eventname&#39; or event = &#39;eventname&#39;, *args</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">event</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">EVENT</span><span class="p">[</span><span class="n">event</span><span class="p">[</span><span class="mi">0</span><span class="p">]](</span><span class="o">*</span><span class="n">event</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">EVENT</span><span class="p">[</span><span class="n">event</span><span class="p">[</span><span class="mi">0</span><span class="p">]]()</span></div>
+
+<div class="viewcode-block" id="Eventsystem_Component.add_event"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.event.Eventsystem_Component.add_event">[Doku]</a>    <span class="k">def</span> <span class="nf">add_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event_name</span><span class="p">,</span> <span class="o">*</span><span class="n">additions</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a new event for this specific eventmember.</span>
+<span class="sd">        Parameters can added as normal Parameters or in a tuple.</span>
+
+<span class="sd">        The event_name should be a key in EVENT-HashMap.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            - event_name as str (key in EVENT-dict)</span>
+<span class="sd">            - additions as tuple or multi arguments (if the eventfunction needs more args)</span>
+<span class="sd">        --------</span>
+<span class="sd">        Returns None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">event</span> <span class="o">=</span> <span class="p">(</span><span class="n">event_name</span><span class="p">,</span> <span class="o">*</span><span class="n">additions</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></div></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Tobia Ippolito, Syon Kadkade, Vadim Korzev.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

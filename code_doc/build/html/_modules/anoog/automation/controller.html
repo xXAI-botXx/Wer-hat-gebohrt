@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>anoog.automation.controller &mdash; Wer hat gebohrt? 21.01.2022 Dokumentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/translations.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="../../../genindex.html" />
+    <link rel="search" title="Suche" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> Wer hat gebohrt?
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">anoog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Wer hat gebohrt?</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Modul-Quellcode</a> &raquo;</li>
+      <li>anoog.automation.controller</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Quellcode für anoog.automation.controller</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span> <span class="nn">queue</span> <span class="kn">import</span> <span class="n">Queue</span><span class="p">,</span> <span class="n">Empty</span>
+<span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Thread</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="kn">from</span> <span class="nn">.py_exe_interface</span> <span class="kn">import</span> <span class="n">Drillcapture_Interface</span><span class="p">,</span> <span class="n">Drilldriver_Interface</span><span class="p">,</span> <span class="n">op</span>
+<span class="kn">from</span> <span class="nn">.ai_model</span> <span class="kn">import</span> <span class="n">AI_Model</span><span class="p">,</span> <span class="n">ALGORITHM</span>
+<span class="kn">from</span> <span class="nn">.event</span> <span class="kn">import</span> <span class="n">Eventsystem_Component</span>
+
+<span class="n">process_state</span> <span class="o">=</span> <span class="n">Enum</span><span class="p">(</span><span class="s1">&#39;process_state&#39;</span><span class="p">,</span> <span class="s1">&#39;NOT_STARTED BEFORE_TRAIN TRAIN TRAIN_END PREDICT&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Terminal"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.controller.Terminal">[Doku]</a><span class="k">class</span> <span class="nc">Terminal</span><span class="p">(</span><span class="n">Eventsystem_Component</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The Terminal class takes care of the logic of the live-application (who-drills).</span>
+<span class="sd">    It creates the folders and files, controlls the subprocess (drillcapture and drilldriver),</span>
+<span class="sd">    owns the data and AI-Model and counts the amounts of drilling.</span>
+
+<span class="sd">    This class sends Event-Messages to the GUI and the SubprocessInterface.</span>
+
+<span class="sd">    It runs with the run-Method and should run in a Thread.</span>
+<span class="sd">    (Normally this is the startpoint of the program, but Tkinter has to run in the real program thread, so the GUI is the startpoint)</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        - User-Interface for sending events (for example: show next drill-person)</span>
+<span class="sd">        - data-path as str (to know, where to save the data)</span>
+<span class="sd">        - drillcapture_path as str (for starting the program)</span>
+<span class="sd">        - drilldriver_path (for starting the program)</span>
+<span class="sd">        - op as Operationsystem (Enum) (for knowing the operating system)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_interface</span><span class="p">,</span> <span class="n">data_path</span><span class="o">=</span><span class="s2">&quot;data/testdata&quot;</span><span class="p">,</span> <span class="n">drillcapture_path</span><span class="o">=</span><span class="s2">&quot;../BACKUP/drill-soft.exe&quot;</span><span class="p">,</span> 
+                                <span class="n">drilldriver_path</span><span class="o">=</span><span class="s2">&quot;../BACKUP/drill-soft.exe&quot;</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">WINDOWS</span><span class="p">):</span>
+        <span class="n">Eventsystem_Component</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_path</span> <span class="o">=</span> <span class="n">data_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drilldriver_path</span> <span class="o">=</span> <span class="n">drilldriver_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drillcapture_path</span> <span class="o">=</span> <span class="n">drillcapture_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drilldriver</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drillcapture</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">op</span> <span class="o">=</span> <span class="n">op</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">op</span> <span class="o">==</span> <span class="n">op</span><span class="o">.</span><span class="n">WINDOWS</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">path_to_output</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">file_path</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="si">}</span><span class="s2">/output&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">path_to_output</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/home/anoog/git/wer/src/anoog/automation/output&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">persons</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_at_least_one_run</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_drill_person</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cur_drill_person</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">process_state</span><span class="o">.</span><span class="n">NOT_STARTED</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">person1_info</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">person2_info</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_delete_last_possible</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">AI_Model</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predict_amount</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">can_delete_last_predict_data</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_running</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">events</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">EVENT</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;train-drill&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">init_train_drilling</span><span class="p">,</span>
+                        <span class="s1">&#39;reset-train&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">reset_train</span><span class="p">,</span>
+                        <span class="s1">&#39;exit&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="p">,</span> <span class="s1">&#39;delete-last&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">delete_last</span><span class="p">,</span>
+                        <span class="s1">&#39;start&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="s1">&#39;stop&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">,</span> 
+                        <span class="s1">&#39;init-predict&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">init_predict</span><span class="p">,</span>
+                        <span class="s1">&#39;add-amount&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">add_amount</span><span class="p">,</span> <span class="s1">&#39;predict-load&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">load_predict</span><span class="p">,</span>
+                        <span class="s1">&#39;from-predict-to-train&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">from_predict_to_train</span><span class="p">,</span> <span class="s1">&#39;delete-last-predict-drill&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">delete_last_predict_drill</span><span class="p">,</span>
+                        <span class="s1">&#39;reset-predict&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">reset_predict</span><span class="p">,</span> <span class="s1">&#39;predict&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_interface</span> <span class="o">=</span> <span class="n">user_interface</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">date_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">year</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">month</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">day</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="c1"># start mcc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_drill_driver</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Terminal.run"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.controller.Terminal.run">[Doku]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        First cleans the Output-Files of the drillcapture file.</span>
+
+<span class="sd">        Then check it event-queue for new events and process it, if there is one.</span>
+<span class="sd">        There is a short waiting buffer.</span>
+
+<span class="sd">        --------</span>
+<span class="sd">        Returns None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clean_output</span><span class="p">()</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">should_running</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run_event</span><span class="p">()</span>
+            <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Terminal.reset_train"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.controller.Terminal.reset_train">[Doku]</a>    <span class="k">def</span> <span class="nf">reset_train</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets all variables with train-context to the init values.</span>
+<span class="sd">        Not includes the predict-data (for purpose).</span>
+
+<span class="sd">        --------</span>
+<span class="sd">        Returns None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">drillcapture</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">drillcapture</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;exit&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">drillcapture</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">persons</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_drill_person</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">persons</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_at_least_one_run</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_drill_person</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cur_drill_person</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">process_state</span><span class="o">.</span><span class="n">NOT_STARTED</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">person1_info</span> <span class="o">!=</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">person2_info</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">person1_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">person1_info</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">person2_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">person2_info</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">clean_output</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">AI_Model</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predict_amount</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">can_delete_last_predict_data</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Terminal.reset_predict"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.controller.Terminal.reset_predict">[Doku]</a>    <span class="k">def</span> <span class="nf">reset_predict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets all variables with predict-context to the init values.</span>
+<span class="sd">        Not includes the train-data (for purpose).</span>
+
+<span class="sd">        --------</span>
+<span class="sd">        Returns None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">remove_predict_dataset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predict_amount</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">can_delete_last_predict_data</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Terminal.from_predict_to_train"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.controller.Terminal.from_predict_to_train">[Doku]</a>    <span class="k">def</span> <span class="nf">from_predict_to_train</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the state, if user goes from predict-screen back to train-screen</span>
+
+<span class="sd">        --------</span>
+<span class="sd">        Returns None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">process_state</span><span class="o">.</span><span class="n">TRAIN_END</span></div>
+
+<div class="viewcode-block" id="Terminal.start_drill_driver"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.controller.Terminal.start_drill_driver">[Doku]</a>    <span class="k">def</span> <span class="nf">start_drill_driver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Starts the Drilldriver-Program.</span>
+
+<span class="sd">        Should be started one time by the start of the live-application.</span>
+
+<span class="sd">        --------</span>
+<span class="sd">        Returns None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">drilldriver</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Drilldriver startet twice. Look at controller 123&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stop_drill_driver</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drilldriver</span> <span class="o">=</span> <span class="n">Drilldriver_Interface</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">drilldriver_path</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">op</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thread_process_1</span> <span class="o">=</span> <span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">drilldriver</span><span class="o">.</span><span class="n">run</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thread_process_1</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Terminal.stop_drill_driver"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.controller.Terminal.stop_drill_driver">[Doku]</a>    <span class="k">def</span> <span class="nf">stop_drill_driver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stops the Drilldriver-Program by sending a exit-event.</span>
+
+<span class="sd">        --------</span>
+<span class="sd">        Returns None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">drilldriver</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">drilldriver</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;exit&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">drilldriver</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Terminal.init_drill"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.controller.Terminal.init_drill">[Doku]</a>    <span class="k">def</span> <span class="nf">init_drill</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">person1</span><span class="p">:</span><span class="nb">dict</span><span class="p">,</span> <span class="n">person2</span><span class="p">:</span><span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates the Directories and yaml-Files for UNKNOWN and the two persons.</span>
+
+<span class="sd">        The yaml-Files contains basic information about the person who drills. </span>
+<span class="sd">        This will be  partly used as label, for the training of the supervised classification models.  </span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            - 2 Dictionaries which incudes informations about the persons (str:str)</span>
+<span class="sd">                -&gt; Following entries are needed: </span>
+<span class="sd">                        - &#39;material&#39; </span>
+<span class="sd">                        - &#39;boreholeSize&#39;</span>
+<span class="sd">                        - &#39;gear&#39;</span>
+<span class="sd">                        - &#39;batteryLevel&#39;</span>
+<span class="sd">                        - &#39;drillType&#39;</span>
+<span class="sd">                        - &#39;operator&#39;</span>
+<span class="sd">                        - &#39;amount&#39;</span>
+<span class="sd">        --------</span>
+<span class="sd">        Returns None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">date_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">year</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">month</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">day</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="c1"># Create 1 Directory -&gt; Date -&gt; if still there -&gt; delete</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">date_str</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">date_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1">#os.rmdir(f&quot;{self.data_path}/{date_str}&quot;)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">date_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+        <span class="c1"># make persons driectories</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">date_str</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">person1</span><span class="p">[</span><span class="s1">&#39;operator&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">date_str</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">person2</span><span class="p">[</span><span class="s1">&#39;operator&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># Predict-Data-Folder</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">date_str</span><span class="si">}</span><span class="s2">/UNKNOWN&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Create in each of these new dirs a yaml file with basic infos</span>
+        <span class="k">for</span> <span class="n">person</span> <span class="ow">in</span> <span class="p">[</span><span class="n">person1</span><span class="p">,</span> <span class="n">person2</span><span class="p">]:</span>
+            <span class="n">yaml_content</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">basic_infos</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;boreholeSize&#39;</span><span class="p">,</span> <span class="s1">&#39;material&#39;</span><span class="p">,</span> <span class="s1">&#39;gear&#39;</span><span class="p">,</span> <span class="s1">&#39;batteryLevel&#39;</span><span class="p">,</span> <span class="s1">&#39;drillType&#39;</span><span class="p">,</span> <span class="s1">&#39;operator&#39;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">basic_infos</span><span class="p">:</span>
+                <span class="n">yaml_content</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">person</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">yaml_content</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;anomalyTimestamps:</span><span class="se">\n</span><span class="s2">- idle&quot;</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">date_str</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">person</span><span class="p">[</span><span class="s1">&#39;operator&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/meta.yaml&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">yaml_content</span><span class="p">)</span>
+
+        <span class="c1"># Create Dummy Meta File for UNKNOWN -&gt; Prediction</span>
+        <span class="n">unknown_meta_data</span> <span class="o">=</span> <span class="s2">&quot;boreholeSize: 4</span><span class="se">\n</span><span class="s2">material: wood-eiche</span><span class="se">\n</span><span class="s2">gear: 2</span><span class="se">\n</span><span class="s2">batteryLevel: normal</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">unknown_meta_data</span> <span class="o">+=</span> <span class="s2">&quot;drillType: universal</span><span class="se">\n</span><span class="s2">operator: UNKNOWN</span><span class="se">\n</span><span class="s2">anomalyTimestamps:</span><span class="se">\n</span><span class="s2">- idle&quot;</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">date_str</span><span class="si">}</span><span class="s2">/UNKNOWN/meta.yaml&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">unknown_meta_data</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">process_state</span><span class="o">.</span><span class="n">BEFORE_TRAIN</span></div>
+
+<div class="viewcode-block" id="Terminal.init_predict"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.controller.Terminal.init_predict">[Doku]</a>    <span class="k">def</span> <span class="nf">init_predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">person1</span><span class="p">:</span><span class="nb">dict</span><span class="p">,</span> <span class="n">person2</span><span class="p">:</span><span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates the Directories and yaml-Files for UNKNOWN with dummy-informations.</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            - 2 Dictionaries which incudes informations about the persons (str:str)</span>
+<span class="sd">                -&gt; Following entries are needed: </span>
+<span class="sd">                        - &#39;material&#39; </span>
+<span class="sd">                        - &#39;boreholeSize&#39;</span>
+<span class="sd">                        - &#39;gear&#39;</span>
+<span class="sd">                        - &#39;batteryLevel&#39;</span>
+<span class="sd">                        - &#39;drillType&#39;</span>
+<span class="sd">                        - &#39;operator&#39;</span>
+<span class="sd">                        - &#39;amount&#39;</span>
+<span class="sd">        --------</span>
+<span class="sd">        Returns None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">date_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">year</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">month</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">day</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="c1"># Create 1 Directory -&gt; Date -&gt; if still there -&gt; delete</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">date_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;unknown&quot;</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">date_str</span><span class="si">}</span><span class="s2">/unknown&quot;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">date_str</span><span class="si">}</span><span class="s2">/unknown&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Metadaten mit ungültigen Daten füllen</span>
+        <span class="n">yaml_content</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">basic_infos</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;boreholeSize&#39;</span><span class="p">,</span> <span class="s1">&#39;material&#39;</span><span class="p">,</span> <span class="s1">&#39;gear&#39;</span><span class="p">,</span> <span class="s1">&#39;batteryLevel&#39;</span><span class="p">,</span> <span class="s1">&#39;drillType&#39;</span><span class="p">,</span> <span class="s1">&#39;operator&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">basic_infos</span><span class="p">:</span>
+            <span class="n">yaml_content</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: -999</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">yaml_content</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;anomalyTimestamps:</span><span class="se">\n</span><span class="s2">- idle&quot;</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">date_str</span><span class="si">}</span><span class="s2">/UNKNOWN/meta.yaml&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span><span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">yaml_content</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Terminal.delete_last"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.controller.Terminal.delete_last">[Doku]</a>    <span class="k">def</span> <span class="nf">delete_last</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Removes last train-data-entry in DataFrame and the real data (folder).</span>
+<span class="sd">        Moreover the Amount is resetting by 1.</span>
+
+<span class="sd">        --------</span>
+<span class="sd">        Returns None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_drill_person</span> <span class="o">!=</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">process_state</span><span class="o">.</span><span class="n">BEFORE_TRAIN</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">process_state</span><span class="o">.</span><span class="n">TRAIN_END</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_delete_last_possible</span><span class="p">:</span>
+            <span class="c1"># delete Folder</span>
+            <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+            <span class="n">date_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">year</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">month</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">day</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">items</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">date_str</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">last_drill_person</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">items</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="n">latest_drill</span> <span class="o">=</span> <span class="n">items</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">while</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">date_str</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">last_drill_person</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">latest_drill</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">i</span><span class="o">*-</span><span class="mi">1</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+                <span class="n">i</span> <span class="o">-=</span> <span class="mi">1</span>
+                <span class="n">latest_drill</span> <span class="o">=</span> <span class="n">items</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">date_str</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">last_drill_person</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">latest_drill</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+            <span class="c1"># update digital amount</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_drill_person</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">person1_info</span><span class="p">[</span><span class="s1">&#39;operator&#39;</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">person1_info</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">person1_info</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">person2_info</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">person2_info</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_interface</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;drill-amount-change&#39;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">person1_info</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">person2_info</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">]))</span>
+
+            <span class="c1"># update model</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">remove_last_train_dataset</span><span class="p">()</span>
+
+            <span class="c1"># Restart the drillcapture</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">drillcapture</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">drillcapture</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;exit&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init_train_drilling</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">person1_info</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">person2_info</span><span class="p">)</span>
+
+            <span class="c1"># block new delete_last actions</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_delete_last_possible</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_interface</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;delete-last&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;disabled&#39;</span><span class="p">,</span> <span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_interface</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;start-change&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;enabled&#39;</span><span class="p">,</span> <span class="p">))</span></div>
+
+<div class="viewcode-block" id="Terminal.delete_last_predict_drill"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.controller.Terminal.delete_last_predict_drill">[Doku]</a>    <span class="k">def</span> <span class="nf">delete_last_predict_drill</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Removes last predict-data-entry in DataFrame and the real data (folder).</span>
+<span class="sd">        Moreover the Predict-Amount is decreased by 1.</span>
+
+<span class="sd">        --------</span>
+<span class="sd">        Returns None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">process_state</span><span class="o">.</span><span class="n">PREDICT</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">can_delete_last_predict_data</span><span class="p">:</span>
+            <span class="c1"># update ai-model / dataframe</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">remove_last_predict_dataset</span><span class="p">()</span>
+            <span class="c1"># Update digital amount</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">predict_amount</span> <span class="o">-=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">can_delete_last_predict_data</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="c1"># Update GUI</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_interface</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;delete-last-predict&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;disabled&#39;</span><span class="p">,</span> <span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_interface</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;set-amount-predict&#39;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">predict_amount</span><span class="p">,</span> <span class="p">))</span></div>
+
+<div class="viewcode-block" id="Terminal.init_train_drilling"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.controller.Terminal.init_train_drilling">[Doku]</a>    <span class="k">def</span> <span class="nf">init_train_drilling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">person1</span><span class="p">:</span><span class="nb">dict</span><span class="p">,</span> <span class="n">person2</span><span class="p">:</span><span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepares the Application for a new train-drill.</span>
+<span class="sd">        Choose a person for drilling. If both have amount left, pseudo-random will choose a person.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            - 2 Dictionaries which incudes informations about the persons (str:str)</span>
+<span class="sd">                -&gt; Following entries are needed: </span>
+<span class="sd">                        - &#39;material&#39; </span>
+<span class="sd">                        - &#39;boreholeSize&#39;</span>
+<span class="sd">                        - &#39;gear&#39;</span>
+<span class="sd">                        - &#39;batteryLevel&#39;</span>
+<span class="sd">                        - &#39;drillType&#39;</span>
+<span class="sd">                        - &#39;operator&#39;</span>
+<span class="sd">                        - &#39;amount&#39;</span>
+
+<span class="sd">        --------</span>
+<span class="sd">        Returns None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">process_state</span><span class="o">.</span><span class="n">NOT_STARTED</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_at_least_one_run</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">drillcapture</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">drillcapture</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;exit&#39;</span><span class="p">)</span>
+                <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init_drill</span><span class="p">(</span><span class="n">person1</span><span class="p">,</span> <span class="n">person2</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">person1_info</span> <span class="o">=</span> <span class="n">person1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">person2_info</span> <span class="o">=</span> <span class="n">person2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">persons</span> <span class="o">=</span> <span class="p">(</span><span class="n">person1</span><span class="p">[</span><span class="s1">&#39;operator&#39;</span><span class="p">],</span> <span class="n">person2</span><span class="p">[</span><span class="s1">&#39;operator&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">process_state</span><span class="o">.</span><span class="n">BEFORE_TRAIN</span>
+
+        <span class="c1"># choose random person</span>
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">person1</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">person2</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_interface</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;drill-person&#39;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">persons</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cur_drill_person</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">persons</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">int</span><span class="p">(</span><span class="n">person2</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">person1</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_interface</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;drill-person&#39;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">persons</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cur_drill_person</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">persons</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">int</span><span class="p">(</span><span class="n">person1</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">person2</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_interface</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;drill-person&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;Keine Bohrung mehr!&#39;</span><span class="p">,</span> <span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cur_drill_person</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">user_interface</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;drill-person&#39;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">persons</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cur_drill_person</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">persons</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">user_interface</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;drill-person&#39;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">persons</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cur_drill_person</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">persons</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Terminal.start"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.controller.Terminal.start">[Doku]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Starts a drill (train or predict) with Drillcapture in single-mode.</span>
+
+<span class="sd">        --------</span>
+<span class="sd">        Return None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">process_state</span><span class="o">.</span><span class="n">BEFORE_TRAIN</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">has_at_least_one_run</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_interface</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;delete-last&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;disabled&#39;</span><span class="p">,</span> <span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_interface</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;drill-starts&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">drillcapture</span> <span class="o">=</span> <span class="n">Drillcapture_Interface</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">drillcapture_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_to_output</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">op</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cur_drill_person</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">thread_process_2</span> <span class="o">=</span> <span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">drillcapture</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;single&quot;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">thread_process_2</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">process_state</span><span class="o">.</span><span class="n">TRAIN</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">process_state</span><span class="o">.</span><span class="n">PREDICT</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">drillcapture</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">drillcapture</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;exit&#39;</span><span class="p">)</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">drillcapture</span> <span class="o">=</span> <span class="n">Drillcapture_Interface</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">drillcapture_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_to_output</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">op</span><span class="p">,</span> <span class="s2">&quot;UNKNOWN&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">thread_process_2</span> <span class="o">=</span> <span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">drillcapture</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;single&quot;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">thread_process_2</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_interface</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;predict-drill-starts&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Terminal.stop"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.controller.Terminal.stop">[Doku]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stops a drill (train or predict). Will check by train, if there is amount left and if not, it activates the predict area.</span>
+<span class="sd">        Prepares next drill, if there is amount left.</span>
+
+<span class="sd">        --------</span>
+<span class="sd">        Returns None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">process_state</span><span class="o">.</span><span class="n">TRAIN</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">drillcapture</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;input&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;from_stop&#39;</span><span class="p">,))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_interface</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;delete-last&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;enabled&#39;</span><span class="p">,</span> <span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_interface</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;stop-time&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_drill_person</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cur_drill_person</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">drillcapture</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;exit&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">drillcapture</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+            <span class="c1"># Update amount</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_drill_person</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">person1_info</span><span class="p">[</span><span class="s1">&#39;operator&#39;</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">person1_info</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">person1_info</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">add_train_dataset</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">person1_info</span><span class="p">[</span><span class="s1">&#39;operator&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">person2_info</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">person2_info</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">add_train_dataset</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">person2_info</span><span class="p">[</span><span class="s1">&#39;operator&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">person1_info</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;0&#39;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">person2_info</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;0&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">process_state</span><span class="o">.</span><span class="n">TRAIN_END</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">user_interface</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;drill-person&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;Keine Bohrungen mehr!&quot;</span><span class="p">,</span> <span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">user_interface</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;drill-ends&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">init_train_drilling</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">person1_info</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">person2_info</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">process_state</span><span class="o">.</span><span class="n">BEFORE_TRAIN</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">user_interface</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;drill-ends&#39;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">person1_info</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">person2_info</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">]))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_delete_last_possible</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">process_state</span><span class="o">.</span><span class="n">PREDICT</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">drillcapture</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;input&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;from_stop&#39;</span><span class="p">,))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_interface</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;stop-time&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">drillcapture</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;exit&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">drillcapture</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">add_predict_dataset</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;UNKNOWN&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">predict_amount</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">can_delete_last_predict_data</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_interface</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;set-amount-predict&#39;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">predict_amount</span><span class="p">,</span> <span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_interface</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;delete-last-predict&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;enabled&#39;</span><span class="p">,</span> <span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_interface</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;predict-drill-ends&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Terminal.add_amount"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.controller.Terminal.add_amount">[Doku]</a>    <span class="k">def</span> <span class="nf">add_amount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amount_person_1</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">amount_person_2</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Increased Amount by 1. Prepares for new train-drill, if amounts over 0.</span>
+
+<span class="sd">        --------</span>
+<span class="sd">        Returns None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># transfer to int</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">amount_person_1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">amount_person_1</span><span class="p">)</span>
+            <span class="n">amount_person_2</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">amount_person_2</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="c1"># break</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># digital update</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">person1_info</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">person1_info</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="n">amount_person_1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">person2_info</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">person2_info</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="n">amount_person_2</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">person1_info</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;0&#39;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">person2_info</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;0&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">init_train_drilling</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">person1_info</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">person2_info</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">process_state</span><span class="o">.</span><span class="n">BEFORE_TRAIN</span>
+
+        <span class="c1"># write in User-Interface</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_interface</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;drill-amount-change&#39;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">person1_info</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">person2_info</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">]))</span></div>
+
+<div class="viewcode-block" id="Terminal.load_predict"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.controller.Terminal.load_predict">[Doku]</a>    <span class="k">def</span> <span class="nf">load_predict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Change the internal state to predict. Important for some methods.</span>
+
+<span class="sd">        --------</span>
+<span class="sd">        Returns None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">process_state</span><span class="o">.</span><span class="n">PREDICT</span></div>
+
+<div class="viewcode-block" id="Terminal.exit"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.controller.Terminal.exit">[Doku]</a>    <span class="k">def</span> <span class="nf">exit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stops the drilldriver and the drillcapture. Stable against None.</span>
+
+<span class="sd">        --------</span>
+<span class="sd">        Returns None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">drillcapture</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">drillcapture</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;exit&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">drillcapture</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">drilldriver</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">drilldriver</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;exit&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">drilldriver</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Terminal.predict"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.controller.Terminal.predict">[Doku]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">normalize</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Train a given model with given parameters with the collected data.</span>
+<span class="sd">        After that, the model will predict the predict-data (every entry).</span>
+<span class="sd">        Get Soft Voting and update GUI with Results.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            - model as str -&gt; &#39;RandomForest&#39;, &#39;SVC&#39;, &#39;Naive Bayes&#39;, &#39;KNN&#39;, &#39;Ada Boost&#39;, &#39;Logistic Regression&#39;</span>
+<span class="sd">            - mode as str -&gt; &#39;auto&#39; or not (decided if predefined Hyperparameters or with GridSearchCV)</span>
+<span class="sd">            - normalize as str -&gt; &#39;normalize&#39; or not (decided if the data should be normalize)</span>
+<span class="sd">        -------</span>
+<span class="sd">        Returns None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># train</span>
+        <span class="k">if</span> <span class="n">normalize</span> <span class="o">==</span> <span class="s1">&#39;normalize&#39;</span><span class="p">:</span>
+            <span class="n">normalize</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">normalize</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;auto&#39;</span><span class="p">:</span>
+            <span class="n">auto_params</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">auto_params</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="n">model</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;svc&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">ALGORITHM</span><span class="o">.</span><span class="n">SVC</span><span class="p">,</span> <span class="n">auto_params</span><span class="p">,</span> <span class="n">normalize</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;randomforest&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">ALGORITHM</span><span class="o">.</span><span class="n">RANDOM_FOREST</span><span class="p">,</span> <span class="n">auto_params</span><span class="p">,</span> <span class="n">normalize</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;knn&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">ALGORITHM</span><span class="o">.</span><span class="n">KNN</span><span class="p">,</span> <span class="n">auto_params</span><span class="p">,</span> <span class="n">normalize</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;naive bayes&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">ALGORITHM</span><span class="o">.</span><span class="n">NAIVE_BAYES</span><span class="p">,</span> <span class="n">auto_params</span><span class="p">,</span> <span class="n">normalize</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;ada boost&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">ALGORITHM</span><span class="o">.</span><span class="n">ADA_BOOST</span><span class="p">,</span> <span class="n">auto_params</span><span class="p">,</span> <span class="n">normalize</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;logistic regression&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">ALGORITHM</span><span class="o">.</span><span class="n">LOGISTIC_REGRESSION</span><span class="p">,</span> <span class="n">auto_params</span><span class="p">,</span> <span class="n">normalize</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">model</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;voting classifier&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">ALGORITHM</span><span class="o">.</span><span class="n">VOTING_CLASSIFIER</span><span class="p">,</span> <span class="n">auto_params</span><span class="p">,</span> <span class="n">normalize</span><span class="p">)</span>
+
+        <span class="c1"># predict</span>
+        <span class="n">person1_proba</span><span class="p">,</span> <span class="n">person2_proba</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">person1_proba</span> <span class="o">&gt;</span> <span class="n">person2_proba</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_interface</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;predict-result&#39;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">person1_info</span><span class="p">[</span><span class="s1">&#39;operator&#39;</span><span class="p">],</span> <span class="n">person1_proba</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">model</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">user_interface</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="s1">&#39;predict-result&#39;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">person2_info</span><span class="p">[</span><span class="s1">&#39;operator&#39;</span><span class="p">],</span> <span class="n">person2_proba</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">model</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Terminal.clean_output"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.controller.Terminal.clean_output">[Doku]</a>    <span class="k">def</span> <span class="nf">clean_output</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clear Output Files of Subprocess. </span>
+<span class="sd">        </span>
+<span class="sd">        Should be called by start of the application.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path_to_output</span><span class="si">}</span><span class="s2">/stdout.txt&quot;</span><span class="p">,</span><span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">out</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path_to_output</span><span class="si">}</span><span class="s2">/stderr.txt&quot;</span><span class="p">,</span><span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">out</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path_to_output</span><span class="si">}</span><span class="s2">/stdin.txt&quot;</span><span class="p">,</span><span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">out</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span></div></div>
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Tobia Ippolito, Syon Kadkade, Vadim Korzev.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

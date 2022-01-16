@@ -14,9 +14,17 @@ Wer hat gebohrt? Ist ein Projekt von Studierenden des Studiegangs 'Angewandte K�
 - In dem [**doc**-Ordner ](doc) befinden sich verschiedene Dokumente im Zusammenhang unseres Projektes
   - [Aufgabenbeschreibung](doc/Aufgabenbeschreibung.md)
   - [Projekteinstieg](doc/Projekteinstieg.md)
-- [**exploration**-Ordner](exploration) beinhaltet verschiedene beispielhafte Auseinandersetzungen mit den Projekt
-- [**src**-Ordner](src) alle Python-Skripte sind hier zu finden. Beinhaltet unteranderem unsere Python-Projekt-Bibliothek
+- [**exploration**-Ordner](exploration) beinhaltet verschiedene beispielhafte Auseinandersetzungen mit den Projekt, daunter fallen auch Experimente
+- [**src**-Ordner](src) alle Programme sind hier zu finden. Beinhaltet unteranderem unsere Python-Projekt-Bibliothek
 
+
+### /exploration
+
+- [**Tobia_Workspace**-Ordner](exploration/Tobia_Workspace) dient als Arbeitsplatz für Tobia und beinhaltet verschiedene Python-Scripte die man ebenfalls ansehen kann
+
+- [**Syon_Workspace**-Ordner](exploration/Syon_Workspace) dient als Arbeitsplatz für Syon und beinhaltet verschiedene Python-Scripte die man ebenfalls ansehen kann
+
+- [**Vadim_Workspace**-Ordner](exploration/Vadim_Workspace) dient als Arbeitsplatz für Vadim und beinhaltet verschiedene Python-Scripte die man ebenfalls ansehen kann
 
 
 ### /src
@@ -24,8 +32,6 @@ Wer hat gebohrt? Ist ein Projekt von Studierenden des Studiegangs 'Angewandte K�
 - [**anoog**-Ordner](src/anoog) ist unsere Python-Bibliothek für die Anwendung für den Live-Betrieb 
 
 - [**DrillDummy**-Ordner](src/DrillDummy) beinhaltet Dummyvarianten um Drillcapture/Drilldriver für die Entwicklung zu ersetzen
-
-- [**Tobia_Workspace**-Ordner](src/Tobia_Workspace) dient als Arbeitsplatz für Tobia und beinhaltet verschiedene Python-Scripte die man ebenfalls ansehen kann
 
 
 
@@ -63,6 +69,8 @@ Für die Anwendung werden folgende externe Bibliotheken benötigt:
 
 - ttkthemes
 
+- webbrowser
+
   
 
 Linux-Systeme müssen zusätzlich noch 2 Python Module installieren
@@ -94,9 +102,21 @@ pip install -r requirements.txt
 
 <img src="images/label_verwendung.jpg">
 
-**Für den Live-Betrieb:**<br>[Diese Datei](src/Tobia_Workspace/RUN.py) wird auf einem dafür aufgesetzen Linux-Rechner mit einem dafür vorgesehen und angeschlossenen Bohrer mit angeschlossenen Sensoren gestartet.
+**Für den Live-Betrieb:**<br>[Diese Datei](src/RUN.py) wird auf einem dafür aufgesetzen Linux-Rechner mit einem dafür vorgesehen und angeschlossenen Bohrer mit angeschlossenen Sensoren gestartet.
+Hierfür navigiert man mit dem Terminal in den src-Ordner und gibt folgenden Befehl ein **python3 RUN.py**.
 
-**Sonst:**<br>Es kann auch mit den DrillDummy-Dateien gearbeitet werden. Dies geschieht dann unter Windows und man muss in der RUN.py diese Option ändern.<br>Ansonsten sind auch weitere Skripte ausführbar, dafür wird meistens aber Testbohrdaten benötigt.
+Dabei muss sichergestellt sein, dass kein weiterer Drilldriver läuft. Um das zu tun, muss einfach der Output in der Konsole/Terminal überprüft werden und es muss **MCCUDP found!** dastehen. Fall dort etwas steht wie **MCCUDP Acquiring...** muss die Anwendung geschlossen werden und folgende Schritte befolgt werden:
+1. Im Terminal **killall MCCUDP** eingeben
+2. Erneut **killall MCCUDP** im Terminal eingeben
+3. Anwendung mit **python3 RUN.py** starten
+4. Anwendung schließen
+5. Anwendung erneut starten und nun funktioniert alles wieder
+
+**Sonst:**<br>Es kann auch mit den DrillDummy-Dateien gearbeitet werden. Dies geschieht dann unter Windows und man muss in der RUN.py diese Option ändern.<br>
+Diese DummyDateien verhalten sich sehr ähnlich zu den echten Programmen und werden genauso angesteuert. Der Unterschied ist, dass zufällige Daten generiert werden, anstatt echte Sensordaten zu erhalten.
+<br>
+<br>
+Ansonsten sind auch weitere Skripte ausführbar (in exploration), dafür wird meistens aber Testbohrdaten benötigt.
 
 <br>
 
@@ -190,9 +210,9 @@ Im Folgenden kannst du dir die Implementierung ansehen. So kannman es vielleicht
 
 **Entwicklungshilfe und Special Thanks:**
 
-- Prof. Dr. rer. nat. Daniela Oelke
+- Prof. Dr. Daniela Oelke
 - Stefan Glaser
-- Mastergruppe (?)
+- Mastergruppe
 
 
 

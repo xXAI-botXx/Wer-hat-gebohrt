@@ -279,7 +279,7 @@ if __name__ == "__main__":
     main_window = ttk.Frame(root)
     main_window.pack(expand=True, fill='both')
 
-    design = 'old_times'#['#ff6f69', '#ffeead']#'random'    # None, 'cyber_shot', 'dune', 'light_rain'
+    design = ('#05ffa1', '#b967ff')#'old_times'#['#ff6f69', '#ffeead']#'random'    # None, 'cyber_shot', 'dune', 'light_rain'
     cg_booster = Color_Gradient_Booster(root=root, parent=main_window,  mode='random', 
                                         should_change_color=change_color_activated, change_time=0.5, 
                                         color_chain=design, gradient_size_tendency='neg')

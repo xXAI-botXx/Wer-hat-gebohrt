@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>anoog.automation.py_exe_interface &mdash; Wer hat gebohrt? 21.01.2022 Dokumentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/translations.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="../../../genindex.html" />
+    <link rel="search" title="Suche" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> Wer hat gebohrt?
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">anoog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Wer hat gebohrt?</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Modul-Quellcode</a> &raquo;</li>
+      <li>anoog.automation.py_exe_interface</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Quellcode für anoog.automation.py_exe_interface</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">import</span> <span class="nn">psutil</span>
+<span class="kn">import</span> <span class="nn">subprocess</span> <span class="k">as</span> <span class="nn">subp</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">abc</span>
+
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span> <span class="nn">queue</span> <span class="kn">import</span> <span class="n">Queue</span>
+
+<span class="kn">from</span> <span class="nn">.event</span> <span class="kn">import</span> <span class="n">Eventsystem_Component</span>
+
+<span class="c1">#from pexpect.popen_spawn import PopenSpawn</span>
+
+<span class="c1"># Event = {str:(name, function), str:(name, function), ..} -&gt; str ist die Output Bedingung und name ist das Event, welches dann ausgelöst werden soll</span>
+<span class="c1"># Funktion wird bei auftreten von str mit Parameter name aufgerufen + Process mit mit übergeben</span>
+
+<span class="n">op</span> <span class="o">=</span> <span class="n">Enum</span><span class="p">(</span><span class="s1">&#39;op&#39;</span><span class="p">,</span> <span class="s1">&#39;WINDOWS LINUX&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Process_Interface"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.py_exe_interface.Process_Interface">[Doku]</a><span class="k">class</span> <span class="nc">Process_Interface</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">,</span> <span class="n">Eventsystem_Component</span><span class="p">):</span>
+    <span class="c1">#id = 0</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">absolut_path_to_exe</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">terminal</span><span class="p">,</span> <span class="n">operating_system</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">WINDOWS</span><span class="p">):</span>
+        <span class="n">Eventsystem_Component</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path_to_exe</span> <span class="o">=</span> <span class="n">absolut_path_to_exe</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span> <span class="o">=</span> <span class="n">terminal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_run</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">operating_system</span> <span class="o">=</span> <span class="n">operating_system</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">events</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">EVENT</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;input&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">,</span> <span class="s1">&#39;exit&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">}</span>
+
+        <span class="c1">#self.id = Process_Interface.id</span>
+        <span class="c1">#print(&quot;Process_Interface created...&quot;, self.id)</span>
+        <span class="c1">#Process_Interface.id += 1</span>
+
+<div class="viewcode-block" id="Process_Interface.start_program"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.py_exe_interface.Process_Interface.start_program">[Doku]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractclassmethod</span>
+    <span class="k">def</span> <span class="nf">start_program</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+    <span class="c1">#@abc.abstractclassmethod</span>
+<div class="viewcode-block" id="Process_Interface.run"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.py_exe_interface.Process_Interface.run">[Doku]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_run</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_program</span><span class="p">()</span>
+        
+        <span class="c1">#os.system(&quot;start cmd /K dir&quot;)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">event_listener</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Process_Interface.read"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.py_exe_interface.Process_Interface.read">[Doku]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_in_file</span><span class="p">(</span><span class="n">out</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+<div class="viewcode-block" id="Process_Interface.read_err"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.py_exe_interface.Process_Interface.read_err">[Doku]</a>    <span class="k">def</span> <span class="nf">read_err</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_in_file</span><span class="p">(</span><span class="n">out</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;err_log.txt&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+<div class="viewcode-block" id="Process_Interface.write"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.py_exe_interface.Process_Interface.write">[Doku]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reaction</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">reaction</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+    <span class="c1"># should run in thread, so that you can write input</span>
+<div class="viewcode-block" id="Process_Interface.event_listener"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.py_exe_interface.Process_Interface.event_listener">[Doku]</a>    <span class="k">def</span> <span class="nf">event_listener</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">should_run</span><span class="p">:</span> <span class="c1">#and self.is_alive():</span>
+            <span class="c1">#print(&quot;Process_Interface on work...&quot;)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run_event</span><span class="p">()</span>
+
+            <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Process_Interface.check_input"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.py_exe_interface.Process_Interface.check_input">[Doku]</a>    <span class="k">def</span> <span class="nf">check_input</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">input</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="vm">__file__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">/output/stdin.txt&quot;</span><span class="p">,</span><span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="nb">input</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span></div>
+
+    <span class="c1"># dont works!!!</span>
+<div class="viewcode-block" id="Process_Interface.is_alive"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.py_exe_interface.Process_Interface.is_alive">[Doku]</a>    <span class="k">def</span> <span class="nf">is_alive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Process_Interface.process_status"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.py_exe_interface.Process_Interface.process_status">[Doku]</a>    <span class="k">def</span> <span class="nf">process_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">pid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">pid</span>
+        <span class="n">process_status</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">process_status</span> <span class="o">=</span> <span class="n">psutil</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">pid</span><span class="p">)</span><span class="o">.</span><span class="n">status</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">psutil</span><span class="o">.</span><span class="n">NoSuchProcess</span> <span class="k">as</span> <span class="n">no_proc_exc</span><span class="p">:</span>
+            <span class="k">pass</span>
+            <span class="c1">#print(no_proc_exc)</span>
+
+        <span class="k">return</span> <span class="n">process_status</span></div>
+
+<div class="viewcode-block" id="Process_Interface.stop"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.py_exe_interface.Process_Interface.stop">[Doku]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">send_event</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="c1">#if self.is_alive():</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_run</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">process</span> <span class="o">!=</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">stdin</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="c1">#self.process.stdout.close()</span>
+            <span class="c1">#self.process.stderr.close()</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="c1">#self.process.wait(timeout=1)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">process</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span></div>
+
+    
+<div class="viewcode-block" id="Process_Interface.save_in_file"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.py_exe_interface.Process_Interface.save_in_file">[Doku]</a>    <span class="k">def</span> <span class="nf">save_in_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">txt</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="s2">&quot;log.txt&quot;</span><span class="p">):</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path_to_exe</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">file</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Drilldriver_Interface"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.py_exe_interface.Drilldriver_Interface">[Doku]</a><span class="k">class</span> <span class="nc">Drilldriver_Interface</span><span class="p">(</span><span class="n">Process_Interface</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">absolut_path_to_exe</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">terminal</span><span class="p">,</span> <span class="n">operating_system</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">WINDOWS</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">absolut_path_to_exe</span><span class="p">,</span> <span class="n">terminal</span><span class="p">,</span> <span class="n">operating_system</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Drilldriver_Interface.start_program"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.py_exe_interface.Drilldriver_Interface.start_program">[Doku]</a>    <span class="k">def</span> <span class="nf">start_program</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">operating_system</span> <span class="o">==</span> <span class="n">op</span><span class="o">.</span><span class="n">WINDOWS</span><span class="p">:</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s1">&#39;/b&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_to_exe</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">path_to_exe</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">process</span> <span class="o">=</span> <span class="n">subp</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">c</span><span class="p">,</span>  <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>    <span class="c1">#  stdin=subp.PIPE, stdout=subp.PIPE, stderr=subp.PIPE,</span></div></div>
+
+
+<span class="c1"># adding arguments + predict mode</span>
+<div class="viewcode-block" id="Drillcapture_Interface"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.py_exe_interface.Drillcapture_Interface">[Doku]</a><span class="k">class</span> <span class="nc">Drillcapture_Interface</span><span class="p">(</span><span class="n">Process_Interface</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">absolut_path_to_exe</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">path_to_output</span><span class="p">,</span> <span class="n">terminal</span><span class="p">,</span> <span class="n">operating_system</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">WINDOWS</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">absolut_path_to_exe</span><span class="p">,</span> <span class="n">terminal</span><span class="p">,</span> <span class="n">operating_system</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path_to_output</span> <span class="o">=</span> <span class="n">path_to_output</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+
+    <span class="c1"># OVERRIDE</span>
+<div class="viewcode-block" id="Drillcapture_Interface.run"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.py_exe_interface.Drillcapture_Interface.run">[Doku]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;bulk&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">should_run</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_program</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">event_listener</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Drillcapture_Interface.start_program"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.py_exe_interface.Drillcapture_Interface.start_program">[Doku]</a>    <span class="k">def</span> <span class="nf">start_program</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;bulk&quot;</span><span class="p">):</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;bulk&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">operating_system</span> <span class="o">==</span> <span class="n">op</span><span class="o">.</span><span class="n">WINDOWS</span><span class="p">:</span>
+                <span class="n">c</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s1">&#39;/b&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_to_exe</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;-mode=bulk&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;-description=</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">year</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">month</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">day</span><span class="si">}</span><span class="s2">.yaml&quot;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1">#c = [self.path_to_exe, &quot;-interface=cli&quot;, &quot;-module=drill&quot;, f&quot;-mode=bulk&quot;, f&quot;-description={now.year}-{now.month}-{now.day}.yaml&quot;]</span>
+                <span class="c1">#print(__file__)</span>
+                <span class="n">c</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path_to_exe</span><span class="si">}</span><span class="s2"> -interface=cli -module=drill -mode=bulk -description=/home/anoog/rec/thema1/</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">year</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">month</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">day</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">year</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">month</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">day</span><span class="si">}</span><span class="s2">.yaml&quot;</span><span class="p">]</span>
+                <span class="c1">#print(c)</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;single&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">operating_system</span> <span class="o">==</span> <span class="n">op</span><span class="o">.</span><span class="n">WINDOWS</span><span class="p">:</span>
+                <span class="n">c</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s1">&#39;/b&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_to_exe</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;-mode=single&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;-description=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">/meta.yaml&quot;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1">#c = [self.path_to_exe, f&quot;-mode=single&quot;, f&quot;-description=UNKNOWN/meta.yaml&quot;]</span>
+                <span class="n">c</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path_to_exe</span><span class="si">}</span><span class="s2"> -interface=cli -module=drill -mode=single -description=/home/anoog/rec/thema1/</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">year</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">month</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">now</span><span class="o">.</span><span class="n">day</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">/meta.yaml&quot;</span><span class="p">]</span>
+
+        <span class="c1">#path = &quot;/&quot;.join(__file__.split(&quot;\\&quot;)[:-1])</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path_to_output</span><span class="si">}</span><span class="s2">/stdout.txt&quot;</span><span class="p">,</span><span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">out</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path_to_output</span><span class="si">}</span><span class="s2">/stderr.txt&quot;</span><span class="p">,</span><span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">process</span> <span class="o">=</span> <span class="n">subp</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">stdin</span><span class="o">=</span><span class="n">subp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">err</span><span class="p">,</span>    
+                                        <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="c1">#, env=env, creationflags=subp.CREATE_NEW_CONSOLE)</span></div></div>
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Tobia Ippolito, Syon Kadkade, Vadim Korzev.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>anoog.io.csv_io &mdash; Wer hat gebohrt? 21.01.2022 Dokumentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/translations.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="../../../genindex.html" />
+    <link rel="search" title="Suche" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> Wer hat gebohrt?
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">anoog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Wer hat gebohrt?</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Modul-Quellcode</a> &raquo;</li>
+      <li>anoog.io.csv_io</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Quellcode für anoog.io.csv_io</h1><div class="highlight"><pre>
+<span></span><span class="c1"># .csv data io functions</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">yaml</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">reduce</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">import</span> <span class="nn">dask.dataframe</span>
+
+<span class="n">loadData_mode</span> <span class="o">=</span> <span class="n">Enum</span><span class="p">(</span><span class="s1">&#39;loadData_mode&#39;</span><span class="p">,</span> <span class="s1">&#39;NONE DASK&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="read_csv"><a class="viewcode-back" href="../../../anoog.io.html#anoog.io.csv_io.read_csv">[Doku]</a><span class="k">def</span> <span class="nf">read_csv</span><span class="p">(</span><span class="n">csvFile</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">loadData_mode</span><span class="o">.</span><span class="n">NONE</span><span class="p">,</span> <span class="n">sampleRate</span><span class="o">=</span><span class="mi">72000</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Method to read sensor time series data from a .csv file.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    csvFile : string</span>
+<span class="sd">        The path to the .csv file to read.</span>
+
+<span class="sd">    sampleRate : number</span>
+<span class="sd">        The measurement frequency.</span>
+<span class="sd">    </span>
+<span class="sd">    mode: enum</span>
+<span class="sd">        Select load method</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    ----------</span>
+<span class="sd">    df : pandas.DataFrame</span>
+<span class="sd">        A pandas DataFrame representing the sensor data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="c1"># Determine start time of measurement</span>
+    <span class="n">startTime</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">csvFile</span><span class="p">)),</span> <span class="nb">format</span> <span class="o">=</span> <span class="s1">&#39;%Y_%m_</span><span class="si">%d</span><span class="s1">_%H-%M-%S&#39;</span><span class="p">)</span>
+
+    <span class="c1">#Use Dask Dataframe</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="n">loadData_mode</span><span class="o">.</span><span class="n">DASK</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">dask</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csvFile</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Audio&#39;</span><span class="p">,</span> <span class="s1">&#39;Voltage&#39;</span><span class="p">,</span> <span class="s1">&#39;Current&#39;</span><span class="p">])</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+    
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1">#Use Pandas Dataframe</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csvFile</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Audio&#39;</span><span class="p">,</span> <span class="s1">&#39;Voltage&#39;</span><span class="p">,</span> <span class="s1">&#39;Current&#39;</span><span class="p">])</span>
+
+
+    <span class="c1"># Scale sensor channels</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">Voltage</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">Voltage</span> <span class="o">*</span> <span class="mf">2.45</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">Current</span> <span class="o">=</span> <span class="o">-</span><span class="mf">15.0</span> <span class="o">*</span> <span class="n">df</span><span class="o">.</span><span class="n">Current</span> <span class="o">+</span> <span class="mi">37</span>
+
+    <span class="c1"># Construct date time index based on start time and sample rate</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span> <span class="o">=</span> <span class="n">startTime</span><span class="p">,</span> <span class="n">periods</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">),</span> <span class="n">freq</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timedelta</span><span class="p">(</span><span class="n">seconds</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">sampleRate</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+
+<div class="viewcode-block" id="read_metadata"><a class="viewcode-back" href="../../../anoog.io.html#anoog.io.csv_io.read_metadata">[Doku]</a><span class="k">def</span> <span class="nf">read_metadata</span><span class="p">(</span><span class="n">yamlFile</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Method to read meta data from a .yaml file.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    yamlFile : string</span>
+<span class="sd">        The path to the .yaml file to read.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    ----------</span>
+<span class="sd">    df : pandas.Series</span>
+<span class="sd">        A pandas Series with the meta data information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">mds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">()</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">yamlFile</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">meta</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">mds</span><span class="p">[</span><span class="s1">&#39;BoreholeSize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="s1">&#39;boreholeSize&#39;</span><span class="p">]</span>
+        <span class="n">mds</span><span class="p">[</span><span class="s1">&#39;Material&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="s1">&#39;material&#39;</span><span class="p">]</span>
+        <span class="n">mds</span><span class="p">[</span><span class="s1">&#39;Gear&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="s1">&#39;gear&#39;</span><span class="p">]</span>
+        <span class="n">mds</span><span class="p">[</span><span class="s1">&#39;SampleRate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="s1">&#39;sampleRate&#39;</span><span class="p">]</span>
+        <span class="n">mds</span><span class="p">[</span><span class="s1">&#39;BatteryLevel&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="s1">&#39;batteryLevel&#39;</span><span class="p">]</span>
+        <span class="n">mds</span><span class="p">[</span><span class="s1">&#39;DrillType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="s1">&#39;drillType&#39;</span><span class="p">]</span>
+        <span class="n">mds</span><span class="p">[</span><span class="s1">&#39;Operator&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="s1">&#39;operator&#39;</span><span class="p">]</span>
+        <span class="n">mds</span><span class="p">[</span><span class="s1">&#39;Annotations&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">reduce</span><span class="p">((</span><span class="k">lambda</span> <span class="n">map1</span><span class="p">,</span> <span class="n">map2</span><span class="p">:</span> <span class="p">{</span><span class="o">**</span><span class="n">map1</span><span class="p">,</span> <span class="o">**</span><span class="n">map2</span><span class="p">}),</span> <span class="n">meta</span><span class="p">[</span><span class="s1">&#39;anomalyTimestamps&#39;</span><span class="p">]))</span>
+
+    <span class="k">return</span> <span class="n">mds</span></div>
+
+
+
+<div class="viewcode-block" id="read_csv_dataset"><a class="viewcode-back" href="../../../anoog.io.html#anoog.io.csv_io.read_csv_dataset">[Doku]</a><span class="k">def</span> <span class="nf">read_csv_dataset</span><span class="p">(</span><span class="n">datasetPath</span><span class="p">,</span> <span class="n">csvName</span><span class="o">=</span><span class="s1">&#39;capture.csv&#39;</span><span class="p">,</span> <span class="n">metaName</span><span class="o">=</span><span class="s1">&#39;meta.yaml&#39;</span><span class="p">):</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datasetPath</span><span class="p">,</span> <span class="n">csvName</span><span class="p">))</span>
+    <span class="n">mds</span> <span class="o">=</span> <span class="n">read_metadata</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datasetPath</span><span class="p">,</span> <span class="n">metaName</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">mds</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="load_tsfresh"><a class="viewcode-back" href="../../../anoog.io.html#anoog.io.csv_io.load_tsfresh">[Doku]</a><span class="k">def</span> <span class="nf">load_tsfresh</span><span class="p">(</span><span class="n">datasetPath</span><span class="p">,</span> <span class="n">seriesIDs</span><span class="p">,</span> <span class="n">csvName</span><span class="o">=</span><span class="s1">&#39;capture.csv&#39;</span><span class="p">,</span> <span class="n">metaName</span><span class="o">=</span><span class="s1">&#39;meta.yaml&#39;</span><span class="p">):</span>
+    <span class="n">sdf</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+    <span class="n">mdf</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+    <span class="n">sID</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">for</span> <span class="n">seriesID</span> <span class="ow">in</span> <span class="n">seriesIDs</span><span class="p">:</span>
+        <span class="n">measurements</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datasetPath</span><span class="p">,</span> <span class="n">seriesID</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">mDir</span> <span class="ow">in</span> <span class="n">measurements</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datasetPath</span><span class="p">,</span> <span class="n">seriesID</span><span class="p">,</span> <span class="n">mDir</span><span class="p">)):</span>
+                <span class="k">continue</span>
+
+            <span class="n">metaData</span> <span class="o">=</span> <span class="n">read_metadata</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datasetPath</span><span class="p">,</span> <span class="n">seriesID</span><span class="p">,</span> <span class="n">mDir</span><span class="p">,</span> <span class="n">metaName</span><span class="p">))</span>
+            <span class="n">sensorData</span> <span class="o">=</span> <span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datasetPath</span><span class="p">,</span> <span class="n">seriesID</span><span class="p">,</span> <span class="n">mDir</span><span class="p">,</span> <span class="n">csvName</span><span class="p">))</span>
+
+            <span class="n">metaData</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sID</span>
+            <span class="n">sensorData</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sID</span>
+
+            <span class="n">metaData</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Annotations&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>      <span class="c1"># drop annotations</span>
+            <span class="n">mdf</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">mdf</span><span class="p">,</span> <span class="n">metaData</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">sdf</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">sdf</span><span class="p">,</span> <span class="n">sensorData</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="n">sID</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="n">mdf</span> <span class="o">=</span> <span class="n">mdf</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">sdf</span><span class="p">,</span> <span class="n">mdf</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="load_single_data"><a class="viewcode-back" href="../../../anoog.io.html#anoog.io.csv_io.load_single_data">[Doku]</a><span class="k">def</span> <span class="nf">load_single_data</span><span class="p">(</span><span class="n">person</span><span class="p">,</span> <span class="n">data_path</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="n">measurements</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">data_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">person</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># get latest measurement</span>
+    <span class="n">measurements</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">latest_drill</span> <span class="o">=</span> <span class="n">measurements</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">while</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">data_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">person</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">latest_drill</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span><span class="o">*-</span><span class="mi">1</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">measurements</span><span class="p">):</span>
+            <span class="c1"># no dir</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No Files in Directory</span><span class="si">{</span><span class="n">data_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">person</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">latest_drill</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">i</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="n">latest_drill</span> <span class="o">=</span> <span class="n">measurements</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+    <span class="n">sensorData</span> <span class="o">=</span> <span class="n">read_csv</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">data_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">person</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">latest_drill</span><span class="si">}</span><span class="s2">/capture.csv&quot;</span><span class="p">)</span>
+
+    <span class="n">sensorData</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">return</span> <span class="n">sensorData</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Tobia Ippolito, Syon Kadkade, Vadim Korzev.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

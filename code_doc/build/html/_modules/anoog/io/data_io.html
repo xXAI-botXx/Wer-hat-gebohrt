@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>anoog.io.data_io &mdash; Wer hat gebohrt? 21.01.2022 Dokumentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/translations.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="../../../genindex.html" />
+    <link rel="search" title="Suche" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> Wer hat gebohrt?
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">anoog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Wer hat gebohrt?</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Modul-Quellcode</a> &raquo;</li>
+      <li>anoog.io.data_io</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Quellcode für anoog.io.data_io</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <span class="n">Pipeline</span>
+<span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">RandomForestClassifier</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">cross_val_score</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">LabelEncoder</span><span class="p">,</span> <span class="n">MinMaxScaler</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">metrics</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">tree</span> <span class="c1">#New Import</span>
+<span class="kn">from</span> <span class="nn">sklearn.feature_selection</span> <span class="kn">import</span> <span class="n">SelectKBest</span><span class="p">,</span> <span class="n">f_classif</span> <span class="c1">#New Import</span>
+<span class="kn">from</span> <span class="nn">sklearn.feature_selection</span> <span class="kn">import</span> <span class="n">VarianceThreshold</span> <span class="c1">#New Import</span>
+<span class="kn">from</span> <span class="nn">sklearn.feature_selection</span> <span class="kn">import</span> <span class="n">SelectFromModel</span> <span class="c1">#New Import</span>
+
+<span class="c1"># For Feature Extraction</span>
+<span class="kn">import</span> <span class="nn">tsfresh</span> <span class="k">as</span> <span class="nn">tsf</span>
+
+<span class="c1"># nötig???</span>
+<span class="c1"># Set up system path to include our &quot;anoog&quot; python package</span>
+<span class="c1">#sys.path.append(&#39;../src&#39;)</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">csv_io</span> <span class="k">as</span> <span class="n">io</span>
+<span class="kn">from</span> <span class="nn">..model</span> <span class="kn">import</span> <span class="n">get_most_important_features_as_list</span>
+
+<span class="n">extraction_mode</span> <span class="o">=</span> <span class="n">Enum</span><span class="p">(</span><span class="s1">&#39;extraction_mode&#39;</span><span class="p">,</span> <span class="s1">&#39;NONE TSFRESH_WITH_PARAMS TSFRESH MANUEL&#39;</span><span class="p">)</span>
+<span class="n">selection_mode</span> <span class="o">=</span> <span class="n">Enum</span><span class="p">(</span><span class="s1">&#39;selection_mode&#39;</span><span class="p">,</span> <span class="s1">&#39;NONE TSFRESH SELECTKBEST VARIANCE MODEL_BASED&#39;</span><span class="p">)</span>  <span class="c1">#New Added Modes: (SelectKBest, VarianceThresholding, Modelbased)</span>
+
+<span class="c1"># data loading</span>
+<div class="viewcode-block" id="load_data"><a class="viewcode-back" href="../../../anoog.io.html#anoog.io.data_io.load_data">[Doku]</a><span class="k">def</span> <span class="nf">load_data</span><span class="p">(</span><span class="n">data_path</span><span class="o">=</span><span class="s1">&#39;../../../data/2021-11-09&#39;</span><span class="p">,</span> 
+              <span class="n">persons</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;tippolit&#39;</span><span class="p">,</span> <span class="s1">&#39;vkorzev&#39;</span><span class="p">],</span> 
+              <span class="n">extraction</span><span class="o">=</span><span class="n">extraction_mode</span><span class="o">.</span><span class="n">MANUEL</span><span class="p">,</span>
+              <span class="n">show_extraction</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+              <span class="n">selection</span><span class="o">=</span><span class="n">selection_mode</span><span class="o">.</span><span class="n">NONE</span><span class="p">,</span>
+              <span class="n">train_test_split</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+              <span class="n">test_size</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+              <span class="n">save_as_csv</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+              <span class="n">csv_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+              <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Loads Data and prepares them.</span>
+<span class="sd">    Feature Extraction and Feature Selection.</span>
+<span class="sd">    Labeling and Resampling.</span>
+
+<span class="sd">    Returns DataFrame&quot;&quot;&quot;</span>
+
+    <span class="c1"># Loading data and meta-data</span>
+    <span class="n">seriesIDs</span> <span class="o">=</span> <span class="n">persons</span>
+
+    <span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">meta_data</span><span class="p">)</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">load_tsfresh</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">seriesIDs</span><span class="p">)</span>
+
+    <span class="n">resampled_data</span> <span class="o">=</span> <span class="n">resampling</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="c1"># Feature Extraction -&gt; Row Time Data are not useful for ML-Algorithm</span>
+    <span class="n">X_imputed</span> <span class="o">=</span> <span class="n">feature_extraction</span><span class="p">(</span><span class="n">resampled_data</span><span class="p">,</span> <span class="n">extraction</span><span class="p">,</span> <span class="n">data_path</span><span class="p">,</span> <span class="n">show_extraction</span><span class="p">)</span>
+
+    <span class="c1"># Target Labeling</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">y_labeling</span><span class="p">(</span><span class="n">X_imputed</span><span class="p">,</span> <span class="n">meta_data</span><span class="p">,</span> <span class="n">extraction</span><span class="p">)</span>
+
+    <span class="n">datasets</span> <span class="o">=</span> <span class="n">split_data</span><span class="p">(</span><span class="n">X_imputed</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="p">,</span> <span class="n">train_test_split</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">datasets</span><span class="p">:</span>
+        <span class="c1"># SEITENEFFEKT</span>
+        <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">feature_selection</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">selection</span><span class="p">,</span> <span class="n">data_path</span><span class="p">)</span>
+
+    <span class="c1"># Target adding + Normalizing</span>
+    <span class="n">result_datasets</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">datasets</span><span class="p">:</span>
+        <span class="n">new_dataset</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">new_dataset</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># Normalizing</span>
+        <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
+            <span class="n">scaler</span> <span class="o">=</span> <span class="n">MinMaxScaler</span><span class="p">()</span>
+            <span class="n">new_dataset</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">scaler</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">new_dataset</span><span class="p">),</span> <span class="n">columns</span><span class="o">=</span><span class="n">new_dataset</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+
+        <span class="n">result_datasets</span> <span class="o">+=</span> <span class="p">[</span><span class="n">new_dataset</span><span class="p">]</span>
+
+    <span class="c1"># Saving</span>
+    <span class="k">if</span> <span class="n">save_as_csv</span><span class="p">:</span>
+        <span class="n">save_data</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">result_datasets</span><span class="p">,</span> <span class="n">csv_name</span><span class="p">)</span>
+
+    <span class="c1"># returns</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result_datasets</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">result_datasets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">result_datasets</span></div>
+
+
+<div class="viewcode-block" id="load_single_data"><a class="viewcode-back" href="../../../anoog.io.html#anoog.io.data_io.load_single_data">[Doku]</a><span class="k">def</span> <span class="nf">load_single_data</span><span class="p">(</span><span class="n">person_id</span><span class="p">,</span>
+                        <span class="n">person</span><span class="o">=</span><span class="s1">&#39;tippolit&#39;</span><span class="p">,</span>
+                        <span class="n">data_path</span><span class="o">=</span><span class="s1">&#39;../../../data/2021-11-09&#39;</span><span class="p">,</span>
+                        <span class="n">drill_id</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> 
+                        <span class="n">extraction</span><span class="o">=</span><span class="n">extraction_mode</span><span class="o">.</span><span class="n">MANUEL</span><span class="p">,</span>
+                        <span class="n">show_extraction</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                        <span class="n">selection</span><span class="o">=</span><span class="n">selection_mode</span><span class="o">.</span><span class="n">NONE</span><span class="p">,</span>
+                        <span class="n">train_test_split</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                        <span class="n">test_size</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+                        <span class="n">save_as_csv</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                        <span class="n">csv_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Loading a single Drill. The last drill in the folder.</span>
+<span class="sd">    returns a DataFrame&quot;&quot;&quot;</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">load_single_data</span><span class="p">(</span><span class="n">person</span><span class="p">,</span> <span class="n">data_path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Case: no directory</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dataentry is None! Loaded from </span><span class="si">{</span><span class="n">data_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Override ID</span>
+    <span class="n">data</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">drill_id</span>
+
+    <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">data</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">resampling</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="c1">#y = pd.Series(LabelEncoder().fit_transform(person_id), index=meta_data[&#39;ID&#39;])    </span>
+    <span class="n">data</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">person_id</span>
+
+    <span class="c1"># Feature Extraction -&gt; Row Time Data are not useful for ML-Algorithm</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">feature_extraction</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">extraction</span><span class="p">,</span> <span class="n">data_path</span><span class="p">,</span> <span class="n">show_extraction</span><span class="p">)</span>
+    <span class="n">data</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">person_id</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">feature_selection</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span> <span class="o">!=</span> <span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">selection</span><span class="p">,</span> <span class="n">data_path</span><span class="p">)</span>
+    <span class="n">data</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">person_id</span>
+
+    <span class="c1"># Normalizing</span>
+    <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
+        <span class="n">scaler</span> <span class="o">=</span> <span class="n">MinMaxScaler</span><span class="p">()</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">scaler</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">columns</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+     
+    <span class="c1"># Saving</span>
+    <span class="k">if</span> <span class="n">save_as_csv</span><span class="p">:</span>
+        <span class="n">save_data</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="p">[</span><span class="n">data</span><span class="p">],</span> <span class="n">csv_name</span><span class="p">)</span>
+
+    <span class="c1"># return</span>
+    <span class="k">return</span> <span class="n">data</span></div>
+    
+
+<span class="c1"># To many data -&gt; Resampling for few data</span>
+<div class="viewcode-block" id="resampling"><a class="viewcode-back" href="../../../anoog.io.html#anoog.io.data_io.resampling">[Doku]</a><span class="k">def</span> <span class="nf">resampling</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="n">resamplingInterval</span> <span class="o">=</span> <span class="s1">&#39;10ms&#39;</span>
+
+    <span class="n">resampled_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">resamplingInterval</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">closed</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;Time&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="n">resampled_data</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">resampled_data</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">resampled_data</span></div>
+
+
+<div class="viewcode-block" id="y_labeling"><a class="viewcode-back" href="../../../anoog.io.html#anoog.io.data_io.y_labeling">[Doku]</a><span class="k">def</span> <span class="nf">y_labeling</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">meta_data</span><span class="p">,</span> <span class="n">extraction</span><span class="p">):</span>
+    <span class="n">labelEnc</span> <span class="o">=</span> <span class="n">LabelEncoder</span><span class="p">()</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">y_target</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">labelEnc</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">meta_data</span><span class="p">[</span><span class="s1">&#39;Operator&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="n">meta_data</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">extraction</span> <span class="o">==</span> <span class="n">extraction_mode</span><span class="o">.</span><span class="n">NONE</span><span class="p">:</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="nb">id</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()):</span>
+            <span class="c1">#print(id)</span>
+            <span class="c1">#print(data[data[&#39;ID&#39;] == id].shape)</span>
+            <span class="n">y</span> <span class="o">+=</span> <span class="p">[</span><span class="n">y_target</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">*</span><span class="n">data</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">y</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">y</span></div>
+
+<span class="c1"># For manuel Feature</span>
+<div class="viewcode-block" id="extract_feature"><a class="viewcode-back" href="../../../anoog.io.html#anoog.io.data_io.extract_feature">[Doku]</a><span class="k">def</span> <span class="nf">extract_feature</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">from_feature</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Extracts Features of a drill timeseries data.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns a list&quot;&quot;&quot;</span>
+    <span class="n">feature_collection</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+        <span class="c1">#feature_collection += [data[data[&#39;ID&#39;] == id][from_feature].function()]</span>
+        <span class="n">feature_collection</span> <span class="o">+=</span> <span class="p">[</span><span class="n">function</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span><span class="o">==</span><span class="nb">id</span><span class="p">][</span><span class="n">from_feature</span><span class="p">])]</span>
+    <span class="k">return</span> <span class="n">feature_collection</span></div>
+
+
+<div class="viewcode-block" id="advanced_feature_extraction"><a class="viewcode-back" href="../../../anoog.io.html#anoog.io.data_io.advanced_feature_extraction">[Doku]</a><span class="k">def</span> <span class="nf">advanced_feature_extraction</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="c1"># Calc mean and transform time in duration</span>
+    <span class="n">time</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]:</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+
+    <span class="n">zeit</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">time</span><span class="p">:</span>
+        <span class="n">zeit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="mi">11</span><span class="p">:])</span>
+
+    <span class="n">stunden</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">minuten</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">sekunden</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">zeit</span><span class="p">:</span>
+        <span class="n">stunden</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">[:</span><span class="mi">2</span><span class="p">])</span>
+        <span class="n">minuten</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="mi">5</span><span class="p">])</span>
+        <span class="n">sekunden</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="mi">6</span><span class="p">:])</span>
+
+    <span class="c1">#Konvertierung zu Sekunden</span>
+    <span class="n">sec</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">st</span> <span class="ow">in</span> <span class="n">stunden</span><span class="p">:</span>
+        <span class="n">sec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">st</span><span class="p">)</span><span class="o">*</span><span class="mi">3600</span><span class="p">)</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">mi</span> <span class="ow">in</span> <span class="n">minuten</span><span class="p">:</span>
+        <span class="n">sec</span><span class="p">[</span><span class="n">z</span><span class="p">]</span><span class="o">=</span><span class="n">sec</span><span class="p">[</span><span class="n">z</span><span class="p">]</span><span class="o">+</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">mi</span><span class="p">)</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
+        <span class="n">z</span> <span class="o">+=</span><span class="mi">1</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">se</span> <span class="ow">in</span> <span class="n">sekunden</span><span class="p">:</span>
+        <span class="n">sec</span><span class="p">[</span><span class="n">z</span><span class="p">]</span><span class="o">=</span><span class="n">sec</span><span class="p">[</span><span class="n">z</span><span class="p">]</span><span class="o">+</span><span class="nb">float</span><span class="p">(</span><span class="n">se</span><span class="p">)</span>
+        <span class="n">z</span> <span class="o">+=</span><span class="mi">1</span>
+    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sec</span>
+
+    <span class="n">current</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">z</span><span class="o">=</span><span class="mi">1</span>
+    <span class="n">num</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">current_mean</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">j</span><span class="p">,</span><span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Current&quot;</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span><span class="p">:</span>
+                <span class="n">current_mean</span> <span class="o">+=</span> <span class="n">value</span>
+                <span class="n">num</span><span class="o">+=</span><span class="mi">1</span>
+        <span class="n">current</span> <span class="o">+=</span> <span class="p">[</span><span class="n">current_mean</span><span class="o">/</span><span class="n">num</span><span class="p">]</span>
+        <span class="n">current_mean</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">num</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">zeit</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">z</span><span class="o">=</span><span class="mi">1</span>
+    <span class="n">num</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">Zeit</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">j</span><span class="p">,</span><span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span><span class="p">:</span>
+                <span class="n">Zeit</span> <span class="o">+=</span> <span class="p">[</span><span class="n">value</span><span class="p">]</span>
+                <span class="n">num</span><span class="o">+=</span><span class="mi">1</span>
+        <span class="n">zeit</span> <span class="o">+=</span> <span class="p">[</span><span class="n">Zeit</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">Zeit</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="n">Zeit</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">num</span> <span class="o">=</span> <span class="mi">0</span> 
+
+    <span class="n">voltage</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">z</span><span class="o">=</span><span class="mi">1</span>
+    <span class="n">num</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">voltage_mean</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">j</span><span class="p">,</span><span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Voltage&quot;</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span><span class="p">:</span>
+                <span class="n">voltage_mean</span> <span class="o">+=</span> <span class="n">value</span>
+                <span class="n">num</span><span class="o">+=</span><span class="mi">1</span>
+        <span class="n">voltage</span> <span class="o">+=</span> <span class="p">[</span><span class="n">voltage_mean</span><span class="o">/</span><span class="n">num</span><span class="p">]</span>
+        <span class="n">voltage_mean</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">num</span> <span class="o">=</span> <span class="mi">0</span> 
+
+    <span class="n">audio</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">z</span><span class="o">=</span><span class="mi">1</span>
+    <span class="n">num</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">audio_mean</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">j</span><span class="p">,</span><span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;Audio&quot;</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span><span class="p">:</span>
+                <span class="n">audio_mean</span> <span class="o">+=</span> <span class="n">value</span>
+                <span class="n">num</span><span class="o">+=</span><span class="mi">1</span>
+        <span class="n">audio</span> <span class="o">+=</span> <span class="p">[</span><span class="n">audio_mean</span><span class="o">/</span><span class="n">num</span><span class="p">]</span>
+        <span class="n">audio_mean</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">num</span> <span class="o">=</span> <span class="mi">0</span>  
+
+    <span class="n">ID</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">zeit</span><span class="p">))</span>    <span class="c1"># a</span>
+    <span class="c1">#b = np.arange(25)</span>
+    <span class="c1">#ID=np.concatenate((a, b))</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Time&quot;</span> <span class="p">:</span> <span class="n">zeit</span><span class="p">,</span>
+            <span class="s2">&quot;Audio&quot;</span> <span class="p">:</span> <span class="n">audio</span><span class="p">,</span>
+            <span class="s2">&quot;Voltage&quot;</span> <span class="p">:</span> <span class="n">voltage</span><span class="p">,</span>
+            <span class="s2">&quot;Current&quot;</span> <span class="p">:</span> <span class="n">current</span><span class="p">,</span>
+            <span class="s2">&quot;ID&quot;</span> <span class="p">:</span> <span class="n">ID</span><span class="p">}</span>
+    <span class="n">df_new</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
+
+    <span class="c1"># Berechnung vom Widerstand Ohm</span>
+    <span class="n">df_new</span><span class="p">[</span><span class="s2">&quot;Resistance&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_new</span><span class="p">[</span><span class="s2">&quot;Current&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">df_new</span><span class="p">[</span><span class="s2">&quot;Voltage&quot;</span><span class="p">]</span>
+
+    <span class="c1"># Berechnung der Elektrischen Leistung P in Joule</span>
+    <span class="n">df_new</span><span class="p">[</span><span class="s2">&quot;Power&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_new</span><span class="p">[</span><span class="s2">&quot;Current&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">df_new</span><span class="p">[</span><span class="s2">&quot;Voltage&quot;</span><span class="p">]</span>
+
+    <span class="c1"># Berechnung der Arbeit W</span>
+    <span class="n">df_new</span><span class="p">[</span><span class="s2">&quot;Work&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_new</span><span class="p">[</span><span class="s2">&quot;Current&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">df_new</span><span class="p">[</span><span class="s2">&quot;Voltage&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">df_new</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span>
+
+    <span class="c1"># Berechnung von mAh(milli Ampere Stunden)</span>
+    <span class="n">df_new</span><span class="p">[</span><span class="s2">&quot;mAh&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">df_new</span><span class="p">[</span><span class="s2">&quot;Current&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">60</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span>
+
+    <span class="c1"># Berechnung von Wh(Watt Stunden)</span>
+    <span class="n">df_new</span><span class="p">[</span><span class="s2">&quot;Wh&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_new</span><span class="p">[</span><span class="s2">&quot;mAh&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">df_new</span><span class="p">[</span><span class="s2">&quot;Voltage&quot;</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">df_new</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">])</span></div>
+
+
+<span class="c1"># data feature extraction + labeling</span>
+<div class="viewcode-block" id="feature_extraction"><a class="viewcode-back" href="../../../anoog.io.html#anoog.io.data_io.feature_extraction">[Doku]</a><span class="k">def</span> <span class="nf">feature_extraction</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">data_path</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="n">extraction_mode</span><span class="o">.</span><span class="n">TSFRESH</span><span class="p">:</span>
+        <span class="c1"># extract Features of time data</span>
+        <span class="n">reverse_show</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">show</span>
+        <span class="n">X_extracted</span> <span class="o">=</span> <span class="n">tsf</span><span class="o">.</span><span class="n">extract_features</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">column_id</span><span class="o">=</span><span class="s2">&quot;ID&quot;</span><span class="p">,</span> <span class="n">column_sort</span><span class="o">=</span><span class="s2">&quot;Time&quot;</span><span class="p">,</span> <span class="n">disable_progressbar</span><span class="o">=</span><span class="n">reverse_show</span><span class="p">)</span>
+
+        <span class="c1"># Impute (replace Nan/Inf) features</span>
+        <span class="k">return</span> <span class="n">tsf</span><span class="o">.</span><span class="n">utilities</span><span class="o">.</span><span class="n">dataframe_functions</span><span class="o">.</span><span class="n">impute</span><span class="p">(</span><span class="n">X_extracted</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="n">extraction_mode</span><span class="o">.</span><span class="n">TSFRESH_WITH_PARAMS</span><span class="p">:</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">load_features</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
+        <span class="n">X_extracted</span> <span class="o">=</span> <span class="n">tsf</span><span class="o">.</span><span class="n">extract_features</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">column_id</span><span class="o">=</span><span class="s2">&quot;ID&quot;</span><span class="p">,</span> 
+                                        <span class="n">column_sort</span><span class="o">=</span><span class="s2">&quot;Time&quot;</span><span class="p">,</span> <span class="n">kind_to_fc_parameters</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+        
+        <span class="c1"># Impute (replace Nan/Inf) features</span>
+        <span class="k">return</span> <span class="n">tsf</span><span class="o">.</span><span class="n">utilities</span><span class="o">.</span><span class="n">dataframe_functions</span><span class="o">.</span><span class="n">impute</span><span class="p">(</span><span class="n">X_extracted</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="n">extraction_mode</span><span class="o">.</span><span class="n">MANUEL</span><span class="p">:</span>    <span class="c1"># by hand</span>
+        <span class="n">X_extracted</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Audio&#39;</span><span class="p">,</span> <span class="s1">&#39;Current&#39;</span><span class="p">,</span> <span class="s1">&#39;Voltage&#39;</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">new_feature</span> <span class="ow">in</span> <span class="p">[(</span><span class="s1">&#39;min&#39;</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;max&#39;</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;median&#39;</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;std&#39;</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">)]:</span>
+                <span class="n">X_extracted</span><span class="p">[</span><span class="n">feature</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">+</span><span class="s2">&quot;_&quot;</span><span class="o">+</span><span class="n">new_feature</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">extract_feature</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">feature</span><span class="p">,</span> <span class="n">new_feature</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        
+        <span class="n">afe</span> <span class="o">=</span> <span class="n">advanced_feature_extraction</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">afe</span> <span class="o">=</span> <span class="n">afe</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Audio&#39;</span><span class="p">,</span> <span class="s1">&#39;Voltage&#39;</span><span class="p">,</span> <span class="s1">&#39;Current&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="c1">#X_extracted = X_extracted.drop(columns=[&#39;audio_mean&#39;, &#39;voltage_mean&#39;, &#39;current_mean&#39;], inplace=False)</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">X_extracted</span><span class="p">,</span> <span class="n">afe</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">data</span></div>
+
+
+<span class="c1"># data feature extraction + labeling</span>
+<div class="viewcode-block" id="feature_selection"><a class="viewcode-back" href="../../../anoog.io.html#anoog.io.data_io.feature_selection">[Doku]</a><span class="k">def</span> <span class="nf">feature_selection</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">data_path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="n">selection_mode</span><span class="o">.</span><span class="n">TSFRESH</span><span class="p">:</span>
+        <span class="c1"># Selecting only important Features</span>
+        <span class="n">X_filtered</span> <span class="o">=</span> <span class="n">tsf</span><span class="o">.</span><span class="n">select_features</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+        <span class="c1"># Get selcted columns/features -&gt; saving</span>
+        <span class="n">kind_to_fc_parameters</span> <span class="o">=</span> <span class="n">tsf</span><span class="o">.</span><span class="n">feature_extraction</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">from_columns</span><span class="p">(</span><span class="n">X_filtered</span><span class="p">)</span>
+        <span class="n">save_features</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">kind_to_fc_parameters</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">X_filtered</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">X</span></div>
+
+
+<div class="viewcode-block" id="split_data"><a class="viewcode-back" href="../../../anoog.io.html#anoog.io.data_io.split_data">[Doku]</a><span class="k">def</span> <span class="nf">split_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size_in_percent</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">should_split</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">should_split</span><span class="p">:</span>
+        <span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="n">test_size_in_percent</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">y</span><span class="p">)</span> 
+        <span class="k">return</span> <span class="p">[[</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">],</span> <span class="p">[</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">]]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[[</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">]]</span></div>
+
+
+<div class="viewcode-block" id="save_features"><a class="viewcode-back" href="../../../anoog.io.html#anoog.io.data_io.save_features">[Doku]</a><span class="k">def</span> <span class="nf">save_features</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;features_00.txt&#39;</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;features_</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">.txt&quot;</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;{&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39;:</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">,</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;}&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="load_features"><a class="viewcode-back" href="../../../anoog.io.html#anoog.io.data_io.load_features">[Doku]</a><span class="k">def</span> <span class="nf">load_features</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="c1"># load features</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.txt&quot;</span><span class="p">):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;features_99.csv&#39;</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">99</span>
+        <span class="k">while</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;features_</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">.txt&quot;</span>
+            <span class="n">i</span> <span class="o">-=</span> <span class="mi">1</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">str_dict</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+            <span class="n">str_dict</span> <span class="o">+=</span> <span class="n">line</span>
+    
+    <span class="n">new_dict</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">str_dict</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">new_dict</span></div>
+
+
+<div class="viewcode-block" id="save_data"><a class="viewcode-back" href="../../../anoog.io.html#anoog.io.data_io.save_data">[Doku]</a><span class="k">def</span> <span class="nf">save_data</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.csv&quot;</span><span class="p">):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;data_save_00.csv&#39;</span>
+        
+    <span class="k">while</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;features_</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">.csv&quot;</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">datasets</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">datasets</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">modified_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.csv&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.csv&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">modified_name</span> <span class="o">=</span> <span class="n">name</span>
+            
+        <span class="n">dataset</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">path</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">modified_name</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saving DataFrame at:&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">modified_name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="X_y_split"><a class="viewcode-back" href="../../../anoog.io.html#anoog.io.data_io.X_y_split">[Doku]</a><span class="k">def</span> <span class="nf">X_y_split</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;y&#39;</span><span class="p">]</span></div>
+    <span class="c1">#or</span>
+    <span class="c1">#return data.drop(columns=[&#39;y&#39;]), data.y</span>
+
+
+<span class="c1">#function for different Selection methods</span>
+<div class="viewcode-block" id="feature_selectionMethod"><a class="viewcode-back" href="../../../anoog.io.html#anoog.io.data_io.feature_selectionMethod">[Doku]</a><span class="k">def</span> <span class="nf">feature_selectionMethod</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span> <span class="c1">#New function</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="n">selection_mode</span><span class="o">.</span><span class="n">SELECTKBEST</span><span class="p">:</span>
+        <span class="n">selectKBest</span> <span class="o">=</span> <span class="n">SelectKBest</span><span class="p">(</span><span class="n">f_classif</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="c1">#default= sf_classif,  k can be changed</span>
+        <span class="n">important_features</span> <span class="o">=</span> <span class="n">rename</span><span class="p">(</span><span class="n">selectKBest</span><span class="o">.</span><span class="n">get_support</span><span class="p">(),</span> <span class="nb">list</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">))</span>
+        <span class="n">X_new</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">important_features</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">X_new</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="n">selection_mode</span><span class="o">.</span><span class="n">VARIANCE</span><span class="p">:</span>
+        <span class="n">varianceSelect</span><span class="o">=</span> <span class="n">VarianceThreshold</span><span class="p">(</span><span class="n">threshold</span><span class="o">=</span><span class="mi">100000</span><span class="p">)</span> <span class="c1">#threshold can be changed</span>
+        <span class="n">varianceSelect</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">important_features</span> <span class="o">=</span> <span class="n">rename</span><span class="p">(</span><span class="n">varianceSelect</span><span class="o">.</span><span class="n">get_support</span><span class="p">(),</span> <span class="nb">list</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">))</span>
+        <span class="n">X_new</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">important_features</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">X_new</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="n">selection_mode</span><span class="o">.</span><span class="n">MODEL_BASED</span><span class="p">:</span>
+        <span class="n">Dtree</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">DecisionTreeClassifier</span><span class="p">()</span> <span class="c1">#Default Values yet</span>
+        <span class="n">SelectM</span> <span class="o">=</span> <span class="n">SelectFromModel</span><span class="p">(</span><span class="n">estimator</span><span class="o">=</span><span class="n">Dtree</span><span class="p">)</span> <span class="c1">#Classifier can be changed</span>
+        <span class="n">SelectM</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">important_features</span> <span class="o">=</span> <span class="n">rename</span><span class="p">(</span><span class="n">SelectM</span><span class="o">.</span><span class="n">get_support</span><span class="p">(),</span> <span class="nb">list</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">))</span>
+        <span class="n">X_new</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">important_features</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">X_new</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">X</span></div>
+
+
+<span class="c1">#function for feature name mask</span>
+<div class="viewcode-block" id="rename"><a class="viewcode-back" href="../../../anoog.io.html#anoog.io.data_io.rename">[Doku]</a><span class="k">def</span> <span class="nf">rename</span><span class="p">(</span><span class="n">score</span><span class="p">,</span> <span class="n">list_names</span><span class="p">):</span> <span class="c1">#New function</span>
+    <span class="n">name_result</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">score</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">name_result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">list_names</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    
+    <span class="k">return</span> <span class="n">name_result</span></div>
+
+<div class="viewcode-block" id="model_based_feature_selection"><a class="viewcode-back" href="../../../anoog.io.html#anoog.io.data_io.model_based_feature_selection">[Doku]</a><span class="k">def</span> <span class="nf">model_based_feature_selection</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get the n best Features. Selected by a RandomForest.</span>
+<span class="sd">    Returns new X with selected Features.&quot;&quot;&quot;</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">RandomForestClassifier</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> 
+                               <span class="n">bootstrap</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                               <span class="n">max_features</span> <span class="o">=</span> <span class="s1">&#39;sqrt&#39;</span><span class="p">)</span>
+    <span class="c1"># Fit on training data</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+    <span class="n">best_features</span> <span class="o">=</span> <span class="n">get_most_important_features_as_list</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">X</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">best_features</span><span class="p">]</span></div>
+
+<span class="c1"># for testing</span>
+<div class="viewcode-block" id="remove_audio_features"><a class="viewcode-back" href="../../../anoog.io.html#anoog.io.data_io.remove_audio_features">[Doku]</a><span class="k">def</span> <span class="nf">remove_audio_features</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;audio_mean&#39;</span><span class="p">,</span> <span class="s1">&#39;audio_max&#39;</span><span class="p">,</span> <span class="s1">&#39;audio_min&#39;</span><span class="p">,</span> <span class="s1">&#39;audio_median&#39;</span><span class="p">,</span> <span class="s1">&#39;audio_std&#39;</span><span class="p">])</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Tobia Ippolito, Syon Kadkade, Vadim Korzev.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

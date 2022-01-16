@@ -6,6 +6,7 @@ ttkthemes
 pyyaml
 tsfresh
 pillow
+webbrowser
 
 ###### Requirements with Version Specifiers ######
 numpy <= 1.20
