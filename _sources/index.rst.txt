@@ -12,6 +12,7 @@ Welcome to the documentation of Wer hat gebohrt?
 
    introduction.rst
    tutorial.rst
+   explain.rst
    anoog.rst
 
 Indices and tables

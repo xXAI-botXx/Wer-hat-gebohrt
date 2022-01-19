@@ -18,7 +18,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="anoog" href="anoog.html" />
+    <link rel="next" title="Explanation" href="explain.html" />
     <link rel="prev" title="Introduction" href="introduction.html" /> 
 </head>
 
@@ -41,6 +41,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="explain.html">Explanation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="anoog.html">anoog</a></li>
 </ul>
 
@@ -105,6 +106,17 @@ numpy &lt;= 1.20
 <p>If the setup is ready, you have to call the run-function in following module:</p>
 <p><a class="reference internal" href="anoog.automation.html#gui"><span class="std std-ref">anoog.automation.graphical_user_interface</span></a></p>
 <p>See the RUN.py for an exemplary call.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Dabei muss sichergestellt sein, dass kein weiterer Drilldriver läuft. Um das zu tun, muss einfach der Output in der Konsole/Terminal überprüft werden und es muss <strong>MCCUDP found!</strong> dastehen. Fall dort etwas steht wie <strong>MCCUDP Acquiring…</strong> muss die Anwendung geschlossen werden und folgende Schritte befolgt werden:</p>
+<ol class="arabic simple">
+<li><p>Im Terminal <strong>killall MCCUDP</strong> eingeben</p></li>
+<li><p>Erneut <strong>killall MCCUDP</strong> im Terminal eingeben</p></li>
+<li><p>Anwendung mit <strong>python3 RUN.py</strong> starten</p></li>
+<li><p>Anwendung schließen</p></li>
+<li><p>Anwendung erneut starten und nun funktioniert alles wieder</p></li>
+</ol>
+</div>
 </section>
 
 
@@ -112,7 +124,7 @@ numpy &lt;= 1.20
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="introduction.html" class="btn btn-neutral float-left" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="anoog.html" class="btn btn-neutral float-right" title="anoog" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="explain.html" class="btn btn-neutral float-right" title="Explanation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

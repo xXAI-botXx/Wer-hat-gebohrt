@@ -19,8 +19,10 @@ Possibilities of our future:
 ============================
 We have imagined a field of use, which can transfer to many other ideas.
 
-Warning: it is far fetched and it may contain traces of humour. But it should still be allowed to have dreams.
-With that philosophy, let us start.
+.. hint::
+
+   It is far fetched and it may contain traces of humour. But it should still be allowed to have dreams.
+   With that philosophy, let us start.
 
 We present the authentic-copy tool, the friend of every student. You have to do some complex math and there are not much time left?
 You only need one solution. The authentic-copy tool reads the content out of this solution and converts its in your own writing style!
