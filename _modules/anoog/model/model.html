@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="de" >
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>anoog.model.model &mdash; Wer hat gebohrt? 21.01.2022 Dokumentation</title>
+  <title>anoog.model.model &mdash; Wer hat gebohrt? 21.01.2022 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -14,10 +14,9 @@
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/translations.js"></script>
     <script src="../../../_static/js/theme.js"></script>
-    <link rel="index" title="Stichwortverzeichnis" href="../../../genindex.html" />
-    <link rel="search" title="Suche" href="../../../search.html" /> 
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -29,7 +28,7 @@
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Dokumentation durchsuchen" />
+    <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -37,7 +36,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">anoog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../anoog.html">anoog</a></li>
 </ul>
 
         </div>
@@ -54,7 +54,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../index.html">Modul-Quellcode</a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
       <li>anoog.model.model</li>
       <li class="wy-breadcrumbs-aside">
       </li>
@@ -64,8 +64,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Quellcode für anoog.model.model</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
+  <h1>Source code for anoog.model.model</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module is used to applie machine-learning algorithm.</span>
+
+<span class="sd">Contains functions for train, predict and evaluate ai-model.</span>
+
+<span class="sd">Author: Tobia Ippolito</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -92,7 +100,28 @@
 <span class="n">MODELS</span> <span class="o">=</span> <span class="n">Enum</span><span class="p">(</span><span class="s1">&#39;MODELS&#39;</span><span class="p">,</span> <span class="s1">&#39;RANDOM_FOREST SVM LOGISTIC_REGRESSION ADA_BOOST VOTING_CLASSIFIER NAIVE_BAYES KNN&#39;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="train_random_forest"><a class="viewcode-back" href="../../../anoog.model.html#anoog.model.model.train_random_forest">[Doku]</a><span class="k">def</span> <span class="nf">train_random_forest</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">auto_params</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<div class="viewcode-block" id="train_random_forest"><a class="viewcode-back" href="../../../anoog.model.html#anoog.model.model.train_random_forest">[docs]</a><span class="k">def</span> <span class="nf">train_random_forest</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">auto_params</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Trains a RandomForrest with the given data.</span>
+
+<span class="sd">    Hyperparameters are configured by Tobia Ippolito. Alternativly GridSearch can be used. But there have to be enough data.</span>
+
+<span class="sd">    The traindata can be normalize.</span>
+
+<span class="sd">    :param X_train: Features which will be used for training.</span>
+<span class="sd">    :type X_train: pd.DataFrame</span>
+<span class="sd">    :param y_train: Target-feature which will be used for training.</span>
+<span class="sd">    :type y_train: pd.Series</span>
+<span class="sd">    :param auto_params: Defines whether or not using preconfigured hyperparameter or lets GridSearch tunes the model.</span>
+<span class="sd">    :type auto_params: bool, optional</span>
+<span class="sd">    :param normalize: Defines if the data should be normalized.</span>
+<span class="sd">    :type normalize: bool, optional</span>
+<span class="sd">    :param cv: Defines the number of cross-validation-datasets by auto variable = True.</span>
+<span class="sd">    :type cv: int, optional</span>
+
+<span class="sd">    :return: Returns the trained classifier.</span>
+<span class="sd">    :rtype: sklearn.ensemble.RandomForestClassifier</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Classifier Randomforest</span>
     <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
         <span class="n">scaler</span> <span class="o">=</span> <span class="n">MinMaxScaler</span><span class="p">()</span>
@@ -109,7 +138,28 @@
     <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="train_svc"><a class="viewcode-back" href="../../../anoog.model.html#anoog.model.model.train_svc">[Doku]</a><span class="k">def</span> <span class="nf">train_svc</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">auto_params</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<div class="viewcode-block" id="train_svc"><a class="viewcode-back" href="../../../anoog.model.html#anoog.model.model.train_svc">[docs]</a><span class="k">def</span> <span class="nf">train_svc</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">auto_params</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Trains a SupportVectorMachine with the given data.</span>
+
+<span class="sd">    Hyperparameters are configured by Tobia Ippolito. Alternativly GridSearch can be used. But there have to be enough data.</span>
+
+<span class="sd">    The traindata can be normalize.</span>
+
+<span class="sd">    :param X_train: Features which will be used for training.</span>
+<span class="sd">    :type X_train: pd.DataFrame</span>
+<span class="sd">    :param y_train: Target-feature which will be used for training.</span>
+<span class="sd">    :type y_train: pd.Series</span>
+<span class="sd">    :param auto_params: Defines whether or not using preconfigured hyperparameter or lets GridSearch tunes the model.</span>
+<span class="sd">    :type auto_params: bool, optional</span>
+<span class="sd">    :param normalize: Defines if the data should be normalized.</span>
+<span class="sd">    :type normalize: bool, optional</span>
+<span class="sd">    :param cv: Defines the number of cross-validation-datasets by auto variable = True.</span>
+<span class="sd">    :type cv: int, optional</span>
+
+<span class="sd">    :return: Returns the trained classifier.</span>
+<span class="sd">    :rtype: sklearn.svm.SVC</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Classifier Support Vector Machines</span>
     <span class="c1">#print(X_train)</span>
     <span class="c1">#print(&quot;nan:&quot;, np.isnan(X_train.any()))</span>
@@ -129,7 +179,28 @@
     <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="train_knn"><a class="viewcode-back" href="../../../anoog.model.html#anoog.model.model.train_knn">[Doku]</a><span class="k">def</span> <span class="nf">train_knn</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">auto_params</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<div class="viewcode-block" id="train_knn"><a class="viewcode-back" href="../../../anoog.model.html#anoog.model.model.train_knn">[docs]</a><span class="k">def</span> <span class="nf">train_knn</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">auto_params</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Trains a K-Nearest Neighbors with the given data.</span>
+
+<span class="sd">    Hyperparameters are configured by Tobia Ippolito. Alternativly GridSearch can be used. But there have to be enough data.</span>
+
+<span class="sd">    The traindata can be normalize.</span>
+
+<span class="sd">    :param X_train: Features which will be used for training.</span>
+<span class="sd">    :type X_train: pd.DataFrame</span>
+<span class="sd">    :param y_train: Target-feature which will be used for training.</span>
+<span class="sd">    :type y_train: pd.Series</span>
+<span class="sd">    :param auto_params: Defines whether or not using preconfigured hyperparameter or lets GridSearch tunes the model.</span>
+<span class="sd">    :type auto_params: bool, optional</span>
+<span class="sd">    :param normalize: Defines if the data should be normalized.</span>
+<span class="sd">    :type normalize: bool, optional</span>
+<span class="sd">    :param cv: Defines the number of cross-validation-datasets by auto variable = True.</span>
+<span class="sd">    :type cv: int, optional</span>
+
+<span class="sd">    :return: Returns the trained classifier.</span>
+<span class="sd">    :rtype: sklearn.neighbors.KNeighborsClassifier</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Classifier K-Nearest Neighbors</span>
     <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
         <span class="n">scaler</span> <span class="o">=</span> <span class="n">MinMaxScaler</span><span class="p">()</span>
@@ -144,7 +215,28 @@
         <span class="n">model</span> <span class="o">=</span> <span class="n">KNeighborsClassifier</span><span class="p">(</span><span class="n">algorithm</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s1">&#39;manhattan&#39;</span><span class="p">,</span> <span class="n">n_neighbors</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="s1">&#39;distance&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="train_adaboost"><a class="viewcode-back" href="../../../anoog.model.html#anoog.model.model.train_adaboost">[Doku]</a><span class="k">def</span> <span class="nf">train_adaboost</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">auto_params</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<div class="viewcode-block" id="train_adaboost"><a class="viewcode-back" href="../../../anoog.model.html#anoog.model.model.train_adaboost">[docs]</a><span class="k">def</span> <span class="nf">train_adaboost</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">auto_params</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Trains a AdaBoost with the given data.</span>
+
+<span class="sd">    Hyperparameters are configured by Tobia Ippolito. Alternativly GridSearch can be used. But there have to be enough data.</span>
+
+<span class="sd">    The traindata can be normalize.</span>
+
+<span class="sd">    :param X_train: Features which will be used for training.</span>
+<span class="sd">    :type X_train: pd.DataFrame</span>
+<span class="sd">    :param y_train: Target-feature which will be used for training.</span>
+<span class="sd">    :type y_train: pd.Series</span>
+<span class="sd">    :param auto_params: Defines whether or not using preconfigured hyperparameter or lets GridSearch tunes the model.</span>
+<span class="sd">    :type auto_params: bool, optional</span>
+<span class="sd">    :param normalize: Defines if the data should be normalized.</span>
+<span class="sd">    :type normalize: bool, optional</span>
+<span class="sd">    :param cv: Defines the number of cross-validation-datasets by auto variable = True.</span>
+<span class="sd">    :type cv: int, optional</span>
+
+<span class="sd">    :return: Returns the trained classifier.</span>
+<span class="sd">    :rtype: sklearn.ensemble.AdaBoostClassifier</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Classifier Ada-Boost with SVC</span>
     <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
         <span class="n">scaler</span> <span class="o">=</span> <span class="n">MinMaxScaler</span><span class="p">()</span>
@@ -163,7 +255,28 @@
                             <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">n_estimators</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s1">&#39;SAMME&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="train_naive_bayes"><a class="viewcode-back" href="../../../anoog.model.html#anoog.model.model.train_naive_bayes">[Doku]</a><span class="k">def</span> <span class="nf">train_naive_bayes</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">auto_params</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<div class="viewcode-block" id="train_naive_bayes"><a class="viewcode-back" href="../../../anoog.model.html#anoog.model.model.train_naive_bayes">[docs]</a><span class="k">def</span> <span class="nf">train_naive_bayes</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">auto_params</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Trains a Naive Bayes with the given data.</span>
+
+<span class="sd">    Hyperparameters are configured by Tobia Ippolito. Alternativly GridSearch can be used. But there have to be enough data.</span>
+
+<span class="sd">    The traindata can be normalize.</span>
+
+<span class="sd">    :param X_train: Features which will be used for training.</span>
+<span class="sd">    :type X_train: pd.DataFrame</span>
+<span class="sd">    :param y_train: Target-feature which will be used for training.</span>
+<span class="sd">    :type y_train: pd.Series</span>
+<span class="sd">    :param auto_params: Defines whether or not using preconfigured hyperparameter or lets GridSearch tunes the model.</span>
+<span class="sd">    :type auto_params: bool, optional</span>
+<span class="sd">    :param normalize: Defines if the data should be normalized.</span>
+<span class="sd">    :type normalize: bool, optional</span>
+<span class="sd">    :param cv: Defines the number of cross-validation-datasets by auto variable = True.</span>
+<span class="sd">    :type cv: int, optional</span>
+
+<span class="sd">    :return: Returns the trained classifier.</span>
+<span class="sd">    :rtype: sklearn.naive_bayes.GaussianNB</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Classifier Naive Bayes</span>
     <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
         <span class="n">scaler</span> <span class="o">=</span> <span class="n">MinMaxScaler</span><span class="p">()</span>
@@ -175,7 +288,28 @@
         <span class="n">model</span> <span class="o">=</span> <span class="n">GaussianNB</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="train_logistic_regression"><a class="viewcode-back" href="../../../anoog.model.html#anoog.model.model.train_logistic_regression">[Doku]</a><span class="k">def</span> <span class="nf">train_logistic_regression</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">auto_params</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<div class="viewcode-block" id="train_logistic_regression"><a class="viewcode-back" href="../../../anoog.model.html#anoog.model.model.train_logistic_regression">[docs]</a><span class="k">def</span> <span class="nf">train_logistic_regression</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">auto_params</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Trains a Logistic Regression with the given data.</span>
+
+<span class="sd">    Hyperparameters are configured by Tobia Ippolito. Alternativly GridSearch can be used. But there have to be enough data.</span>
+
+<span class="sd">    The traindata can be normalize.</span>
+
+<span class="sd">    :param X_train: Features which will be used for training.</span>
+<span class="sd">    :type X_train: pd.DataFrame</span>
+<span class="sd">    :param y_train: Target-feature which will be used for training.</span>
+<span class="sd">    :type y_train: pd.Series</span>
+<span class="sd">    :param auto_params: Defines whether or not using preconfigured hyperparameter or lets GridSearch tunes the model.</span>
+<span class="sd">    :type auto_params: bool, optional</span>
+<span class="sd">    :param normalize: Defines if the data should be normalized.</span>
+<span class="sd">    :type normalize: bool, optional</span>
+<span class="sd">    :param cv: Defines the number of cross-validation-datasets by auto variable = True.</span>
+<span class="sd">    :type cv: int, optional</span>
+
+<span class="sd">    :return: Returns the trained classifier.</span>
+<span class="sd">    :rtype: sklearn.linear_model.LogisticRegression</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Classifier Logistic Regression</span>
     <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
         <span class="n">scaler</span> <span class="o">=</span> <span class="n">MinMaxScaler</span><span class="p">()</span>
@@ -190,7 +324,28 @@
         <span class="n">model</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">penalty</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;newton-cg&#39;</span><span class="p">)</span>    <span class="c1">#C=0.001, </span>
     <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="train_voting_classifier"><a class="viewcode-back" href="../../../anoog.model.html#anoog.model.model.train_voting_classifier">[Doku]</a><span class="k">def</span> <span class="nf">train_voting_classifier</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">auto_params</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<div class="viewcode-block" id="train_voting_classifier"><a class="viewcode-back" href="../../../anoog.model.html#anoog.model.model.train_voting_classifier">[docs]</a><span class="k">def</span> <span class="nf">train_voting_classifier</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">auto_params</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Trains a Voting Classifier with the given data.</span>
+
+<span class="sd">    Hyperparameters are configured by Tobia Ippolito. Alternativly GridSearch can be used. But there have to be enough data.</span>
+
+<span class="sd">    The traindata can be normalize.</span>
+
+<span class="sd">    :param X_train: Features which will be used for training.</span>
+<span class="sd">    :type X_train: pd.DataFrame</span>
+<span class="sd">    :param y_train: Target-feature which will be used for training.</span>
+<span class="sd">    :type y_train: pd.Series</span>
+<span class="sd">    :param auto_params: Defines whether or not using preconfigured hyperparameter or lets GridSearch tunes the model.</span>
+<span class="sd">    :type auto_params: bool, optional</span>
+<span class="sd">    :param normalize: Defines if the data should be normalized.</span>
+<span class="sd">    :type normalize: bool, optional</span>
+<span class="sd">    :param cv: Defines the number of cross-validation-datasets by auto variable = True.</span>
+<span class="sd">    :type cv: int, optional</span>
+
+<span class="sd">    :return: Returns the trained classifier.</span>
+<span class="sd">    :rtype: sklearn.ensemble.VotingClassifier</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Classifier Logistic Regression</span>
     <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
         <span class="n">scaler</span> <span class="o">=</span> <span class="n">MinMaxScaler</span><span class="p">()</span>
@@ -205,21 +360,72 @@
     <span class="n">model</span> <span class="o">=</span> <span class="n">VotingClassifier</span><span class="p">(</span><span class="n">estimators</span><span class="o">=</span><span class="n">estimators</span><span class="p">,</span> <span class="n">voting</span><span class="o">=</span><span class="s1">&#39;hard&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="predict"><a class="viewcode-back" href="../../../anoog.model.html#anoog.model.model.predict">[Doku]</a><span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">predict_data</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="predict"><a class="viewcode-back" href="../../../anoog.model.html#anoog.model.model.predict">[docs]</a><span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">predict_data</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Predicts new data with a model. </span>
+<span class="sd">    Can normalize the data.</span>
+
+<span class="sd">    :param model: Model used for prediction.</span>
+<span class="sd">    :type model: sklearn.base.BaseEstimator</span>
+<span class="sd">    :param predict_data: Data which will be predict.</span>
+<span class="sd">    :type predict_data: pd.DataFrame</span>
+<span class="sd">    :param X_train: Data which will be used for normalization.</span>
+<span class="sd">    :type X_train: pd.DataFrame</span>
+<span class="sd">    :param normalize: Defines if the data should be normalize (if True, uses X_train for normalization).</span>
+<span class="sd">    :type normalize: bool, optional</span>
+
+<span class="sd">    :return: A list of predicted classes.</span>
+<span class="sd">    :rtype: numpy.ndarray</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
+        <span class="n">scaler</span> <span class="o">=</span> <span class="n">MinMaxScaler</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
+        <span class="n">predict_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">predict_data</span><span class="p">),</span> <span class="n">columns</span><span class="o">=</span><span class="n">predict_data</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">predict_data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="predict_proba"><a class="viewcode-back" href="../../../anoog.model.html#anoog.model.model.predict_proba">[docs]</a><span class="k">def</span> <span class="nf">predict_proba</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">predict_data</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Predicts new data with a model in percent. </span>
+<span class="sd">    Can normalize the data.</span>
+
+<span class="sd">    :param model: Model used for prediction.</span>
+<span class="sd">    :type model: sklearn.base.BaseEstimator</span>
+<span class="sd">    :param predict_data: Data which will be predict.</span>
+<span class="sd">    :type predict_data: pd.DataFrame</span>
+<span class="sd">    :param X_train: Data which will be used for normalization.</span>
+<span class="sd">    :type X_train: pd.DataFrame</span>
+<span class="sd">    :param normalize: Defines if the data should be normalize (if True, uses X_train for normalization).</span>
+<span class="sd">    :type normalize: bool, optional</span>
+
+<span class="sd">    :return: A list of predicted classes with the 2 probabilities.</span>
+<span class="sd">    :rtype: numpy.ndarray</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
         <span class="n">scaler</span> <span class="o">=</span> <span class="n">MinMaxScaler</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
         <span class="n">predict_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">predict_data</span><span class="p">),</span> <span class="n">columns</span><span class="o">=</span><span class="n">predict_data</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">predict_data</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="predict_proba"><a class="viewcode-back" href="../../../anoog.model.html#anoog.model.model.predict_proba">[Doku]</a><span class="k">def</span> <span class="nf">predict_proba</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">predict_data</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
-        <span class="n">scaler</span> <span class="o">=</span> <span class="n">MinMaxScaler</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
-        <span class="n">predict_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">predict_data</span><span class="p">),</span> <span class="n">columns</span><span class="o">=</span><span class="n">predict_data</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">predict_data</span><span class="p">)</span></div>
+<div class="viewcode-block" id="evaluate_model"><a class="viewcode-back" href="../../../anoog.model.html#anoog.model.model.evaluate_model">[docs]</a><span class="k">def</span> <span class="nf">evaluate_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Evaluats a model. </span>
+<span class="sd">    Means predict new data and returns the accuracy and confusion-matrix. </span>
+<span class="sd">    Can normalize the data.</span>
 
+<span class="sd">    :param model: Model used for evaluation.</span>
+<span class="sd">    :type model: sklearn.base.BaseEstimator</span>
+<span class="sd">    :param X_test: Data which will be predict.</span>
+<span class="sd">    :type X_test: pd.DataFrame</span>
+<span class="sd">    :param y_test: Target value of the test-data.</span>
+<span class="sd">    :type y_test: pd.Series</span>
+<span class="sd">    :param X_train: Data which will be used for normalization.</span>
+<span class="sd">    :type X_train: pd.DataFrame</span>
+<span class="sd">    :param normalize: Defines if the data should be normalize (if True, uses X_train for normalization).</span>
+<span class="sd">    :type normalize: bool, optional</span>
 
-<div class="viewcode-block" id="evaluate_model"><a class="viewcode-back" href="../../../anoog.model.html#anoog.model.model.evaluate_model">[Doku]</a><span class="k">def</span> <span class="nf">evaluate_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="sd">    :return: A list of predicted classes with the 2 probabilities.</span>
+<span class="sd">    :rtype: tuple of accuracy and confusion matrix.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># normalize</span>
     <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
         <span class="n">scaler</span> <span class="o">=</span> <span class="n">MinMaxScaler</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
@@ -237,7 +443,23 @@
 
 
 <span class="c1"># give Enum or sklearn model in</span>
-<div class="viewcode-block" id="evaluate_model_with_cross_validation"><a class="viewcode-back" href="../../../anoog.model.html#anoog.model.model.evaluate_model_with_cross_validation">[Doku]</a><span class="k">def</span> <span class="nf">evaluate_model_with_cross_validation</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">MODELS</span><span class="o">.</span><span class="n">RANDOM_FOREST</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+<div class="viewcode-block" id="evaluate_model_with_cross_validation"><a class="viewcode-back" href="../../../anoog.model.html#anoog.model.model.evaluate_model_with_cross_validation">[docs]</a><span class="k">def</span> <span class="nf">evaluate_model_with_cross_validation</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">MODELS</span><span class="o">.</span><span class="n">RANDOM_FOREST</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Evaluats a model with cross-validation. </span>
+<span class="sd">    </span>
+
+<span class="sd">    :param X: Features which will be splittet in train and validation datasets.</span>
+<span class="sd">    :type X: pd.DataFrame</span>
+<span class="sd">    :param y: Target value of the data (which will be splittet in train and validation datasets).</span>
+<span class="sd">    :type y: pd.Series</span>
+<span class="sd">    :param model: Model used for evaluation.</span>
+<span class="sd">    :type model: :class:`~anoog.model.model.MODELS`</span>
+<span class="sd">    :param cv: Defines the number of cross-validation-datasets.</span>
+<span class="sd">    :type cv: int, optional</span>
+
+<span class="sd">    :return: A list of predicted classes with the 2 probabilities.</span>
+<span class="sd">    :rtype: tuple of accuracy and confusion matrix.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="n">MODELS</span><span class="o">.</span><span class="n">RANDOM_FOREST</span><span class="p">:</span>
         <span class="n">estimator</span> <span class="o">=</span> <span class="n">RandomForestClassifier</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">criterion</span><span class="o">=</span><span class="s1">&#39;entropy&#39;</span><span class="p">,</span> <span class="n">min_samples_split</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">model</span> <span class="o">==</span> <span class="n">MODELS</span><span class="o">.</span><span class="n">SVM</span><span class="p">:</span>
@@ -259,14 +481,38 @@
     <span class="k">return</span> <span class="n">cross_val_score</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_most_important_features"><a class="viewcode-back" href="../../../anoog.model.html#anoog.model.model.get_most_important_features">[Doku]</a><span class="k">def</span> <span class="nf">get_most_important_features</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+<div class="viewcode-block" id="get_most_important_features"><a class="viewcode-back" href="../../../anoog.model.html#anoog.model.model.get_most_important_features">[docs]</a><span class="k">def</span> <span class="nf">get_most_important_features</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the n most important features of a RandomForestClassifier.</span>
+<span class="sd">    Prints the result. See :func:`~anoog.model.model.get_most_important_features_as_list` for getting a result returned.</span>
+
+<span class="sd">    :param model: Model used for feature-selection.</span>
+<span class="sd">    :type model: sklearn.base.BaseEstimator</span>
+<span class="sd">    :param X: Features which will be used for information-source by columns specifications.</span>
+<span class="sd">    :type X: pd.DataFrame</span>
+<span class="sd">    :param n: Number of Features to select.</span>
+<span class="sd">    :type n: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">importance_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">model</span><span class="o">.</span><span class="n">feature_importances_</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
     <span class="n">sorted_feature_importance</span> <span class="o">=</span> <span class="n">importance_list</span><span class="p">[</span><span class="n">importance_list</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">argsort</span><span class="p">()][::</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> 
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">sorted_feature_importance</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">sorted_feature_importance</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_most_important_features_as_list"><a class="viewcode-back" href="../../../anoog.model.html#anoog.model.model.get_most_important_features_as_list">[Doku]</a><span class="k">def</span> <span class="nf">get_most_important_features_as_list</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+<div class="viewcode-block" id="get_most_important_features_as_list"><a class="viewcode-back" href="../../../anoog.model.html#anoog.model.model.get_most_important_features_as_list">[docs]</a><span class="k">def</span> <span class="nf">get_most_important_features_as_list</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the n most important features of a RandomForestClassifier.</span>
+<span class="sd">    </span>
+<span class="sd">    :param model: Model used for feature-selection.</span>
+<span class="sd">    :type model: sklearn.base.BaseEstimator</span>
+<span class="sd">    :param X: Features which will be used for information-source by columns specifications.</span>
+<span class="sd">    :type X: pd.DataFrame</span>
+<span class="sd">    :param n: Number of Features to select.</span>
+<span class="sd">    :type n: int</span>
+
+<span class="sd">    :return: Most important features.</span>
+<span class="sd">    :rtype: list of names of selected-features.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">importance_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">model</span><span class="o">.</span><span class="n">feature_importances_</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
     <span class="n">sorted_feature_importance</span> <span class="o">=</span> <span class="n">importance_list</span><span class="p">[</span><span class="n">importance_list</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">argsort</span><span class="p">()][::</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> 
     <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
@@ -285,9 +531,9 @@
     <p>&#169; Copyright 2022, Tobia Ippolito, Syon Kadkade, Vadim Korzev.</p>
   </div>
 
-  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
    
 
 </footer>

@@ -1,0 +1,44 @@
+Tutorial
+^^^^^^^^
+This library is programmed for distinguish drilling persons.
+
+To start the application, you need a setup with following points:
+
+* drilldriver and drillcapture programs
+* wired drill
+* wood for drilling
+* at least 2 persons
+* our library
+* python3 installed
+* all modules in the requirements.txt (see below)
+
+.. code-block:: none
+
+    ###### Requirements without Version Specifiers ######
+    pandas
+    matplotlib
+    sklearn
+    ttkthemes
+    pyyaml
+    tsfresh
+    pillow
+    webbrowser
+
+    ###### Requirements with Version Specifiers ######
+    numpy <= 1.20
+
+    ###### Linux System need to install ######
+    # Tkinter
+    # sudo apt-get install python3-tk 
+
+    # And Pillow Tk
+    # sudo apt-get install python3-pil.imagetk
+
+
+If the setup is ready, you have to call the run-function in following module:
+
+:ref:`gui`
+
+See the RUN.py for an exemplary call.
+
+
