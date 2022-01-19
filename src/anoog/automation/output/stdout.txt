@@ -1,5 +1,0 @@
-AnoOG 1.0.0-SNAPSHOT
-Unable to record webcam on this system
-Press Enter to set the next timestamp
-Timestamp idle set to 0.0
-No more timestamps available. Press Enter to save and quit...

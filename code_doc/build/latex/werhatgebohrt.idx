@@ -1,0 +1,241 @@
+\indexentry{module@\spxentry{module}!anoog.automation.ai\_model@\spxentry{anoog.automation.ai\_model}|hyperpage}{13}
+\indexentry{anoog.automation.ai\_model@\spxentry{anoog.automation.ai\_model}!module@\spxentry{module}|hyperpage}{13}
+\indexentry{AI\_Model (class in anoog.automation.ai\_model)@\spxentry{AI\_Model}\spxextra{class in anoog.automation.ai\_model}|hyperpage}{13}
+\indexentry{add\_predict\_dataset() (anoog.automation.ai\_model.AI\_Model method)@\spxentry{add\_predict\_dataset()}\spxextra{anoog.automation.ai\_model.AI\_Model method}|hyperpage}{13}
+\indexentry{add\_train\_dataset() (anoog.automation.ai\_model.AI\_Model method)@\spxentry{add\_train\_dataset()}\spxextra{anoog.automation.ai\_model.AI\_Model method}|hyperpage}{13}
+\indexentry{clean\_log() (anoog.automation.ai\_model.AI\_Model method)@\spxentry{clean\_log()}\spxextra{anoog.automation.ai\_model.AI\_Model method}|hyperpage}{14}
+\indexentry{draw\_result() (anoog.automation.ai\_model.AI\_Model method)@\spxentry{draw\_result()}\spxextra{anoog.automation.ai\_model.AI\_Model method}|hyperpage}{14}
+\indexentry{predict() (anoog.automation.ai\_model.AI\_Model method)@\spxentry{predict()}\spxextra{anoog.automation.ai\_model.AI\_Model method}|hyperpage}{14}
+\indexentry{remove\_last\_predict\_dataset() (anoog.automation.ai\_model.AI\_Model method)@\spxentry{remove\_last\_predict\_dataset()}\spxextra{anoog.automation.ai\_model.AI\_Model method}|hyperpage}{14}
+\indexentry{remove\_last\_train\_dataset() (anoog.automation.ai\_model.AI\_Model method)@\spxentry{remove\_last\_train\_dataset()}\spxextra{anoog.automation.ai\_model.AI\_Model method}|hyperpage}{14}
+\indexentry{remove\_predict\_dataset() (anoog.automation.ai\_model.AI\_Model method)@\spxentry{remove\_predict\_dataset()}\spxextra{anoog.automation.ai\_model.AI\_Model method}|hyperpage}{14}
+\indexentry{remove\_unused\_columns() (anoog.automation.ai\_model.AI\_Model method)@\spxentry{remove\_unused\_columns()}\spxextra{anoog.automation.ai\_model.AI\_Model method}|hyperpage}{14}
+\indexentry{reset() (anoog.automation.ai\_model.AI\_Model method)@\spxentry{reset()}\spxextra{anoog.automation.ai\_model.AI\_Model method}|hyperpage}{14}
+\indexentry{train() (anoog.automation.ai\_model.AI\_Model method)@\spxentry{train()}\spxextra{anoog.automation.ai\_model.AI\_Model method}|hyperpage}{15}
+\indexentry{write\_log() (anoog.automation.ai\_model.AI\_Model method)@\spxentry{write\_log()}\spxextra{anoog.automation.ai\_model.AI\_Model method}|hyperpage}{15}
+\indexentry{ALGORITHM (class in anoog.automation.ai\_model)@\spxentry{ALGORITHM}\spxextra{class in anoog.automation.ai\_model}|hyperpage}{15}
+\indexentry{ADA\_BOOST (anoog.automation.ai\_model.ALGORITHM attribute)@\spxentry{ADA\_BOOST}\spxextra{anoog.automation.ai\_model.ALGORITHM attribute}|hyperpage}{15}
+\indexentry{KNN (anoog.automation.ai\_model.ALGORITHM attribute)@\spxentry{KNN}\spxextra{anoog.automation.ai\_model.ALGORITHM attribute}|hyperpage}{15}
+\indexentry{LOGISTIC\_REGRESSION (anoog.automation.ai\_model.ALGORITHM attribute)@\spxentry{LOGISTIC\_REGRESSION}\spxextra{anoog.automation.ai\_model.ALGORITHM attribute}|hyperpage}{15}
+\indexentry{NAIVE\_BAYES (anoog.automation.ai\_model.ALGORITHM attribute)@\spxentry{NAIVE\_BAYES}\spxextra{anoog.automation.ai\_model.ALGORITHM attribute}|hyperpage}{15}
+\indexentry{RANDOM\_FOREST (anoog.automation.ai\_model.ALGORITHM attribute)@\spxentry{RANDOM\_FOREST}\spxextra{anoog.automation.ai\_model.ALGORITHM attribute}|hyperpage}{15}
+\indexentry{SVC (anoog.automation.ai\_model.ALGORITHM attribute)@\spxentry{SVC}\spxextra{anoog.automation.ai\_model.ALGORITHM attribute}|hyperpage}{15}
+\indexentry{VOTING\_CLASSIFIER (anoog.automation.ai\_model.ALGORITHM attribute)@\spxentry{VOTING\_CLASSIFIER}\spxextra{anoog.automation.ai\_model.ALGORITHM attribute}|hyperpage}{15}
+\indexentry{module@\spxentry{module}!anoog.automation.bg\_booster@\spxentry{anoog.automation.bg\_booster}|hyperpage}{15}
+\indexentry{anoog.automation.bg\_booster@\spxentry{anoog.automation.bg\_booster}!module@\spxentry{module}|hyperpage}{15}
+\indexentry{Color\_Gradient\_Booster (class in anoog.automation.bg\_booster)@\spxentry{Color\_Gradient\_Booster}\spxextra{class in anoog.automation.bg\_booster}|hyperpage}{15}
+\indexentry{calc\_shiny\_flow\_effect() (anoog.automation.bg\_booster.Color\_Gradient\_Booster method)@\spxentry{calc\_shiny\_flow\_effect()}\spxextra{anoog.automation.bg\_booster.Color\_Gradient\_Booster method}|hyperpage}{16}
+\indexentry{color\_chain\_change() (anoog.automation.bg\_booster.Color\_Gradient\_Booster method)@\spxentry{color\_chain\_change()}\spxextra{anoog.automation.bg\_booster.Color\_Gradient\_Booster method}|hyperpage}{16}
+\indexentry{hex2rgb() (anoog.automation.bg\_booster.Color\_Gradient\_Booster method)@\spxentry{hex2rgb()}\spxextra{anoog.automation.bg\_booster.Color\_Gradient\_Booster method}|hyperpage}{16}
+\indexentry{run() (anoog.automation.bg\_booster.Color\_Gradient\_Booster method)@\spxentry{run()}\spxextra{anoog.automation.bg\_booster.Color\_Gradient\_Booster method}|hyperpage}{16}
+\indexentry{set\_fav\_color() (anoog.automation.bg\_booster.Color\_Gradient\_Booster method)@\spxentry{set\_fav\_color()}\spxextra{anoog.automation.bg\_booster.Color\_Gradient\_Booster method}|hyperpage}{16}
+\indexentry{set\_off\_screen() (anoog.automation.bg\_booster.Color\_Gradient\_Booster method)@\spxentry{set\_off\_screen()}\spxextra{anoog.automation.bg\_booster.Color\_Gradient\_Booster method}|hyperpage}{16}
+\indexentry{set\_on\_screen() (anoog.automation.bg\_booster.Color\_Gradient\_Booster method)@\spxentry{set\_on\_screen()}\spxextra{anoog.automation.bg\_booster.Color\_Gradient\_Booster method}|hyperpage}{16}
+\indexentry{set\_random\_colors() (anoog.automation.bg\_booster.Color\_Gradient\_Booster method)@\spxentry{set\_random\_colors()}\spxextra{anoog.automation.bg\_booster.Color\_Gradient\_Booster method}|hyperpage}{16}
+\indexentry{start() (anoog.automation.bg\_booster.Color\_Gradient\_Booster method)@\spxentry{start()}\spxextra{anoog.automation.bg\_booster.Color\_Gradient\_Booster method}|hyperpage}{17}
+\indexentry{stop() (anoog.automation.bg\_booster.Color\_Gradient\_Booster method)@\spxentry{stop()}\spxextra{anoog.automation.bg\_booster.Color\_Gradient\_Booster method}|hyperpage}{17}
+\indexentry{update() (anoog.automation.bg\_booster.Color\_Gradient\_Booster method)@\spxentry{update()}\spxextra{anoog.automation.bg\_booster.Color\_Gradient\_Booster method}|hyperpage}{17}
+\indexentry{variate\_color() (anoog.automation.bg\_booster.Color\_Gradient\_Booster method)@\spxentry{variate\_color()}\spxextra{anoog.automation.bg\_booster.Color\_Gradient\_Booster method}|hyperpage}{17}
+\indexentry{variate\_gradient\_size() (anoog.automation.bg\_booster.Color\_Gradient\_Booster method)@\spxentry{variate\_gradient\_size()}\spxextra{anoog.automation.bg\_booster.Color\_Gradient\_Booster method}|hyperpage}{17}
+\indexentry{variate\_gradient\_size\_speed() (anoog.automation.bg\_booster.Color\_Gradient\_Booster method)@\spxentry{variate\_gradient\_size\_speed()}\spxextra{anoog.automation.bg\_booster.Color\_Gradient\_Booster method}|hyperpage}{17}
+\indexentry{module@\spxentry{module}!anoog.automation.controller@\spxentry{anoog.automation.controller}|hyperpage}{17}
+\indexentry{anoog.automation.controller@\spxentry{anoog.automation.controller}!module@\spxentry{module}|hyperpage}{17}
+\indexentry{Terminal (class in anoog.automation.controller)@\spxentry{Terminal}\spxextra{class in anoog.automation.controller}|hyperpage}{17}
+\indexentry{add\_amount() (anoog.automation.controller.Terminal method)@\spxentry{add\_amount()}\spxextra{anoog.automation.controller.Terminal method}|hyperpage}{17}
+\indexentry{clean\_output() (anoog.automation.controller.Terminal method)@\spxentry{clean\_output()}\spxextra{anoog.automation.controller.Terminal method}|hyperpage}{18}
+\indexentry{delete\_last() (anoog.automation.controller.Terminal method)@\spxentry{delete\_last()}\spxextra{anoog.automation.controller.Terminal method}|hyperpage}{18}
+\indexentry{delete\_last\_predict\_drill() (anoog.automation.controller.Terminal method)@\spxentry{delete\_last\_predict\_drill()}\spxextra{anoog.automation.controller.Terminal method}|hyperpage}{18}
+\indexentry{exit() (anoog.automation.controller.Terminal method)@\spxentry{exit()}\spxextra{anoog.automation.controller.Terminal method}|hyperpage}{18}
+\indexentry{from\_predict\_to\_train() (anoog.automation.controller.Terminal method)@\spxentry{from\_predict\_to\_train()}\spxextra{anoog.automation.controller.Terminal method}|hyperpage}{18}
+\indexentry{init\_drill() (anoog.automation.controller.Terminal method)@\spxentry{init\_drill()}\spxextra{anoog.automation.controller.Terminal method}|hyperpage}{18}
+\indexentry{init\_predict() (anoog.automation.controller.Terminal method)@\spxentry{init\_predict()}\spxextra{anoog.automation.controller.Terminal method}|hyperpage}{18}
+\indexentry{init\_train\_drilling() (anoog.automation.controller.Terminal method)@\spxentry{init\_train\_drilling()}\spxextra{anoog.automation.controller.Terminal method}|hyperpage}{18}
+\indexentry{load\_predict() (anoog.automation.controller.Terminal method)@\spxentry{load\_predict()}\spxextra{anoog.automation.controller.Terminal method}|hyperpage}{18}
+\indexentry{predict() (anoog.automation.controller.Terminal method)@\spxentry{predict()}\spxextra{anoog.automation.controller.Terminal method}|hyperpage}{19}
+\indexentry{reset\_predict() (anoog.automation.controller.Terminal method)@\spxentry{reset\_predict()}\spxextra{anoog.automation.controller.Terminal method}|hyperpage}{19}
+\indexentry{reset\_train() (anoog.automation.controller.Terminal method)@\spxentry{reset\_train()}\spxextra{anoog.automation.controller.Terminal method}|hyperpage}{19}
+\indexentry{run() (anoog.automation.controller.Terminal method)@\spxentry{run()}\spxextra{anoog.automation.controller.Terminal method}|hyperpage}{19}
+\indexentry{start() (anoog.automation.controller.Terminal method)@\spxentry{start()}\spxextra{anoog.automation.controller.Terminal method}|hyperpage}{19}
+\indexentry{start\_drill\_driver() (anoog.automation.controller.Terminal method)@\spxentry{start\_drill\_driver()}\spxextra{anoog.automation.controller.Terminal method}|hyperpage}{19}
+\indexentry{stop() (anoog.automation.controller.Terminal method)@\spxentry{stop()}\spxextra{anoog.automation.controller.Terminal method}|hyperpage}{19}
+\indexentry{stop\_drill\_driver() (anoog.automation.controller.Terminal method)@\spxentry{stop\_drill\_driver()}\spxextra{anoog.automation.controller.Terminal method}|hyperpage}{19}
+\indexentry{process\_state (class in anoog.automation.controller)@\spxentry{process\_state}\spxextra{class in anoog.automation.controller}|hyperpage}{19}
+\indexentry{BEFORE\_TRAIN (anoog.automation.controller.process\_state attribute)@\spxentry{BEFORE\_TRAIN}\spxextra{anoog.automation.controller.process\_state attribute}|hyperpage}{19}
+\indexentry{NOT\_STARTED (anoog.automation.controller.process\_state attribute)@\spxentry{NOT\_STARTED}\spxextra{anoog.automation.controller.process\_state attribute}|hyperpage}{19}
+\indexentry{PREDICT (anoog.automation.controller.process\_state attribute)@\spxentry{PREDICT}\spxextra{anoog.automation.controller.process\_state attribute}|hyperpage}{19}
+\indexentry{TRAIN (anoog.automation.controller.process\_state attribute)@\spxentry{TRAIN}\spxextra{anoog.automation.controller.process\_state attribute}|hyperpage}{19}
+\indexentry{TRAIN\_END (anoog.automation.controller.process\_state attribute)@\spxentry{TRAIN\_END}\spxextra{anoog.automation.controller.process\_state attribute}|hyperpage}{19}
+\indexentry{module@\spxentry{module}!anoog.automation.event@\spxentry{anoog.automation.event}|hyperpage}{20}
+\indexentry{anoog.automation.event@\spxentry{anoog.automation.event}!module@\spxentry{module}|hyperpage}{20}
+\indexentry{Eventsystem\_Component (class in anoog.automation.event)@\spxentry{Eventsystem\_Component}\spxextra{class in anoog.automation.event}|hyperpage}{20}
+\indexentry{add\_event() (anoog.automation.event.Eventsystem\_Component method)@\spxentry{add\_event()}\spxextra{anoog.automation.event.Eventsystem\_Component method}|hyperpage}{20}
+\indexentry{run\_event() (anoog.automation.event.Eventsystem\_Component method)@\spxentry{run\_event()}\spxextra{anoog.automation.event.Eventsystem\_Component method}|hyperpage}{20}
+\indexentry{module@\spxentry{module}!anoog.automation.graphical\_user\_interface@\spxentry{anoog.automation.graphical\_user\_interface}|hyperpage}{20}
+\indexentry{anoog.automation.graphical\_user\_interface@\spxentry{anoog.automation.graphical\_user\_interface}!module@\spxentry{module}|hyperpage}{20}
+\indexentry{Credits\_Window (class in anoog.automation.graphical\_user\_interface)@\spxentry{Credits\_Window}\spxextra{class in anoog.automation.graphical\_user\_interface}|hyperpage}{20}
+\indexentry{add\_padding() (anoog.automation.graphical\_user\_interface.Credits\_Window method)@\spxentry{add\_padding()}\spxextra{anoog.automation.graphical\_user\_interface.Credits\_Window method}|hyperpage}{20}
+\indexentry{create\_widgets() (anoog.automation.graphical\_user\_interface.Credits\_Window method)@\spxentry{create\_widgets()}\spxextra{anoog.automation.graphical\_user\_interface.Credits\_Window method}|hyperpage}{21}
+\indexentry{event\_back() (anoog.automation.graphical\_user\_interface.Credits\_Window method)@\spxentry{event\_back()}\spxextra{anoog.automation.graphical\_user\_interface.Credits\_Window method}|hyperpage}{21}
+\indexentry{hide() (anoog.automation.graphical\_user\_interface.Credits\_Window method)@\spxentry{hide()}\spxextra{anoog.automation.graphical\_user\_interface.Credits\_Window method}|hyperpage}{21}
+\indexentry{show() (anoog.automation.graphical\_user\_interface.Credits\_Window method)@\spxentry{show()}\spxextra{anoog.automation.graphical\_user\_interface.Credits\_Window method}|hyperpage}{21}
+\indexentry{update\_show() (anoog.automation.graphical\_user\_interface.Credits\_Window method)@\spxentry{update\_show()}\spxextra{anoog.automation.graphical\_user\_interface.Credits\_Window method}|hyperpage}{21}
+\indexentry{weighting() (anoog.automation.graphical\_user\_interface.Credits\_Window method)@\spxentry{weighting()}\spxextra{anoog.automation.graphical\_user\_interface.Credits\_Window method}|hyperpage}{21}
+\indexentry{GUI\_App (class in anoog.automation.graphical\_user\_interface)@\spxentry{GUI\_App}\spxextra{class in anoog.automation.graphical\_user\_interface}|hyperpage}{21}
+\indexentry{check\_events() (anoog.automation.graphical\_user\_interface.GUI\_App method)@\spxentry{check\_events()}\spxextra{anoog.automation.graphical\_user\_interface.GUI\_App method}|hyperpage}{21}
+\indexentry{close() (anoog.automation.graphical\_user\_interface.GUI\_App method)@\spxentry{close()}\spxextra{anoog.automation.graphical\_user\_interface.GUI\_App method}|hyperpage}{21}
+\indexentry{event\_resize\_bg() (anoog.automation.graphical\_user\_interface.GUI\_App method)@\spxentry{event\_resize\_bg()}\spxextra{anoog.automation.graphical\_user\_interface.GUI\_App method}|hyperpage}{21}
+\indexentry{event\_space() (anoog.automation.graphical\_user\_interface.GUI\_App method)@\spxentry{event\_space()}\spxextra{anoog.automation.graphical\_user\_interface.GUI\_App method}|hyperpage}{21}
+\indexentry{load\_screen\_credits() (anoog.automation.graphical\_user\_interface.GUI\_App method)@\spxentry{load\_screen\_credits()}\spxextra{anoog.automation.graphical\_user\_interface.GUI\_App method}|hyperpage}{21}
+\indexentry{load\_screen\_main\_menu() (anoog.automation.graphical\_user\_interface.GUI\_App method)@\spxentry{load\_screen\_main\_menu()}\spxextra{anoog.automation.graphical\_user\_interface.GUI\_App method}|hyperpage}{21}
+\indexentry{load\_screen\_predict() (anoog.automation.graphical\_user\_interface.GUI\_App method)@\spxentry{load\_screen\_predict()}\spxextra{anoog.automation.graphical\_user\_interface.GUI\_App method}|hyperpage}{22}
+\indexentry{load\_screen\_train() (anoog.automation.graphical\_user\_interface.GUI\_App method)@\spxentry{load\_screen\_train()}\spxextra{anoog.automation.graphical\_user\_interface.GUI\_App method}|hyperpage}{22}
+\indexentry{load\_theme() (anoog.automation.graphical\_user\_interface.GUI\_App method)@\spxentry{load\_theme()}\spxextra{anoog.automation.graphical\_user\_interface.GUI\_App method}|hyperpage}{22}
+\indexentry{reset\_predict() (anoog.automation.graphical\_user\_interface.GUI\_App method)@\spxentry{reset\_predict()}\spxextra{anoog.automation.graphical\_user\_interface.GUI\_App method}|hyperpage}{22}
+\indexentry{run() (anoog.automation.graphical\_user\_interface.GUI\_App method)@\spxentry{run()}\spxextra{anoog.automation.graphical\_user\_interface.GUI\_App method}|hyperpage}{22}
+\indexentry{set\_bg() (anoog.automation.graphical\_user\_interface.GUI\_App method)@\spxentry{set\_bg()}\spxextra{anoog.automation.graphical\_user\_interface.GUI\_App method}|hyperpage}{22}
+\indexentry{set\_min() (anoog.automation.graphical\_user\_interface.GUI\_App method)@\spxentry{set\_min()}\spxextra{anoog.automation.graphical\_user\_interface.GUI\_App method}|hyperpage}{22}
+\indexentry{set\_theme() (anoog.automation.graphical\_user\_interface.GUI\_App method)@\spxentry{set\_theme()}\spxextra{anoog.automation.graphical\_user\_interface.GUI\_App method}|hyperpage}{22}
+\indexentry{start\_button() (anoog.automation.graphical\_user\_interface.GUI\_App method)@\spxentry{start\_button()}\spxextra{anoog.automation.graphical\_user\_interface.GUI\_App method}|hyperpage}{23}
+\indexentry{stop\_time() (anoog.automation.graphical\_user\_interface.GUI\_App method)@\spxentry{stop\_time()}\spxextra{anoog.automation.graphical\_user\_interface.GUI\_App method}|hyperpage}{23}
+\indexentry{Menu (class in anoog.automation.graphical\_user\_interface)@\spxentry{Menu}\spxextra{class in anoog.automation.graphical\_user\_interface}|hyperpage}{23}
+\indexentry{add\_padding() (anoog.automation.graphical\_user\_interface.Menu method)@\spxentry{add\_padding()}\spxextra{anoog.automation.graphical\_user\_interface.Menu method}|hyperpage}{23}
+\indexentry{create\_widgets() (anoog.automation.graphical\_user\_interface.Menu method)@\spxentry{create\_widgets()}\spxextra{anoog.automation.graphical\_user\_interface.Menu method}|hyperpage}{23}
+\indexentry{event\_button\_credits() (anoog.automation.graphical\_user\_interface.Menu method)@\spxentry{event\_button\_credits()}\spxextra{anoog.automation.graphical\_user\_interface.Menu method}|hyperpage}{23}
+\indexentry{event\_button\_info() (anoog.automation.graphical\_user\_interface.Menu method)@\spxentry{event\_button\_info()}\spxextra{anoog.automation.graphical\_user\_interface.Menu method}|hyperpage}{23}
+\indexentry{event\_button\_start() (anoog.automation.graphical\_user\_interface.Menu method)@\spxentry{event\_button\_start()}\spxextra{anoog.automation.graphical\_user\_interface.Menu method}|hyperpage}{23}
+\indexentry{event\_resize\_label() (anoog.automation.graphical\_user\_interface.Menu method)@\spxentry{event\_resize\_label()}\spxextra{anoog.automation.graphical\_user\_interface.Menu method}|hyperpage}{23}
+\indexentry{hide() (anoog.automation.graphical\_user\_interface.Menu method)@\spxentry{hide()}\spxextra{anoog.automation.graphical\_user\_interface.Menu method}|hyperpage}{23}
+\indexentry{show() (anoog.automation.graphical\_user\_interface.Menu method)@\spxentry{show()}\spxextra{anoog.automation.graphical\_user\_interface.Menu method}|hyperpage}{23}
+\indexentry{weighting() (anoog.automation.graphical\_user\_interface.Menu method)@\spxentry{weighting()}\spxextra{anoog.automation.graphical\_user\_interface.Menu method}|hyperpage}{23}
+\indexentry{Predict\_Window (class in anoog.automation.graphical\_user\_interface)@\spxentry{Predict\_Window}\spxextra{class in anoog.automation.graphical\_user\_interface}|hyperpage}{24}
+\indexentry{add\_padding() (anoog.automation.graphical\_user\_interface.Predict\_Window method)@\spxentry{add\_padding()}\spxextra{anoog.automation.graphical\_user\_interface.Predict\_Window method}|hyperpage}{24}
+\indexentry{change\_run\_time() (anoog.automation.graphical\_user\_interface.Predict\_Window method)@\spxentry{change\_run\_time()}\spxextra{anoog.automation.graphical\_user\_interface.Predict\_Window method}|hyperpage}{24}
+\indexentry{create\_widgets() (anoog.automation.graphical\_user\_interface.Predict\_Window method)@\spxentry{create\_widgets()}\spxextra{anoog.automation.graphical\_user\_interface.Predict\_Window method}|hyperpage}{24}
+\indexentry{delete\_last\_btn\_change() (anoog.automation.graphical\_user\_interface.Predict\_Window method)@\spxentry{delete\_last\_btn\_change()}\spxextra{anoog.automation.graphical\_user\_interface.Predict\_Window method}|hyperpage}{24}
+\indexentry{draw\_result() (anoog.automation.graphical\_user\_interface.Predict\_Window method)@\spxentry{draw\_result()}\spxextra{anoog.automation.graphical\_user\_interface.Predict\_Window method}|hyperpage}{24}
+\indexentry{drill\_ends() (anoog.automation.graphical\_user\_interface.Predict\_Window method)@\spxentry{drill\_ends()}\spxextra{anoog.automation.graphical\_user\_interface.Predict\_Window method}|hyperpage}{24}
+\indexentry{drill\_starts() (anoog.automation.graphical\_user\_interface.Predict\_Window method)@\spxentry{drill\_starts()}\spxextra{anoog.automation.graphical\_user\_interface.Predict\_Window method}|hyperpage}{24}
+\indexentry{event\_back() (anoog.automation.graphical\_user\_interface.Predict\_Window method)@\spxentry{event\_back()}\spxextra{anoog.automation.graphical\_user\_interface.Predict\_Window method}|hyperpage}{24}
+\indexentry{event\_delete\_last\_button() (anoog.automation.graphical\_user\_interface.Predict\_Window method)@\spxentry{event\_delete\_last\_button()}\spxextra{anoog.automation.graphical\_user\_interface.Predict\_Window method}|hyperpage}{24}
+\indexentry{event\_predict\_button() (anoog.automation.graphical\_user\_interface.Predict\_Window method)@\spxentry{event\_predict\_button()}\spxextra{anoog.automation.graphical\_user\_interface.Predict\_Window method}|hyperpage}{24}
+\indexentry{event\_reset\_button() (anoog.automation.graphical\_user\_interface.Predict\_Window method)@\spxentry{event\_reset\_button()}\spxextra{anoog.automation.graphical\_user\_interface.Predict\_Window method}|hyperpage}{25}
+\indexentry{event\_start\_button() (anoog.automation.graphical\_user\_interface.Predict\_Window method)@\spxentry{event\_start\_button()}\spxextra{anoog.automation.graphical\_user\_interface.Predict\_Window method}|hyperpage}{25}
+\indexentry{hide() (anoog.automation.graphical\_user\_interface.Predict\_Window method)@\spxentry{hide()}\spxextra{anoog.automation.graphical\_user\_interface.Predict\_Window method}|hyperpage}{25}
+\indexentry{reset() (anoog.automation.graphical\_user\_interface.Predict\_Window method)@\spxentry{reset()}\spxextra{anoog.automation.graphical\_user\_interface.Predict\_Window method}|hyperpage}{25}
+\indexentry{set\_amount() (anoog.automation.graphical\_user\_interface.Predict\_Window method)@\spxentry{set\_amount()}\spxextra{anoog.automation.graphical\_user\_interface.Predict\_Window method}|hyperpage}{25}
+\indexentry{show() (anoog.automation.graphical\_user\_interface.Predict\_Window method)@\spxentry{show()}\spxextra{anoog.automation.graphical\_user\_interface.Predict\_Window method}|hyperpage}{25}
+\indexentry{show\_result() (anoog.automation.graphical\_user\_interface.Predict\_Window method)@\spxentry{show\_result()}\spxextra{anoog.automation.graphical\_user\_interface.Predict\_Window method}|hyperpage}{25}
+\indexentry{start\_button\_change() (anoog.automation.graphical\_user\_interface.Predict\_Window method)@\spxentry{start\_button\_change()}\spxextra{anoog.automation.graphical\_user\_interface.Predict\_Window method}|hyperpage}{25}
+\indexentry{stop\_time() (anoog.automation.graphical\_user\_interface.Predict\_Window method)@\spxentry{stop\_time()}\spxextra{anoog.automation.graphical\_user\_interface.Predict\_Window method}|hyperpage}{25}
+\indexentry{weighting() (anoog.automation.graphical\_user\_interface.Predict\_Window method)@\spxentry{weighting()}\spxextra{anoog.automation.graphical\_user\_interface.Predict\_Window method}|hyperpage}{25}
+\indexentry{Screen (class in anoog.automation.graphical\_user\_interface)@\spxentry{Screen}\spxextra{class in anoog.automation.graphical\_user\_interface}|hyperpage}{25}
+\indexentry{resize\_bg() (anoog.automation.graphical\_user\_interface.Screen method)@\spxentry{resize\_bg()}\spxextra{anoog.automation.graphical\_user\_interface.Screen method}|hyperpage}{26}
+\indexentry{set\_bg() (anoog.automation.graphical\_user\_interface.Screen method)@\spxentry{set\_bg()}\spxextra{anoog.automation.graphical\_user\_interface.Screen method}|hyperpage}{26}
+\indexentry{Train\_Window (class in anoog.automation.graphical\_user\_interface)@\spxentry{Train\_Window}\spxextra{class in anoog.automation.graphical\_user\_interface}|hyperpage}{26}
+\indexentry{add\_padding() (anoog.automation.graphical\_user\_interface.Train\_Window method)@\spxentry{add\_padding()}\spxextra{anoog.automation.graphical\_user\_interface.Train\_Window method}|hyperpage}{26}
+\indexentry{change\_init\_state() (anoog.automation.graphical\_user\_interface.Train\_Window method)@\spxentry{change\_init\_state()}\spxextra{anoog.automation.graphical\_user\_interface.Train\_Window method}|hyperpage}{26}
+\indexentry{change\_run\_time() (anoog.automation.graphical\_user\_interface.Train\_Window method)@\spxentry{change\_run\_time()}\spxextra{anoog.automation.graphical\_user\_interface.Train\_Window method}|hyperpage}{26}
+\indexentry{change\_train\_person() (anoog.automation.graphical\_user\_interface.Train\_Window method)@\spxentry{change\_train\_person()}\spxextra{anoog.automation.graphical\_user\_interface.Train\_Window method}|hyperpage}{26}
+\indexentry{create\_widgets() (anoog.automation.graphical\_user\_interface.Train\_Window method)@\spxentry{create\_widgets()}\spxextra{anoog.automation.graphical\_user\_interface.Train\_Window method}|hyperpage}{26}
+\indexentry{delete\_last\_btn\_change() (anoog.automation.graphical\_user\_interface.Train\_Window method)@\spxentry{delete\_last\_btn\_change()}\spxextra{anoog.automation.graphical\_user\_interface.Train\_Window method}|hyperpage}{26}
+\indexentry{drill\_amount\_change() (anoog.automation.graphical\_user\_interface.Train\_Window method)@\spxentry{drill\_amount\_change()}\spxextra{anoog.automation.graphical\_user\_interface.Train\_Window method}|hyperpage}{26}
+\indexentry{drill\_ends() (anoog.automation.graphical\_user\_interface.Train\_Window method)@\spxentry{drill\_ends()}\spxextra{anoog.automation.graphical\_user\_interface.Train\_Window method}|hyperpage}{27}
+\indexentry{drill\_starts() (anoog.automation.graphical\_user\_interface.Train\_Window method)@\spxentry{drill\_starts()}\spxextra{anoog.automation.graphical\_user\_interface.Train\_Window method}|hyperpage}{27}
+\indexentry{event\_back() (anoog.automation.graphical\_user\_interface.Train\_Window method)@\spxentry{event\_back()}\spxextra{anoog.automation.graphical\_user\_interface.Train\_Window method}|hyperpage}{27}
+\indexentry{event\_confirm\_add() (anoog.automation.graphical\_user\_interface.Train\_Window method)@\spxentry{event\_confirm\_add()}\spxextra{anoog.automation.graphical\_user\_interface.Train\_Window method}|hyperpage}{27}
+\indexentry{event\_confirm\_init\_change() (anoog.automation.graphical\_user\_interface.Train\_Window method)@\spxentry{event\_confirm\_init\_change()}\spxextra{anoog.automation.graphical\_user\_interface.Train\_Window method}|hyperpage}{27}
+\indexentry{event\_delete\_last\_button() (anoog.automation.graphical\_user\_interface.Train\_Window method)@\spxentry{event\_delete\_last\_button()}\spxextra{anoog.automation.graphical\_user\_interface.Train\_Window method}|hyperpage}{27}
+\indexentry{event\_predict\_button() (anoog.automation.graphical\_user\_interface.Train\_Window method)@\spxentry{event\_predict\_button()}\spxextra{anoog.automation.graphical\_user\_interface.Train\_Window method}|hyperpage}{27}
+\indexentry{event\_reset\_button() (anoog.automation.graphical\_user\_interface.Train\_Window method)@\spxentry{event\_reset\_button()}\spxextra{anoog.automation.graphical\_user\_interface.Train\_Window method}|hyperpage}{27}
+\indexentry{event\_start\_button() (anoog.automation.graphical\_user\_interface.Train\_Window method)@\spxentry{event\_start\_button()}\spxextra{anoog.automation.graphical\_user\_interface.Train\_Window method}|hyperpage}{27}
+\indexentry{hide() (anoog.automation.graphical\_user\_interface.Train\_Window method)@\spxentry{hide()}\spxextra{anoog.automation.graphical\_user\_interface.Train\_Window method}|hyperpage}{27}
+\indexentry{init\_changes() (anoog.automation.graphical\_user\_interface.Train\_Window method)@\spxentry{init\_changes()}\spxextra{anoog.automation.graphical\_user\_interface.Train\_Window method}|hyperpage}{27}
+\indexentry{show() (anoog.automation.graphical\_user\_interface.Train\_Window method)@\spxentry{show()}\spxextra{anoog.automation.graphical\_user\_interface.Train\_Window method}|hyperpage}{27}
+\indexentry{start\_button\_change() (anoog.automation.graphical\_user\_interface.Train\_Window method)@\spxentry{start\_button\_change()}\spxextra{anoog.automation.graphical\_user\_interface.Train\_Window method}|hyperpage}{27}
+\indexentry{stop\_time() (anoog.automation.graphical\_user\_interface.Train\_Window method)@\spxentry{stop\_time()}\spxextra{anoog.automation.graphical\_user\_interface.Train\_Window method}|hyperpage}{28}
+\indexentry{weighting() (anoog.automation.graphical\_user\_interface.Train\_Window method)@\spxentry{weighting()}\spxextra{anoog.automation.graphical\_user\_interface.Train\_Window method}|hyperpage}{28}
+\indexentry{run() (in module anoog.automation.graphical\_user\_interface)@\spxentry{run()}\spxextra{in module anoog.automation.graphical\_user\_interface}|hyperpage}{28}
+\indexentry{module@\spxentry{module}!anoog.automation.py\_exe\_interface@\spxentry{anoog.automation.py\_exe\_interface}|hyperpage}{28}
+\indexentry{anoog.automation.py\_exe\_interface@\spxentry{anoog.automation.py\_exe\_interface}!module@\spxentry{module}|hyperpage}{28}
+\indexentry{Drillcapture\_Interface (class in anoog.automation.py\_exe\_interface)@\spxentry{Drillcapture\_Interface}\spxextra{class in anoog.automation.py\_exe\_interface}|hyperpage}{28}
+\indexentry{run() (anoog.automation.py\_exe\_interface.Drillcapture\_Interface method)@\spxentry{run()}\spxextra{anoog.automation.py\_exe\_interface.Drillcapture\_Interface method}|hyperpage}{28}
+\indexentry{start\_program() (anoog.automation.py\_exe\_interface.Drillcapture\_Interface method)@\spxentry{start\_program()}\spxextra{anoog.automation.py\_exe\_interface.Drillcapture\_Interface method}|hyperpage}{29}
+\indexentry{Drilldriver\_Interface (class in anoog.automation.py\_exe\_interface)@\spxentry{Drilldriver\_Interface}\spxextra{class in anoog.automation.py\_exe\_interface}|hyperpage}{29}
+\indexentry{start\_program() (anoog.automation.py\_exe\_interface.Drilldriver\_Interface method)@\spxentry{start\_program()}\spxextra{anoog.automation.py\_exe\_interface.Drilldriver\_Interface method}|hyperpage}{29}
+\indexentry{Process\_Interface (class in anoog.automation.py\_exe\_interface)@\spxentry{Process\_Interface}\spxextra{class in anoog.automation.py\_exe\_interface}|hyperpage}{29}
+\indexentry{check\_input() (anoog.automation.py\_exe\_interface.Process\_Interface method)@\spxentry{check\_input()}\spxextra{anoog.automation.py\_exe\_interface.Process\_Interface method}|hyperpage}{29}
+\indexentry{event\_listener() (anoog.automation.py\_exe\_interface.Process\_Interface method)@\spxentry{event\_listener()}\spxextra{anoog.automation.py\_exe\_interface.Process\_Interface method}|hyperpage}{29}
+\indexentry{is\_alive() (anoog.automation.py\_exe\_interface.Process\_Interface method)@\spxentry{is\_alive()}\spxextra{anoog.automation.py\_exe\_interface.Process\_Interface method}|hyperpage}{29}
+\indexentry{process\_status() (anoog.automation.py\_exe\_interface.Process\_Interface method)@\spxentry{process\_status()}\spxextra{anoog.automation.py\_exe\_interface.Process\_Interface method}|hyperpage}{29}
+\indexentry{read() (anoog.automation.py\_exe\_interface.Process\_Interface method)@\spxentry{read()}\spxextra{anoog.automation.py\_exe\_interface.Process\_Interface method}|hyperpage}{30}
+\indexentry{read\_err() (anoog.automation.py\_exe\_interface.Process\_Interface method)@\spxentry{read\_err()}\spxextra{anoog.automation.py\_exe\_interface.Process\_Interface method}|hyperpage}{30}
+\indexentry{run() (anoog.automation.py\_exe\_interface.Process\_Interface method)@\spxentry{run()}\spxextra{anoog.automation.py\_exe\_interface.Process\_Interface method}|hyperpage}{30}
+\indexentry{save\_in\_file() (anoog.automation.py\_exe\_interface.Process\_Interface method)@\spxentry{save\_in\_file()}\spxextra{anoog.automation.py\_exe\_interface.Process\_Interface method}|hyperpage}{30}
+\indexentry{start\_program() (anoog.automation.py\_exe\_interface.Process\_Interface class method)@\spxentry{start\_program()}\spxextra{anoog.automation.py\_exe\_interface.Process\_Interface class method}|hyperpage}{30}
+\indexentry{stop() (anoog.automation.py\_exe\_interface.Process\_Interface method)@\spxentry{stop()}\spxextra{anoog.automation.py\_exe\_interface.Process\_Interface method}|hyperpage}{30}
+\indexentry{write() (anoog.automation.py\_exe\_interface.Process\_Interface method)@\spxentry{write()}\spxextra{anoog.automation.py\_exe\_interface.Process\_Interface method}|hyperpage}{30}
+\indexentry{op (class in anoog.automation.py\_exe\_interface)@\spxentry{op}\spxextra{class in anoog.automation.py\_exe\_interface}|hyperpage}{30}
+\indexentry{LINUX (anoog.automation.py\_exe\_interface.op attribute)@\spxentry{LINUX}\spxextra{anoog.automation.py\_exe\_interface.op attribute}|hyperpage}{30}
+\indexentry{WINDOWS (anoog.automation.py\_exe\_interface.op attribute)@\spxentry{WINDOWS}\spxextra{anoog.automation.py\_exe\_interface.op attribute}|hyperpage}{30}
+\indexentry{module@\spxentry{module}!anoog.io.csv\_io@\spxentry{anoog.io.csv\_io}|hyperpage}{31}
+\indexentry{anoog.io.csv\_io@\spxentry{anoog.io.csv\_io}!module@\spxentry{module}|hyperpage}{31}
+\indexentry{loadData\_mode (class in anoog.io.csv\_io)@\spxentry{loadData\_mode}\spxextra{class in anoog.io.csv\_io}|hyperpage}{31}
+\indexentry{DASK (anoog.io.csv\_io.loadData\_mode attribute)@\spxentry{DASK}\spxextra{anoog.io.csv\_io.loadData\_mode attribute}|hyperpage}{31}
+\indexentry{NONE (anoog.io.csv\_io.loadData\_mode attribute)@\spxentry{NONE}\spxextra{anoog.io.csv\_io.loadData\_mode attribute}|hyperpage}{31}
+\indexentry{load\_single\_data() (in module anoog.io.csv\_io)@\spxentry{load\_single\_data()}\spxextra{in module anoog.io.csv\_io}|hyperpage}{31}
+\indexentry{load\_tsfresh() (in module anoog.io.csv\_io)@\spxentry{load\_tsfresh()}\spxextra{in module anoog.io.csv\_io}|hyperpage}{31}
+\indexentry{read\_csv() (in module anoog.io.csv\_io)@\spxentry{read\_csv()}\spxextra{in module anoog.io.csv\_io}|hyperpage}{31}
+\indexentry{read\_csv\_dataset() (in module anoog.io.csv\_io)@\spxentry{read\_csv\_dataset()}\spxextra{in module anoog.io.csv\_io}|hyperpage}{32}
+\indexentry{read\_metadata() (in module anoog.io.csv\_io)@\spxentry{read\_metadata()}\spxextra{in module anoog.io.csv\_io}|hyperpage}{32}
+\indexentry{module@\spxentry{module}!anoog.io.data\_io@\spxentry{anoog.io.data\_io}|hyperpage}{32}
+\indexentry{anoog.io.data\_io@\spxentry{anoog.io.data\_io}!module@\spxentry{module}|hyperpage}{32}
+\indexentry{X\_y\_split() (in module anoog.io.data\_io)@\spxentry{X\_y\_split()}\spxextra{in module anoog.io.data\_io}|hyperpage}{32}
+\indexentry{advanced\_feature\_extraction() (in module anoog.io.data\_io)@\spxentry{advanced\_feature\_extraction()}\spxextra{in module anoog.io.data\_io}|hyperpage}{32}
+\indexentry{extract\_feature() (in module anoog.io.data\_io)@\spxentry{extract\_feature()}\spxextra{in module anoog.io.data\_io}|hyperpage}{32}
+\indexentry{extraction\_mode (class in anoog.io.data\_io)@\spxentry{extraction\_mode}\spxextra{class in anoog.io.data\_io}|hyperpage}{33}
+\indexentry{MANUEL (anoog.io.data\_io.extraction\_mode attribute)@\spxentry{MANUEL}\spxextra{anoog.io.data\_io.extraction\_mode attribute}|hyperpage}{33}
+\indexentry{NONE (anoog.io.data\_io.extraction\_mode attribute)@\spxentry{NONE}\spxextra{anoog.io.data\_io.extraction\_mode attribute}|hyperpage}{33}
+\indexentry{TSFRESH (anoog.io.data\_io.extraction\_mode attribute)@\spxentry{TSFRESH}\spxextra{anoog.io.data\_io.extraction\_mode attribute}|hyperpage}{33}
+\indexentry{TSFRESH\_WITH\_PARAMS (anoog.io.data\_io.extraction\_mode attribute)@\spxentry{TSFRESH\_WITH\_PARAMS}\spxextra{anoog.io.data\_io.extraction\_mode attribute}|hyperpage}{33}
+\indexentry{feature\_extraction() (in module anoog.io.data\_io)@\spxentry{feature\_extraction()}\spxextra{in module anoog.io.data\_io}|hyperpage}{33}
+\indexentry{feature\_selection() (in module anoog.io.data\_io)@\spxentry{feature\_selection()}\spxextra{in module anoog.io.data\_io}|hyperpage}{33}
+\indexentry{load\_data() (in module anoog.io.data\_io)@\spxentry{load\_data()}\spxextra{in module anoog.io.data\_io}|hyperpage}{33}
+\indexentry{load\_features() (in module anoog.io.data\_io)@\spxentry{load\_features()}\spxextra{in module anoog.io.data\_io}|hyperpage}{34}
+\indexentry{load\_single\_data() (in module anoog.io.data\_io)@\spxentry{load\_single\_data()}\spxextra{in module anoog.io.data\_io}|hyperpage}{34}
+\indexentry{model\_based\_feature\_selection() (in module anoog.io.data\_io)@\spxentry{model\_based\_feature\_selection()}\spxextra{in module anoog.io.data\_io}|hyperpage}{35}
+\indexentry{remove\_audio\_features() (in module anoog.io.data\_io)@\spxentry{remove\_audio\_features()}\spxextra{in module anoog.io.data\_io}|hyperpage}{35}
+\indexentry{rename() (in module anoog.io.data\_io)@\spxentry{rename()}\spxextra{in module anoog.io.data\_io}|hyperpage}{35}
+\indexentry{resampling() (in module anoog.io.data\_io)@\spxentry{resampling()}\spxextra{in module anoog.io.data\_io}|hyperpage}{35}
+\indexentry{save\_data() (in module anoog.io.data\_io)@\spxentry{save\_data()}\spxextra{in module anoog.io.data\_io}|hyperpage}{35}
+\indexentry{save\_features() (in module anoog.io.data\_io)@\spxentry{save\_features()}\spxextra{in module anoog.io.data\_io}|hyperpage}{36}
+\indexentry{selection\_mode (class in anoog.io.data\_io)@\spxentry{selection\_mode}\spxextra{class in anoog.io.data\_io}|hyperpage}{36}
+\indexentry{MODEL\_BASED (anoog.io.data\_io.selection\_mode attribute)@\spxentry{MODEL\_BASED}\spxextra{anoog.io.data\_io.selection\_mode attribute}|hyperpage}{36}
+\indexentry{NONE (anoog.io.data\_io.selection\_mode attribute)@\spxentry{NONE}\spxextra{anoog.io.data\_io.selection\_mode attribute}|hyperpage}{36}
+\indexentry{SELECTKBEST (anoog.io.data\_io.selection\_mode attribute)@\spxentry{SELECTKBEST}\spxextra{anoog.io.data\_io.selection\_mode attribute}|hyperpage}{36}
+\indexentry{TSFRESH (anoog.io.data\_io.selection\_mode attribute)@\spxentry{TSFRESH}\spxextra{anoog.io.data\_io.selection\_mode attribute}|hyperpage}{36}
+\indexentry{VARIANCE (anoog.io.data\_io.selection\_mode attribute)@\spxentry{VARIANCE}\spxextra{anoog.io.data\_io.selection\_mode attribute}|hyperpage}{36}
+\indexentry{split\_data() (in module anoog.io.data\_io)@\spxentry{split\_data()}\spxextra{in module anoog.io.data\_io}|hyperpage}{36}
+\indexentry{y\_labeling() (in module anoog.io.data\_io)@\spxentry{y\_labeling()}\spxextra{in module anoog.io.data\_io}|hyperpage}{36}
+\indexentry{module@\spxentry{module}!anoog.model.model@\spxentry{anoog.model.model}|hyperpage}{37}
+\indexentry{anoog.model.model@\spxentry{anoog.model.model}!module@\spxentry{module}|hyperpage}{37}
+\indexentry{MODELS (class in anoog.model.model)@\spxentry{MODELS}\spxextra{class in anoog.model.model}|hyperpage}{37}
+\indexentry{ADA\_BOOST (anoog.model.model.MODELS attribute)@\spxentry{ADA\_BOOST}\spxextra{anoog.model.model.MODELS attribute}|hyperpage}{37}
+\indexentry{KNN (anoog.model.model.MODELS attribute)@\spxentry{KNN}\spxextra{anoog.model.model.MODELS attribute}|hyperpage}{37}
+\indexentry{LOGISTIC\_REGRESSION (anoog.model.model.MODELS attribute)@\spxentry{LOGISTIC\_REGRESSION}\spxextra{anoog.model.model.MODELS attribute}|hyperpage}{37}
+\indexentry{NAIVE\_BAYES (anoog.model.model.MODELS attribute)@\spxentry{NAIVE\_BAYES}\spxextra{anoog.model.model.MODELS attribute}|hyperpage}{37}
+\indexentry{RANDOM\_FOREST (anoog.model.model.MODELS attribute)@\spxentry{RANDOM\_FOREST}\spxextra{anoog.model.model.MODELS attribute}|hyperpage}{37}
+\indexentry{SVM (anoog.model.model.MODELS attribute)@\spxentry{SVM}\spxextra{anoog.model.model.MODELS attribute}|hyperpage}{37}
+\indexentry{VOTING\_CLASSIFIER (anoog.model.model.MODELS attribute)@\spxentry{VOTING\_CLASSIFIER}\spxextra{anoog.model.model.MODELS attribute}|hyperpage}{37}
+\indexentry{evaluate\_model() (in module anoog.model.model)@\spxentry{evaluate\_model()}\spxextra{in module anoog.model.model}|hyperpage}{37}
+\indexentry{evaluate\_model\_with\_cross\_validation() (in module anoog.model.model)@\spxentry{evaluate\_model\_with\_cross\_validation()}\spxextra{in module anoog.model.model}|hyperpage}{37}
+\indexentry{get\_most\_important\_features() (in module anoog.model.model)@\spxentry{get\_most\_important\_features()}\spxextra{in module anoog.model.model}|hyperpage}{38}
+\indexentry{get\_most\_important\_features\_as\_list() (in module anoog.model.model)@\spxentry{get\_most\_important\_features\_as\_list()}\spxextra{in module anoog.model.model}|hyperpage}{38}
+\indexentry{predict() (in module anoog.model.model)@\spxentry{predict()}\spxextra{in module anoog.model.model}|hyperpage}{38}
+\indexentry{predict\_proba() (in module anoog.model.model)@\spxentry{predict\_proba()}\spxextra{in module anoog.model.model}|hyperpage}{38}
+\indexentry{train\_adaboost() (in module anoog.model.model)@\spxentry{train\_adaboost()}\spxextra{in module anoog.model.model}|hyperpage}{39}
+\indexentry{train\_knn() (in module anoog.model.model)@\spxentry{train\_knn()}\spxextra{in module anoog.model.model}|hyperpage}{39}
+\indexentry{train\_logistic\_regression() (in module anoog.model.model)@\spxentry{train\_logistic\_regression()}\spxextra{in module anoog.model.model}|hyperpage}{39}
+\indexentry{train\_naive\_bayes() (in module anoog.model.model)@\spxentry{train\_naive\_bayes()}\spxextra{in module anoog.model.model}|hyperpage}{40}
+\indexentry{train\_random\_forest() (in module anoog.model.model)@\spxentry{train\_random\_forest()}\spxextra{in module anoog.model.model}|hyperpage}{40}
+\indexentry{train\_svc() (in module anoog.model.model)@\spxentry{train\_svc()}\spxextra{in module anoog.model.model}|hyperpage}{40}
+\indexentry{train\_voting\_classifier() (in module anoog.model.model)@\spxentry{train\_voting\_classifier()}\spxextra{in module anoog.model.model}|hyperpage}{41}

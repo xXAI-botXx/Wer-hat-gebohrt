@@ -1,8 +1,6 @@
-anoog package
-=============
-
-Subpackages
------------
+anoog
+=====
+The library for distinguish drilling people.
 
 .. toctree::
    :maxdepth: 4
@@ -11,10 +9,3 @@ Subpackages
    anoog.io
    anoog.model
 
-Module contents
----------------
-
-.. automodule:: src.anoog
-   :members:
-   :undoc-members:
-   :show-inheritance:

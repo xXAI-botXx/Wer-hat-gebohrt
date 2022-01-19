@@ -1,3 +1,9 @@
+"""
+This module is used to control the logical while running the application.
+
+Author: Tobia Ippolito
+"""
+
 import sys
 import os
 import random
@@ -25,16 +31,23 @@ class Terminal(Eventsystem_Component):
 
     It runs with the run-Method and should run in a Thread.
     (Normally this is the startpoint of the program, but Tkinter has to run in the real program thread, so the GUI is the startpoint)
-    
-    Arguments:
-        - User-Interface for sending events (for example: show next drill-person)
-        - data-path as str (to know, where to save the data)
-        - drillcapture_path as str (for starting the program)
-        - drilldriver_path (for starting the program)
-        - op as Operationsystem (Enum) (for knowing the operating system)
+
+    :param user_interface: An interface to the user. For sending events (for example: show next drill-person)
+    :type user_interface: :class:`~anoog.automation.graphical_user_interface.GUI_App`
+    :param data-path: A path to the location where the data will be stored (there will be created a new folder with the current date)
+    :type data-path: str, optional
+    :param drillcapture_path: A path to the location where the Drillcapture program executable is stored.
+    :type drillcapture_path: str, optional
+    :param drilldriver_path: A path to the location where the Drilldriver program executable is stored.
+    :type drilldriver_path: str, optional
+    :param op: Defines on which operating system the program should run.
+    :type op: :class:`~anoog.automation.py_exe_interface.op`, optional
     """
     def __init__(self, user_interface, data_path="data/testdata", drillcapture_path="../BACKUP/drill-soft.exe", 
                                 drilldriver_path="../BACKUP/drill-soft.exe", op=op.WINDOWS):
+        """
+        Constructor method
+        """
         Eventsystem_Component.__init__(self)
         self.data_path = data_path
         self.drilldriver_path = drilldriver_path
@@ -85,9 +98,6 @@ class Terminal(Eventsystem_Component):
 
         Then check it event-queue for new events and process it, if there is one.
         There is a short waiting buffer.
-
-        --------
-        Returns None
         """
         self.clean_output()
         while self.should_running:
@@ -98,9 +108,6 @@ class Terminal(Eventsystem_Component):
         """
         Sets all variables with train-context to the init values.
         Not includes the predict-data (for purpose).
-
-        --------
-        Returns None
         """
         if self.drillcapture != None:
             self.drillcapture.add_event('exit')
@@ -127,9 +134,6 @@ class Terminal(Eventsystem_Component):
         """
         Sets all variables with predict-context to the init values.
         Not includes the train-data (for purpose).
-
-        --------
-        Returns None
         """
         self.model.remove_predict_dataset()
         self.predict_amount = 0
@@ -138,9 +142,6 @@ class Terminal(Eventsystem_Component):
     def from_predict_to_train(self):
         """
         Sets the state, if user goes from predict-screen back to train-screen
-
-        --------
-        Returns None
         """
         self.state = process_state.TRAIN_END
 
@@ -149,9 +150,6 @@ class Terminal(Eventsystem_Component):
         Starts the Drilldriver-Program.
 
         Should be started one time by the start of the live-application.
-
-        --------
-        Returns None
         """
         if self.drilldriver != None:
             raise ValueError("Drilldriver startet twice. Look at controller 123")
@@ -163,9 +161,6 @@ class Terminal(Eventsystem_Component):
     def stop_drill_driver(self):
         """
         Stops the Drilldriver-Program by sending a exit-event.
-
-        --------
-        Returns None
         """
         if self.drilldriver != None:
             self.drilldriver.add_event('exit')
@@ -178,18 +173,10 @@ class Terminal(Eventsystem_Component):
         The yaml-Files contains basic information about the person who drills. 
         This will be  partly used as label, for the training of the supervised classification models.  
         
-        Arguments:
-            - 2 Dictionaries which incudes informations about the persons (str:str)
-                -> Following entries are needed: 
-                        - 'material' 
-                        - 'boreholeSize'
-                        - 'gear'
-                        - 'batteryLevel'
-                        - 'drillType'
-                        - 'operator'
-                        - 'amount'
-        --------
-        Returns None
+        :param person1: Includes informations about the first person. Have to store following keys: 'material', 'boreholeSize', 'gear', 'batteryLevel', 'drillType', 'operator', 'amount'
+        :type person1: dict
+        :param person2: Includes informations about the second person. Have to store following keys: 'material', 'boreholeSize', 'gear', 'batteryLevel', 'drillType', 'operator', 'amount'
+        :type person2: dict
         """
         now = datetime.now()
         date_str = f"{now.year}-{now.month}-{now.day}"
@@ -230,18 +217,10 @@ class Terminal(Eventsystem_Component):
         """
         Creates the Directories and yaml-Files for UNKNOWN with dummy-informations.
         
-        Arguments:
-            - 2 Dictionaries which incudes informations about the persons (str:str)
-                -> Following entries are needed: 
-                        - 'material' 
-                        - 'boreholeSize'
-                        - 'gear'
-                        - 'batteryLevel'
-                        - 'drillType'
-                        - 'operator'
-                        - 'amount'
-        --------
-        Returns None
+        :param person1: Includes informations about the first person. Have to store following keys: 'material', 'boreholeSize', 'gear', 'batteryLevel', 'drillType', 'operator', 'amount'
+        :type person1: dict
+        :param person2: Includes informations about the second person. Have to store following keys: 'material', 'boreholeSize', 'gear', 'batteryLevel', 'drillType', 'operator', 'amount'
+        :type person2: dict
         """
         now = datetime.now()
         date_str = f"{now.year}-{now.month}-{now.day}"
@@ -265,9 +244,6 @@ class Terminal(Eventsystem_Component):
         """
         Removes last train-data-entry in DataFrame and the real data (folder).
         Moreover the Amount is resetting by 1.
-
-        --------
-        Returns None
         """
         if self.last_drill_person != None and (self.state == process_state.BEFORE_TRAIN or self.state == process_state.TRAIN_END) and self.is_delete_last_possible:
             # delete Folder
@@ -309,9 +285,6 @@ class Terminal(Eventsystem_Component):
         """
         Removes last predict-data-entry in DataFrame and the real data (folder).
         Moreover the Predict-Amount is decreased by 1.
-
-        --------
-        Returns None
         """
         if self.state == process_state.PREDICT and self.can_delete_last_predict_data:
             # update ai-model / dataframe
@@ -328,19 +301,10 @@ class Terminal(Eventsystem_Component):
         Prepares the Application for a new train-drill.
         Choose a person for drilling. If both have amount left, pseudo-random will choose a person.
 
-        Arguments:
-            - 2 Dictionaries which incudes informations about the persons (str:str)
-                -> Following entries are needed: 
-                        - 'material' 
-                        - 'boreholeSize'
-                        - 'gear'
-                        - 'batteryLevel'
-                        - 'drillType'
-                        - 'operator'
-                        - 'amount'
-
-        --------
-        Returns None
+        :param person1: Includes informations about the first person. Have to store following keys: 'material', 'boreholeSize', 'gear', 'batteryLevel', 'drillType', 'operator', 'amount'
+        :type person1: dict
+        :param person2: Includes informations about the second person. Have to store following keys: 'material', 'boreholeSize', 'gear', 'batteryLevel', 'drillType', 'operator', 'amount'
+        :type person2: dict
         """
         if self.state == process_state.NOT_STARTED or not self.has_at_least_one_run:
             if self.drillcapture != None:
@@ -374,9 +338,6 @@ class Terminal(Eventsystem_Component):
     def start(self):
         """
         Starts a drill (train or predict) with Drillcapture in single-mode.
-
-        --------
-        Return None
         """
         if self.state == process_state.BEFORE_TRAIN:
             self.has_at_least_one_run = True
@@ -399,9 +360,6 @@ class Terminal(Eventsystem_Component):
         """
         Stops a drill (train or predict). Will check by train, if there is amount left and if not, it activates the predict area.
         Prepares next drill, if there is amount left.
-
-        --------
-        Returns None
         """
         if self.state == process_state.TRAIN:
             self.drillcapture.add_event('input', ('from_stop',))
@@ -446,8 +404,10 @@ class Terminal(Eventsystem_Component):
         """
         Increased Amount by 1. Prepares for new train-drill, if amounts over 0.
 
-        --------
-        Returns None
+        :param amount_person_1: Includes the amount of drills left for the first person
+        :type amount_person_1: str
+        :param amount_person_2: Includes the amount of drills left for the first person
+        :type amount_person_2: str
         """
         # transfer to int
         try:
@@ -471,18 +431,12 @@ class Terminal(Eventsystem_Component):
     def load_predict(self):
         """
         Change the internal state to predict. Important for some methods.
-
-        --------
-        Returns None
         """
         self.state = process_state.PREDICT
 
     def exit(self):
         """
         Stops the drilldriver and the drillcapture. Stable against None.
-
-        --------
-        Returns None
         """
         if self.drillcapture != None:
             self.drillcapture.add_event('exit')
@@ -500,12 +454,12 @@ class Terminal(Eventsystem_Component):
         After that, the model will predict the predict-data (every entry).
         Get Soft Voting and update GUI with Results.
 
-        Arguments:
-            - model as str -> 'RandomForest', 'SVC', 'Naive Bayes', 'KNN', 'Ada Boost', 'Logistic Regression'
-            - mode as str -> 'auto' or not (decided if predefined Hyperparameters or with GridSearchCV)
-            - normalize as str -> 'normalize' or not (decided if the data should be normalize)
-        -------
-        Returns None
+        :param model: Sets the model which will be used for training and prediction. Following Values exists: 'RandomForest', 'SVC', 'Naive Bayes', 'KNN', 'Ada Boost', 'Logistic Regression'
+        :type model: str
+        :param mode: Defines whether uses predefined hyperparameter for the model or use GridSearch ('auto' or not).
+        :type mode: str
+        :param normalize: Decided if the data should be normalized or not ('normalize' or not).
+        :type normalize: str
         """
         # train
         if normalize == 'normalize':

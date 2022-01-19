@@ -1,21 +1,13 @@
-anoog.model package
-===================
+anoog.model
+===========
 
-Submodules
-----------
+This Package has content about Machine Learning Algorithms.
 
-anoog.model.model module
-------------------------
+anoog.model.model
+-----------------
 
 .. automodule:: anoog.model.model
    :members:
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
-
-.. automodule:: anoog.model
-   :members:
-   :undoc-members:
-   :show-inheritance:

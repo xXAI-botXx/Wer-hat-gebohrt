@@ -1,3 +1,11 @@
+"""
+This module contains a Tkinter-Widget for gradient-color.
+
+Its runnable to test the Gradient-Color-Widget.
+
+Author: Tobia Ippolito
+"""
+
 import abc
 import random
 import threading
@@ -39,8 +47,37 @@ FAV_COLOR_MIX = (('#ff4040','#5757ff'), ('#ffb3ba', '#bae1ff'), ('#ff6f69', '#ff
 
 # Color-Chains works not very good
 class Color_Gradient_Booster(tk.Canvas):
+    """
+    Tkinter-Widget filled out with a gradient color.
+
+    The gradient-color can be static or dynamic (with a flow).
+
+    :param root: The basic widget of the gui-application.
+    :type root: tk.TK()
+    :param parent: The parent of this widget (which contains this widget).
+    :type parent: tk.Widget
+    :param mode: Defines the direction of the gradient-color. ('HORIZONTAL', 'random', 'VERTICAL')
+    :type mode: str, optional
+    :param should_change_color: Defines whether or not the color changes (dynamic).
+    :type should_change_color: bool, optional
+    :param change_time: Defines how fast the colors should be changed in dynamic mode. In seconds.
+    :type change_time: float, optional
+    :param width: The width of the widget (by most of the LayoutManager it's not relevant)
+    :type width: int, optional
+    :param height: The height of the widget (by most of the LayoutManager it's not relevant)
+    :type height: int, optional
+    :param height: Activates/Deactivates a small variation of the color-values, should ended in a shiny-glimmer-effect.
+    :type height: bool, optional
+    :param color_chain: Defines the used colors.
+    :type color_chain: list of str, optional
+    :param gradient_size_tendency: Defines the direction of the flow (dynamic). ('neg' or 'pos' or 'random')
+    :type gradient_size_tendency: str, optional
+    """
     def __init__(self, root, parent, mode='HORIZONTAL', should_change_color=False, change_time=0.1, 
                  width=None, height=None, shiny_flow_effect=False, color_chain=None, gradient_size_tendency='neg'):
+        """
+        Constructor method
+        """
         super().__init__(parent, highlightthickness=0)
         self.root = root
         self.parent = parent
@@ -82,7 +119,6 @@ class Color_Gradient_Booster(tk.Canvas):
         self.change_time = change_time
         # for changing the gradient size
         self.gradient_size = 1.0
-        #self.gradient_size_vario = 0.02
         self.gradient_size_vario = 0.0001
         self.gradient_size_vario_factor = (-0.0001, 0.0001)
         # for variate the show every time
@@ -100,25 +136,19 @@ class Color_Gradient_Booster(tk.Canvas):
         # maybe call on some later point (?)
         self.update()
 
-        #if should_change_color:
-            #self.start()
-
     def run(self):
+        """
+        Calls the update method and set itself to be called in some time (change_time defines that waiting time).
+        """
         if self.should_change_color:
-            #self.variate_color()
             self.variate_gradient_size()
             self.update()
-            #threading.Event().wait(self.change_time)
             self.root.after(int(self.change_time*1000), self.run)
 
-    # don't works with tkinter
-    #def update_in_thread(self):
-    #    self.should_change_color = True
-    #    self.color_update_thread = threading.Thread(target=self.run)
-    #    self.color_update_thread.start()
-
     def update(self):
-        #print(self.color[0][0], self.color[0][1], self.color[0][2])
+        """
+        Creates and draws the gradient color.
+        """
         # get height and width
         width = self.winfo_width()
         height = self.winfo_height()
@@ -167,20 +197,37 @@ class Color_Gradient_Booster(tk.Canvas):
         self.create_image(0, 0, anchor="nw", image=self.gradient_image)
 
     def start(self):
-        #self.update_in_thread()
+        """
+        Starts the flow-effect.
+
+        So that the gradient-color moves.
+        """
         self.should_change_color = True
         self.run()
 
     def stop(self):
+        """
+        Stops the flow-effect.
+
+        So that the gradient-color not moves anymore.
+        """
         self.should_change_color = False
 
     # variate colors
     def variate_color(self):
+        """
+        Brings a little variation of the colors.
+        """
         for i, color in enumerate(self.color):
             for j, value in enumerate(color):
                 self.color[i][j] = (value + random.randint(-2, 2))%255
 
     def variate_gradient_size(self):
+        """
+        Variates the size of the 2 colors. 
+        
+        This creates a flow-effect.
+        """
         if self.gradient_size_tendency == 'pos':
             self.gradient_size += self.gradient_size_vario
             if self.gradient_size >= 3.0:
@@ -198,6 +245,9 @@ class Color_Gradient_Booster(tk.Canvas):
 
     # desto kleiner desto unwahrscheinlicher
     def variate_gradient_size_speed(self) -> float:
+        """
+        Variate the speed of the gradient-color change time.
+        """
         min, max = self.gradient_size_vario_factor
         self.gradient_size_vario += (random.random()*(max-min))+min
         # reset, if value to low or to high
@@ -205,10 +255,21 @@ class Color_Gradient_Booster(tk.Canvas):
             self.gradient_size_vario = 0.02
 
     def calc_shiny_flow_effect(self) -> float:
+        """
+        Calculates the variation of the color-value for the shiny-effect.
+
+        :return: Number of the variation of the normal color-point.
+        :rtype: float
+        """
         min, max = self.shiny_flow
         return (random.random()*(max-min))+min
 
     def color_chain_change(self):
+        """
+        Changes the current 2 colors using the color-chain.
+
+        With that, there can be many color used, but at one time can only 2 colors be activate.
+        """
         # change only its over 2
         if len(self.color_chain) > 2:
             # update pointer
@@ -223,6 +284,14 @@ class Color_Gradient_Booster(tk.Canvas):
                 self.color[1] = self.hex2rgb(self.color_chain[self.chain_pointer])
 
     def set_random_colors(self, n_colors=2):
+        """
+        Calculates random colors.
+
+        Sets the new colors as color_chain inplace.
+
+        :param n_colors: Defines how many random colors should be calculated.
+        :type n_colors: int, optional
+        """
         hex_codes = ('f', 'e', 'd', 'c', 'b', 'a', '9', '8', '7', '6', '5', '4', '3', '2', '1', '0')
      
         colors = []
@@ -235,6 +304,11 @@ class Color_Gradient_Booster(tk.Canvas):
         self.color = [self.from_color, self.to_color]
 
     def set_fav_color(self):
+        """
+        Picks a random color-chain from a selection.
+
+        Sets the new colors as color_chain inplace.
+        """
         color = random.choice(FAV_COLOR_MIX)    #+tuple(COLOR_CHAINS.values())
         self.from_color = self.hex2rgb(self.color_chain[0])
         self.to_color = self.hex2rgb(self.color_chain[1])
@@ -242,6 +316,12 @@ class Color_Gradient_Booster(tk.Canvas):
         self.color = [self.from_color, self.to_color]
 
     def hex2rgb(self, str_hex):
+        """
+        Calculate a hex color to an rgb color.
+
+        :param str_hex: A color in hex-format with # or not at the beginning.
+        :type str_hex: str
+        """
         if str_hex.startswith("#"):
             str_hex = str_hex[1:]
         r, g, b = str_hex[0:2], str_hex[2:4], str_hex[4:6]
@@ -250,9 +330,17 @@ class Color_Gradient_Booster(tk.Canvas):
         return list(int(hex_num, 16) for hex_num in (r, g, b))
 
     def set_on_screen(self):
+        """
+        Place the Gradient-color-widget on his parent. 
+
+        Will outfull the whole parent-widget.
+        """
         self.place(relx=0, rely=0, relwidth=1, relheight=1)
 
     def set_off_screen(self):
+        """
+        Unplace the Gradient-color-widget on his parent. 
+        """
         self.place_forget()
 
 
@@ -260,6 +348,9 @@ class Color_Gradient_Booster(tk.Canvas):
 
 if __name__ == "__main__":
     def event_btn_clicked(booster):
+        """
+        Event for GUI-Button for stop/start the flow.
+        """
         global change_color_activated, start_stop_btn
         if change_color_activated:
             booster.stop()

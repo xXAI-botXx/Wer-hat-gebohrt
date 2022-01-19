@@ -1,0 +1,8 @@
+boreholeSize: 4
+material: wood-eiche
+gear: 2
+batteryLevel: normal
+drillType: universal
+operator: Syon
+anomalyTimestamps:
+- idle

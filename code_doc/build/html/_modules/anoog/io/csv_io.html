@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="de" >
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>anoog.io.csv_io &mdash; Wer hat gebohrt? 21.01.2022 Dokumentation</title>
+  <title>anoog.io.csv_io &mdash; Wer hat gebohrt? 21.01.2022 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -14,10 +14,9 @@
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/translations.js"></script>
     <script src="../../../_static/js/theme.js"></script>
-    <link rel="index" title="Stichwortverzeichnis" href="../../../genindex.html" />
-    <link rel="search" title="Suche" href="../../../search.html" /> 
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -29,7 +28,7 @@
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Dokumentation durchsuchen" />
+    <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -37,7 +36,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">anoog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../anoog.html">anoog</a></li>
 </ul>
 
         </div>
@@ -54,7 +54,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../index.html">Modul-Quellcode</a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
       <li>anoog.io.csv_io</li>
       <li class="wy-breadcrumbs-aside">
       </li>
@@ -64,8 +64,18 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Quellcode für anoog.io.csv_io</h1><div class="highlight"><pre>
-<span></span><span class="c1"># .csv data io functions</span>
+  <h1>Source code for anoog.io.csv_io</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module used to load the drill data from csv.</span>
+
+<span class="sd">Contains functions to load drill-data simply and without many features, created from drillcapture.</span>
+
+<span class="sd">Author for :func:`~anoog.io.csv_io.read_csv`: Syon Kadkade</span>
+<span class="sd">Author for :func:`~anoog.io.csv_io.load_single_data`: Tobia Ippolito</span>
+<span class="sd">Author for :func:`~anoog.io.csv_io.read_csv` and the other functions: Stefan Glaser</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">yaml</span>
 <span class="kn">import</span> <span class="nn">os</span>
@@ -75,24 +85,19 @@
 
 <span class="n">loadData_mode</span> <span class="o">=</span> <span class="n">Enum</span><span class="p">(</span><span class="s1">&#39;loadData_mode&#39;</span><span class="p">,</span> <span class="s1">&#39;NONE DASK&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="read_csv"><a class="viewcode-back" href="../../../anoog.io.html#anoog.io.csv_io.read_csv">[Doku]</a><span class="k">def</span> <span class="nf">read_csv</span><span class="p">(</span><span class="n">csvFile</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">loadData_mode</span><span class="o">.</span><span class="n">NONE</span><span class="p">,</span> <span class="n">sampleRate</span><span class="o">=</span><span class="mi">72000</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Method to read sensor time series data from a .csv file.</span>
+<div class="viewcode-block" id="read_csv"><a class="viewcode-back" href="../../../anoog.io.html#anoog.io.csv_io.read_csv">[docs]</a><span class="k">def</span> <span class="nf">read_csv</span><span class="p">(</span><span class="n">csvFile</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">loadData_mode</span><span class="o">.</span><span class="n">NONE</span><span class="p">,</span> <span class="n">sampleRate</span><span class="o">=</span><span class="mi">72000</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Method to read sensor time series data from a .csv file.</span>
 <span class="sd">    </span>
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    csvFile : string</span>
-<span class="sd">        The path to the .csv file to read.</span>
+<span class="sd">    :param mode: The path to the .csv file to read.</span>
+<span class="sd">    :type mode: str</span>
+<span class="sd">    :param mode: The measurement frequency.</span>
+<span class="sd">    :type mode: int</span>
+<span class="sd">    :param mode: Defines how to load the data.</span>
+<span class="sd">    :type mode: :class:`~anoog.io.csv_io.loadData_mode`</span>
 
-<span class="sd">    sampleRate : number</span>
-<span class="sd">        The measurement frequency.</span>
-<span class="sd">    </span>
-<span class="sd">    mode: enum</span>
-<span class="sd">        Select load method</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    ----------</span>
-<span class="sd">    df : pandas.DataFrame</span>
-<span class="sd">        A pandas DataFrame representing the sensor data.</span>
+<span class="sd">    :return: A pandas DataFrame representing the sensor data.</span>
+<span class="sd">    :rtype: pd.DataFrame</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 
@@ -120,18 +125,15 @@
 
 
 
-<div class="viewcode-block" id="read_metadata"><a class="viewcode-back" href="../../../anoog.io.html#anoog.io.csv_io.read_metadata">[Doku]</a><span class="k">def</span> <span class="nf">read_metadata</span><span class="p">(</span><span class="n">yamlFile</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Method to read meta data from a .yaml file.</span>
+<div class="viewcode-block" id="read_metadata"><a class="viewcode-back" href="../../../anoog.io.html#anoog.io.csv_io.read_metadata">[docs]</a><span class="k">def</span> <span class="nf">read_metadata</span><span class="p">(</span><span class="n">yamlFile</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Method to read meta data from a .yaml file.</span>
 <span class="sd">    </span>
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    yamlFile : string</span>
-<span class="sd">        The path to the .yaml file to read.</span>
-<span class="sd">    </span>
-<span class="sd">    Returns</span>
-<span class="sd">    ----------</span>
-<span class="sd">    df : pandas.Series</span>
-<span class="sd">        A pandas Series with the meta data information.</span>
+<span class="sd">    :param yamlFile: The path to the .yaml file to read.</span>
+<span class="sd">    :type yamlFile: str</span>
+
+<span class="sd">    :return: A pandas Series with the meta data information.</span>
+<span class="sd">    :rtype: pd.Series</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">mds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">()</span>
@@ -151,7 +153,22 @@
 
 
 
-<div class="viewcode-block" id="read_csv_dataset"><a class="viewcode-back" href="../../../anoog.io.html#anoog.io.csv_io.read_csv_dataset">[Doku]</a><span class="k">def</span> <span class="nf">read_csv_dataset</span><span class="p">(</span><span class="n">datasetPath</span><span class="p">,</span> <span class="n">csvName</span><span class="o">=</span><span class="s1">&#39;capture.csv&#39;</span><span class="p">,</span> <span class="n">metaName</span><span class="o">=</span><span class="s1">&#39;meta.yaml&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="read_csv_dataset"><a class="viewcode-back" href="../../../anoog.io.html#anoog.io.csv_io.read_csv_dataset">[docs]</a><span class="k">def</span> <span class="nf">read_csv_dataset</span><span class="p">(</span><span class="n">datasetPath</span><span class="p">,</span> <span class="n">csvName</span><span class="o">=</span><span class="s1">&#39;capture.csv&#39;</span><span class="p">,</span> <span class="n">metaName</span><span class="o">=</span><span class="s1">&#39;meta.yaml&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Loads a measurement dataset and meta-data.</span>
+
+<span class="sd">    Uses :func:`~anoog.io.csv_io.read_csv` and :func:`~anoog.io.csv_io.read_metadata` functions.</span>
+<span class="sd">    </span>
+<span class="sd">    :param datasetPath: The path to the dataset, to load it.</span>
+<span class="sd">    :type datasetPath: str</span>
+<span class="sd">    :param csvName: The name of the measurement file.</span>
+<span class="sd">    :type csvName: str, optional</span>
+<span class="sd">    :param metaName: The name of the measurement metadata file.</span>
+<span class="sd">    :type metaName: str, optional</span>
+
+<span class="sd">    :return: The measurement and the metadata of the drill.</span>
+<span class="sd">    :rtype: tuple of pd.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datasetPath</span><span class="p">,</span> <span class="n">csvName</span><span class="p">))</span>
     <span class="n">mds</span> <span class="o">=</span> <span class="n">read_metadata</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datasetPath</span><span class="p">,</span> <span class="n">metaName</span><span class="p">))</span>
 
@@ -159,7 +176,22 @@
 
 
 
-<div class="viewcode-block" id="load_tsfresh"><a class="viewcode-back" href="../../../anoog.io.html#anoog.io.csv_io.load_tsfresh">[Doku]</a><span class="k">def</span> <span class="nf">load_tsfresh</span><span class="p">(</span><span class="n">datasetPath</span><span class="p">,</span> <span class="n">seriesIDs</span><span class="p">,</span> <span class="n">csvName</span><span class="o">=</span><span class="s1">&#39;capture.csv&#39;</span><span class="p">,</span> <span class="n">metaName</span><span class="o">=</span><span class="s1">&#39;meta.yaml&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="load_tsfresh"><a class="viewcode-back" href="../../../anoog.io.html#anoog.io.csv_io.load_tsfresh">[docs]</a><span class="k">def</span> <span class="nf">load_tsfresh</span><span class="p">(</span><span class="n">datasetPath</span><span class="p">,</span> <span class="n">seriesIDs</span><span class="p">,</span> <span class="n">csvName</span><span class="o">=</span><span class="s1">&#39;capture.csv&#39;</span><span class="p">,</span> <span class="n">metaName</span><span class="o">=</span><span class="s1">&#39;meta.yaml&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Loads a complete drill-data created from drillcapture.</span>
+
+<span class="sd">    :param datasetPath: The path to the dataset, to load it.</span>
+<span class="sd">    :type datasetPath: str</span>
+<span class="sd">    :param seriesIDs: The operators/folder names which should be loaded.</span>
+<span class="sd">    :type seriesIDs: list of str</span>
+<span class="sd">    :param csvName: The name of the measurement file.</span>
+<span class="sd">    :type csvName: str, optional</span>
+<span class="sd">    :param metaName: The name of the measurement metadata file.</span>
+<span class="sd">    :type metaName: str, optional</span>
+
+<span class="sd">    :return: The measurement and the metadata of all drills.</span>
+<span class="sd">    :rtype: tuple of pd.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">sdf</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
     <span class="n">mdf</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
     <span class="n">sID</span> <span class="o">=</span> <span class="mi">0</span>
@@ -188,7 +220,20 @@
     <span class="k">return</span> <span class="p">(</span><span class="n">sdf</span><span class="p">,</span> <span class="n">mdf</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="load_single_data"><a class="viewcode-back" href="../../../anoog.io.html#anoog.io.csv_io.load_single_data">[Doku]</a><span class="k">def</span> <span class="nf">load_single_data</span><span class="p">(</span><span class="n">person</span><span class="p">,</span> <span class="n">data_path</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<div class="viewcode-block" id="load_single_data"><a class="viewcode-back" href="../../../anoog.io.html#anoog.io.csv_io.load_single_data">[docs]</a><span class="k">def</span> <span class="nf">load_single_data</span><span class="p">(</span><span class="n">person</span><span class="p">,</span> <span class="n">data_path</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Loads a single drill-data created from drillcapture.</span>
+
+<span class="sd">    Uses the last-drill.</span>
+
+<span class="sd">    :param person: The person, who drilled at last.</span>
+<span class="sd">    :type person: str</span>
+<span class="sd">    :param datasetPath: The path to the dataset, to load it.</span>
+<span class="sd">    :type datasetPath: str</span>
+
+<span class="sd">    :return: The measurement of one drill.</span>
+<span class="sd">    :rtype: tuple of pd.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">measurements</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">data_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">person</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="c1"># get latest measurement</span>
@@ -220,9 +265,9 @@
     <p>&#169; Copyright 2022, Tobia Ippolito, Syon Kadkade, Vadim Korzev.</p>
   </div>
 
-  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
    
 
 </footer>

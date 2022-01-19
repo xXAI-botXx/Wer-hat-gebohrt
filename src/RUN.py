@@ -1,3 +1,7 @@
+"""
+Used for running the anoog live-application.
+"""
+
 import importlib.util
 import subprocess
 import sys
@@ -43,14 +47,14 @@ print("\n-------- Checking Finished --------\n\nSystem Output:")
 # RUN the Application
 
 data_path = '/home/anoog/rec/thema1'
-anoog.automation.run(data_path=data_path, drillcapture_path='python3.8 /home/anoog/git/anoog/framework/src/anoog/', 
-                                          drilldriver_path='/home/anoog/git/anoog/framework/src/anoog/data_gathering/mcc-libusb/application/mccudp', 
-                                          op=anoog.automation.op.LINUX, path_to_project="/home/git/wer")
+#anoog.automation.run(data_path=data_path, drillcapture_path='python3.8 /home/anoog/git/anoog/framework/src/anoog/', 
+#                                          drilldriver_path='/home/anoog/git/anoog/framework/src/anoog/data_gathering/mcc-libusb/application/mccudp', 
+#                                          op=anoog.automation.op.LINUX, path_to_project="/home/git/wer")
 
 # Laptop integration
-#anoog.automation.run(data_path='src/DrillDummy/testdata', drillcapture_path='src/DrillDummy/drillcapture.exe', 
-#                drilldriver_path='src/DrillDummy/drilldriver.exe', 
-#                op=anoog.automation.op.WINDOWS, path_to_project="./")
+anoog.automation.run(data_path='src/DrillDummy/testdata', drillcapture_path='src/DrillDummy/drillcapture.exe', 
+                drilldriver_path='src/DrillDummy/drilldriver.exe', 
+                op=anoog.automation.op.WINDOWS, path_to_project="./")
 
 
 

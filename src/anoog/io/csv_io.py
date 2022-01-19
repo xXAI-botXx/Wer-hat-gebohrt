@@ -1,4 +1,14 @@
-# .csv data io functions
+"""
+This module used to load the drill data from csv.
+
+Contains functions to load drill-data simply and without many features, created from drillcapture.
+
+Author for :func:`~anoog.io.csv_io.read_csv`: Syon Kadkade
+Author for :func:`~anoog.io.csv_io.load_single_data`: Tobia Ippolito
+Author for :func:`~anoog.io.csv_io.read_csv` and the other functions: Stefan Glaser
+"""
+
+
 import pandas as pd
 import yaml
 import os
@@ -9,23 +19,18 @@ import dask.dataframe
 loadData_mode = Enum('loadData_mode', 'NONE DASK')
 
 def read_csv(csvFile, mode=loadData_mode.NONE, sampleRate=72000):
-    """Method to read sensor time series data from a .csv file.
+    """
+    Method to read sensor time series data from a .csv file.
     
-    Parameters
-    ----------
-    csvFile : string
-        The path to the .csv file to read.
+    :param mode: The path to the .csv file to read.
+    :type mode: str
+    :param mode: The measurement frequency.
+    :type mode: int
+    :param mode: Defines how to load the data.
+    :type mode: :class:`~anoog.io.csv_io.loadData_mode`
 
-    sampleRate : number
-        The measurement frequency.
-    
-    mode: enum
-        Select load method
-
-    Returns
-    ----------
-    df : pandas.DataFrame
-        A pandas DataFrame representing the sensor data.
+    :return: A pandas DataFrame representing the sensor data.
+    :rtype: pd.DataFrame
     """
 
 
@@ -54,17 +59,14 @@ def read_csv(csvFile, mode=loadData_mode.NONE, sampleRate=72000):
 
 
 def read_metadata(yamlFile):
-    """Method to read meta data from a .yaml file.
+    """
+    Method to read meta data from a .yaml file.
     
-    Parameters
-    ----------
-    yamlFile : string
-        The path to the .yaml file to read.
-    
-    Returns
-    ----------
-    df : pandas.Series
-        A pandas Series with the meta data information.
+    :param yamlFile: The path to the .yaml file to read.
+    :type yamlFile: str
+
+    :return: A pandas Series with the meta data information.
+    :rtype: pd.Series
     """
 
     mds = pd.Series()
@@ -85,6 +87,21 @@ def read_metadata(yamlFile):
 
 
 def read_csv_dataset(datasetPath, csvName='capture.csv', metaName='meta.yaml'):
+    """
+    Loads a measurement dataset and meta-data.
+
+    Uses :func:`~anoog.io.csv_io.read_csv` and :func:`~anoog.io.csv_io.read_metadata` functions.
+    
+    :param datasetPath: The path to the dataset, to load it.
+    :type datasetPath: str
+    :param csvName: The name of the measurement file.
+    :type csvName: str, optional
+    :param metaName: The name of the measurement metadata file.
+    :type metaName: str, optional
+
+    :return: The measurement and the metadata of the drill.
+    :rtype: tuple of pd.DataFrame
+    """
     df = read_csv(os.path.join(datasetPath, csvName))
     mds = read_metadata(os.path.join(datasetPath, metaName))
 
@@ -93,6 +110,21 @@ def read_csv_dataset(datasetPath, csvName='capture.csv', metaName='meta.yaml'):
 
 
 def load_tsfresh(datasetPath, seriesIDs, csvName='capture.csv', metaName='meta.yaml'):
+    """
+    Loads a complete drill-data created from drillcapture.
+
+    :param datasetPath: The path to the dataset, to load it.
+    :type datasetPath: str
+    :param seriesIDs: The operators/folder names which should be loaded.
+    :type seriesIDs: list of str
+    :param csvName: The name of the measurement file.
+    :type csvName: str, optional
+    :param metaName: The name of the measurement metadata file.
+    :type metaName: str, optional
+
+    :return: The measurement and the metadata of all drills.
+    :rtype: tuple of pd.DataFrame
+    """
     sdf = pd.DataFrame()
     mdf = pd.DataFrame()
     sID = 0
@@ -122,6 +154,19 @@ def load_tsfresh(datasetPath, seriesIDs, csvName='capture.csv', metaName='meta.y
 
 
 def load_single_data(person, data_path:str) -> pd.DataFrame:
+    """
+    Loads a single drill-data created from drillcapture.
+
+    Uses the last-drill.
+
+    :param person: The person, who drilled at last.
+    :type person: str
+    :param datasetPath: The path to the dataset, to load it.
+    :type datasetPath: str
+
+    :return: The measurement of one drill.
+    :rtype: tuple of pd.DataFrame
+    """
     measurements = os.listdir(f"{data_path}/{person}")
 
     # get latest measurement

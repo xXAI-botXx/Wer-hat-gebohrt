@@ -1,10 +1,18 @@
+"""
+This module provides content for members of the eventsystem.
+
+The eventsystem is the possibality to commincate over Threads and lets run a method in another Thread.
+
+Author: Tobia Ippolito
+"""
+
 import abc
 from queue import Queue, Empty
 
 class Eventsystem_Component():
     """
     A member in the eventsystem should inherite from this class.
-    --------
+    
     Funtionality:
     Other objectes/methods can call add_event() to add a new Event. Now the spicific Eventmember
     can process this event in his Thread by calling run_event. The given event in the queue is
@@ -12,7 +20,7 @@ class Eventsystem_Component():
 
     The Event should be a String (the eventname/key in EVENT) and can add multi-params in a tuple.
     For one param you should call as follow: add_Event(eventname, (param1, ))
-    --------
+    
     Notice following points:
     - The variable EVENT (HashMap/dictionary) should be implemented in the specific Eventmember class.
     - Don't forget to call: EventSystem_Component.__init__(self)
@@ -29,9 +37,6 @@ class Eventsystem_Component():
         The eventname used as key in the EVENT HashMap. 
         The value should be a callable and this function/method is called.
         If there were params (in a tuple) then they will handed over.
-
-        --------
-        Returns None
         """
         if not self.events.empty():
             event = self.events.get()
@@ -49,11 +54,11 @@ class Eventsystem_Component():
 
         The event_name should be a key in EVENT-HashMap.
 
-        Arguments:
-            - event_name as str (key in EVENT-dict)
-            - additions as tuple or multi arguments (if the eventfunction needs more args)
-        --------
-        Returns None
+        :param event_name: Key in the EVENT HashMap
+        :type event_name: str
+
+        :param additions: Additional arguments for the event function.
+        :type additions: dict, optional
         """
         event = (event_name, *additions)
         self.events.put(event)

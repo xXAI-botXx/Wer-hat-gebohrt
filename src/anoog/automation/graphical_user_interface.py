@@ -1,3 +1,11 @@
+"""
+This module is used to implement a graphical user interface for the application.
+It contains all Widget/Screen-Classes for GUI. Only the Gradient-Color-Widget has it own class :module:~anoog.automation.bg_booster.py
+-> and implements the start-method of the application
+
+Author: Tobia Ippolito
+"""
+
 from queue import Queue
 from threading import Thread
 import abc
@@ -27,10 +35,20 @@ THEMES = ['smog', 'ubuntu', 'scidgrey', 'scidblue',
           'blue', 'kroc', 'itft1', 'black', 
           'scidpink', 'aquativo', 'xpnative', 'elegance']
 
-# ladet die verschiedenen Widgets
-# ein Main-Wudget = Zustand
+
 class GUI_App(tk.Tk, Eventsystem_Component):
+    """
+    This is the root-Widget of the GUI.
+
+    All other Windows will call and managed drom this root-point.
+
+    :param kwargs: Key, Value arguments for the Widget (relatively unrelevant)
+    :type kwargs: dict
+    """
     def __init__(self, **kwargs):
+        """
+        Constructor method
+        """
         super().__init__(**kwargs)
         Eventsystem_Component.__init__(self)
         self.bg_img = None
@@ -64,8 +82,6 @@ class GUI_App(tk.Tk, Eventsystem_Component):
         self.bind('<Escape>', self.close)
         self.bind('<Configure>', self.event_resize_bg)
         self.bind('<space>', self.event_space)
-        self.bind('<Button-1>', self.event_left_mouse_pressed)
-        self.bind('<Button-1>', self.event_left_mouse_released)
 
         self.events = Queue()
         self.EVENT = {'drill-person':self.screen_train.change_train_person, 'drill-starts':self.screen_train.drill_starts, 
@@ -75,13 +91,24 @@ class GUI_App(tk.Tk, Eventsystem_Component):
                         'set-amount-predict':self.screen_predict.set_amount, 'predict-drill-starts':self.screen_predict.drill_starts,
                         'predict-drill-ends':self.screen_predict.drill_ends, 'delete-last-predict':self.screen_predict.delete_last_btn_change,
                         'predict-result':self.screen_predict.show_result, 'draw-result':self.screen_predict.draw_result}
-
-    def set_theme(self, name):
-        if name in THEMES:
-            self.style.theme_use(name)
-            self.set_min()
         
     def run(self, data_path, drillcapture_path, drilldriver_path, op, path_to_project):
+        """
+        The Startmethod of the Application.
+
+        Starts the Terminal and the GUI.
+
+        :param data-path: A path to the location where the data will be stored (there will be created a new folder with the current date)
+        :type data-path: str, optional
+        :param drillcapture_path: A path to the location where the Drillcapture program executable is stored.
+        :type drillcapture_path: str, optional
+        :param drilldriver_path: A path to the location where the Drilldriver program executable is stored.
+        :type drilldriver_path: str, optional
+        :param op: Defines on which operating system the program should run.
+        :type op: :class:`~anoog.automation.py_exe_interface.op`, optional
+        :param path_to_project: A path to the location to the Project folder.
+        :type path_to_project: str, optional
+        """
         self.path_to_project = path_to_project
         self.terminal = Terminal(self, data_path=data_path, drillcapture_path=drillcapture_path, drilldriver_path=drilldriver_path, op=op)
         self.thread_terminal = Thread(target=self.terminal.run)
@@ -92,18 +119,51 @@ class GUI_App(tk.Tk, Eventsystem_Component):
         self.mainloop()
 
     def check_events(self):
+        """
+        Checks the event-queue and calls to do so after 50ms again.
+        """
         self.run_event()
         self.after(50, self.check_events)
 
     def close(self):
+        """
+        Close the GUI and send an event to terminal to close it too.
+        """
         self.terminal.add_event('exit')
         self.quit()
 
+    def set_theme(self, name:str):
+        """
+        Set the Theme of the GUI. Standart is a dark-theme ('equilux').
+
+        This method will called by load_theme()-method.
+
+        :param name: Name of the theme.
+        :type name: str
+        """
+        if name in THEMES:
+            self.style.theme_use(name)
+            self.set_min()
+
     def load_theme(self, name):
+        """
+        To load a Theme. Coloring and looking of the Widgets.
+
+        See the THEMES list for some Themes examples.
+
+        :param name: Name of the theme.
+        :type name: str
+        """
         if name in THEMES:
             self.set_theme(name)
 
     def load_screen_main_menu(self, from_widget):
+        """
+        To load the Startmenu-Screen.
+
+        :param from_widget: The current screen, which will be hided.
+        :type from_widget: :class:~anoog.automation.graphical_user_interface.Screen
+        """
         self.cur_screen = self.screen_main_menu
         from_widget.hide()
         self.screen_main_menu.show()
@@ -111,27 +171,56 @@ class GUI_App(tk.Tk, Eventsystem_Component):
         self.set_min()
 
     def load_screen_train(self, from_widget):
+        """
+        To load the Train-Screen.
+
+        :param from_widget: The current screen, which will be hided.
+        :type from_widget: :class:~anoog.automation.graphical_user_interface.Screen
+        """
         self.cur_screen = self.screen_train
         from_widget.hide()
         self.screen_train.show()
         self.set_min()
 
     def load_screen_predict(self, from_widget):
+        """
+        To load the Predict-Screen.
+
+        :param from_widget: The current screen, which will be hided.
+        :type from_widget: :class:~anoog.automation.graphical_user_interface.Screen
+        """
         self.cur_screen = self.screen_predict
         from_widget.hide()
         self.screen_predict.show()
         self.set_min()
 
-    def reset_predict(self):
-        self.screen_predict.event_reset_button()
-
     def load_screen_credits(self, from_widget):
+        """
+        To load the Credit-Screen.
+
+        :param from_widget: The current screen, which will be hided.
+        :type from_widget: :class:~anoog.automation.graphical_user_interface.Screen
+        """
         self.cur_screen = self.screen_credits
         from_widget.hide()
         self.screen_credits.show()
         self.set_min()
+
+    def reset_predict(self):
+        """
+        Resets the Predict-Screen. Uses internaly the :meth:~anoog.automation.graphical_user_interface.Predict_Window.event_reset_button method.
+
+        Clears all drill-data, setted settings and showed results.
+        """
+        self.screen_predict.event_reset_button()
         
     def set_min(self):
+        """
+        Sets the minimum height and width off a screen. 
+        The minimum is calculated, that all widgets have enough size and are completly showed.
+
+        This calculation is automaticly.
+        """
         # only if not in Fullscreen mode
         # Version 1:
         #if not (self.wm_state() == 'zoomed'):
@@ -150,6 +239,16 @@ class GUI_App(tk.Tk, Eventsystem_Component):
             self.geometry(f"{self.winfo_width()}x{self.winfo_height()}")
 
     def set_bg(self, img):
+        """
+        Can be used to set a background-image. 
+
+        The size will be fitted on the screen. It uses a Label, which every screen owned.
+
+        (Currently not used)
+
+        :param img: A Path to an image to load in Background.
+        :type img: str
+        """
         self.bg_img = img
 
         if self.bg_img != "":
@@ -169,6 +268,14 @@ class GUI_App(tk.Tk, Eventsystem_Component):
             self.screen_predict.set_bg("")
 
     def event_resize_bg(self, event):
+        """
+        An event to fit the background-image to the screen-size.
+
+        Will be called every time, if the screen-size is changing. Only change image-size, if the size has changed.
+        (The method also will be called, if the user moves the application.)
+
+        :param event: The event from Tkinter for resizing.
+        """
         size_changed = self.old_size[0] != self.winfo_width() or self.old_size[1] != self.winfo_height()
         if self.bg_img != None and self.bg_img != "" and size_changed and self.mouse_not_hold:
             self.old_size = (self.winfo_width(), self.winfo_height())
@@ -181,27 +288,38 @@ class GUI_App(tk.Tk, Eventsystem_Component):
             self.screen_main_menu.resize_bg(self.tk_image)
             self.screen_train.resize_bg(self.tk_image)
 
-    # dont works -> when resize the window this event dont call
-    def event_left_mouse_pressed(self, event):
-        self.mouse_not_hold = False
-
-    # dont works -> when resize the window this event dont call
-    def event_left_mouse_released(self, event):
-        self.mouse_not_hold = True
-
     def event_space(self, event):
+        """
+        Event handling for pressing Spacebar.
+        Used for starting/stopping a new drill-process.
+
+        :param event: The event from Tkinter for Key-Pressed.
+        """
         if self.cur_screen == self.screen_train:
             self.screen_train.event_start_button()
         elif self.cur_screen == self.screen_predict:
             self.screen_predict.event_start_button()
 
     def stop_time(self):
+        """
+        Event handling for pressing Spacebar.
+        Used for starting/stopping a drill-process.
+        """
         if self.cur_screen == self.screen_train:
             self.screen_train.stop_time()
         elif self.cur_screen == self.screen_predict:
             self.screen_predict.stop_time()
 
     def start_button(self, state):
+        """
+        Method to change the state of the start-button in the current screen.
+        If disabled, the button isn't pressable anymore.
+
+        Only in predict-Screen or in Train-Screen available.
+
+        :param state: State in which the start-button should be switch: 'disabled' or 'enabled' available.
+        :type state: str
+        """
         if self.cur_screen == self.screen_train:
             self.screen_train.start_button_change(state)
         elif self.cur_screen == self.screen_predict:
@@ -212,7 +330,21 @@ class GUI_App(tk.Tk, Eventsystem_Component):
 ###############    Screen    ##################
 ###############################################
 class Screen(ttk.Frame, abc.ABC):
+    """
+    Base Class for all Screens. 
+
+    Implements the functionality for setting a background-image.
+    For that a label is initialized. And methods to set and resize an image.
+
+    :param root: Root-Widget. Needed for communicate with :class:~anoog.automation.controller.Terminal.
+    :param root: tk.Tk
+    :param kwargs: Key, Value arguments for the Widget (relatively unrelevant)
+    :type kwargs: dict
+    """
     def __init__(self, root, **kwargs):
+        """
+        Constructor method
+        """
         super().__init__(root, **kwargs)
         self.root = root
 
@@ -222,21 +354,40 @@ class Screen(ttk.Frame, abc.ABC):
         self.label_bg.place(x=0, y=0, relwidth=1, relheight=1)
 
     def resize_bg(self, img):
-        #self.label_bg.place_forget()
+        """
+        Method to reset the image of the label.
+
+        :param img: New Backgroundimage
+        :type img: PIL.ImageTk
+        """
         self.label_bg.configure(image=img)
-        #self.label_bg.place(x=0, y=0, relwidth=1, relheight=1)
 
     def set_bg(self, img):
-        #self.label_bg.place_forget()
+        """
+        Method to reset the image of the label.
+
+        :param img: New Backgroundimage
+        :type img: PIL.ImageTk
+        """
         self.label_bg.configure(image=img)
-        #self.label_bg.place(x=0, y=0, relwidth=1, relheight=1)
 
 
 ###############################################
 #############   Menu_Screen    ################
 ###############################################
 class Menu(Screen):
+    """
+    Contains all widgets from start-screen. 3 Buttons (start, informationen, credits), title-label, Gradientcolor-stripes.
+
+    :param root: Root-Widget. Needed for communicate with :class:~anoog.automation.controller.Terminal.
+    :param root: tk.Tk
+    :param kwargs: Key, Value arguments for the Widget (relatively unrelevant)
+    :type kwargs: dict
+    """
     def __init__(self, root, **kwargs):
+        """
+        Constructor method
+        """
         super().__init__(root, **kwargs)
         self.min = (1200, 700)
 
@@ -248,6 +399,9 @@ class Menu(Screen):
         #self.hide()
 
     def create_widgets(self):
+        """
+        Method to create all important Widgets of the Start-Menu.
+        """
         # Color Background
         self.color_label = ttk.Label(self)
         self.color_label.place(relx=0, rely=0, relwidth=1, relheight=1)
@@ -314,12 +468,20 @@ class Menu(Screen):
         self.add_padding()
 
     def add_padding(self):
+        """
+        Defines all paddings of the widgets.
+        """
         for child in self.winfo_children():
             child.grid_configure(padx=40, pady=10)
         self.label_title.grid_configure(padx=10, pady=10)
         #self.grid_rowconfigure(5, minsize=20)
 
     def weighting(self):
+        """
+        Defines all weightings of the widgets.
+
+        The weighting defines, how intensive the grid-entry fit, if the size of the screen is changing.
+        """
         for n in range(self.max_rows-1):
             self.grid_rowconfigure(n, weight=1, minsize=50)
         
@@ -335,6 +497,11 @@ class Menu(Screen):
         self.grid_columnconfigure(self.max_columns-1, weight=1, minsize=100)
     
     def show(self):
+        """
+        Shows the Start-Menu screen.
+
+        For that the screen will be packed and the gradient-color stripes will be started.
+        """
         self.pack(expand=True, fill='both', side='top')
         self.label_bg.place(x=0, y=0, relwidth=1, relheight=1)
         self.color_frame_bg.start()
@@ -342,20 +509,46 @@ class Menu(Screen):
         self.color_label.place(relx=0, rely=0, relwidth=1, relheight=1)
 
     def hide(self):
+        """
+        Hides the Start-Menu screen.
+
+        For that the screen will be unpacked and the gradient-color stripes will be stopped.
+        """
         self.pack_forget()
         self.color_frame_bg.stop()
 
     def event_button_start(self):
+        """
+        Loads the train-screen.
+
+        Should be called, if the Start-Button pressed.
+        """
         self.root.load_screen_train(self)
 
     def event_button_credits(self):
-        #self.hide()
+        """
+        Loads the credits-screen.
+
+        Should be called, if the Credits-Button pressed.
+        """
         self.root.load_screen_credits(self)
 
     def event_button_info(self):
+        """
+        Opens the README-File of our project.
+
+        Should be called, if the Informationen-Button pressed.
+        """
         webbrowser.open_new("https://github.com/xXAI-botXx/Wer-hat-gebohrt/blob/main/README.md")
 
     def event_resize_label(self, event):
+        """
+        Change the label-font size of the title, if the screen-size has changed.
+
+        With that method, the title is in a right size.
+
+        :param event: The event from Tkinter for resizing.
+        """
         width = event.widget.winfo_width()
         height = event.widget.winfo_height()
         event.widget.configure(font=font.Font(size=height//3))
@@ -365,7 +558,22 @@ class Menu(Screen):
 #############   Train_Screen    ###############
 ###############################################
 class Train_Window(Screen):
+    """
+    Contains the logic and all widgets from train-screen. 
+
+    Included the Meta-Data-Section, the gradient-color hyphen and the train-data-section.
+
+    This Screen used to collect train-data for the prediction.
+
+    :param root: Root-Widget. Needed for communicate with :class:~anoog.automation.controller.Terminal.
+    :param root: tk.Tk
+    :param kwargs: Key, Value arguments for the Widget (relatively unrelevant)
+    :type kwargs: dict
+    """
     def __init__(self, root, **kwargs):
+        """
+        Constructor method
+        """
         super().__init__(root, **kwargs)
         self.min = (1200, 700)
 
@@ -381,6 +589,9 @@ class Train_Window(Screen):
         self.is_drilling = False
 
     def create_widgets(self):
+        """
+        Method to create all important Widgets of the Train-Screen.
+        """
         # Back Button
         self.button_back = ttk.Button(self, text="<", command=self.event_back, takefocus = 0)
         self.button_back.grid(row=0, column=0, sticky="nw", padx=10, pady=10)
@@ -622,7 +833,9 @@ class Train_Window(Screen):
         self.cg_booster_borderline.set_on_screen()
 
     def add_padding(self):
-     
+        """
+        Defines all paddings of the widgets.
+        """
         #self.init_frame.grid_configure(ipady=100, ipadx=100)
         self.init_spacing.grid_configure(pady=20)
         self.init_label_title.grid_configure(pady=30)
@@ -644,6 +857,11 @@ class Train_Window(Screen):
         self.drill_add_amounts_person1_label.grid_configure(padx=10)
 
     def weighting(self):
+        """
+        Defines all weightings of the widgets.
+
+        The weighting defines, how intensive the grid-entry fit, if the size of the screen is changing.
+        """
         for n in range(self.max_rows):
             self.grid_rowconfigure(n, weight=1, minsize=20) #20
         
@@ -673,15 +891,30 @@ class Train_Window(Screen):
         self.train_frame.grid_rowconfigure(9, weight=1, minsize=60)
     
     def show(self):
+        """
+        Shows the Train-Screen.
+
+        For that the screen will be packed and the gradient-color will be started.
+        """
         self.pack(expand=True, fill='both', side='top')
         self.label_bg.place(x=0, y=0, relwidth=1, relheight=1)
         self.cg_booster_borderline.start()
 
     def hide(self):
+        """
+        Hides the Train-Screen.
+
+        For that the screen will be unpacked and the gradient-color stripes will be stopped.
+        """
         self.pack_forget()
         self.cg_booster_borderline.stop()
 
     def event_back(self):
+        """
+        Loads the Startmenu and resets the train-screen and the predict-screen.
+
+        Called by clicking the back-button.
+        """
         self.root.terminal.add_event('reset-train')
         self.event_reset_button()
         self.root.load_screen_main_menu(self)
@@ -690,20 +923,47 @@ class Train_Window(Screen):
 
     # detect changes
     def init_changes(self, var, indx, mode):
-        #self.init_confirm.grid(row=20, column=2)
+        """
+        Creates the confitm-button by the meta-data area.
+
+        Called if detected changes.
+
+        Params automatically sets by Tkinter and are not relevant and not used.
+        """
         self.init_confirm.grid(row=0, column=0)
         self.root.set_min()
 
     def delete_last_btn_change(self, state):
+        """
+        Disabled or enabled the button to delete the last drill.
+
+        :param state: Sets the state of the delete-last-button ('disabled' or 'enabled' available)
+        :type state: str
+        """
         self.train_delete_last.configure(state=state)
 
     def change_train_person(self, person):
+        """
+        Shows the persons-name who should drill at next.
+
+        :param person: The person who should drill at next.
+        :type person: str
+        """
         self.train_drill_next_name.config(text=person)
 
     def start_button_change(self, state):
+        """
+        Disabled or enabled the button to start a drill.
+
+        :param state: Sets the state of the start-drill-button ('disabled' or 'enabled' available)
+        :type state: str
+        """
         self.train_drill_start.config(state=state)
 
     def event_confirm_init_change(self):
+        """
+        Checks if the meta-data are valid and if yes, shows the person who should drill at next.
+        """
         enough_amount = int(self.var_person1_drill_amount.get()) > 0 and int(self.var_person2_drill_amount.get()) > 0
         if self.var_person1_name.get() != self.var_person2_name.get() and enough_amount:
             self.root.focus()    # set focus on root
@@ -738,6 +998,9 @@ class Train_Window(Screen):
             # Start software -> one Software starts direct by beginning, the other now
 
     def event_confirm_add(self):
+        """
+        Add new data-amount. 
+        """
         self.root.focus()    # set focus on root
         add_amount_person1 = self.var_add_person1_amount.get()
         add_amount_person2 = self.var_add_person2_amount.get()
@@ -745,6 +1008,11 @@ class Train_Window(Screen):
         self.train_predict.configure(state='disabled')
 
     def event_start_button(self):
+        """
+        Starts or stops a drill.
+
+        The method takes care of the state of the buttons. (While drilling the user should not be able to leave the screen or delete the last drill)
+        """
         if self.train_drill_start['text'] == "Start":
             self.root.terminal.add_event("start")
             self.train_reset.configure(state='disabled')
@@ -763,10 +1031,16 @@ class Train_Window(Screen):
         self.change_init_state(state='disabled')
 
     def event_delete_last_button(self):
+        """
+        Communicates with the Terminal to delete the last data-entry.
+        """
         self.root.terminal.add_event('delete-last')
         self.train_predict.configure(state='disabled')
 
     def event_reset_button(self):
+        """
+        Sets the screen and all his content to a initialized state.
+        """
         self.train_drill_start.configure(state="disabled")
         self.train_reset.configure(state="disabled")
         self.train_delete_last.configure(state="disabled")
@@ -807,10 +1081,21 @@ class Train_Window(Screen):
         self.is_drilling = False
 
     def event_predict_button(self):
+        """
+        Loads the predict-screen.
+
+        Only apears, if there are no more data-drills left.
+        """
         self.root.terminal.add_event("predict-load")
         self.root.load_screen_predict(self)
 
     def change_init_state(self, state='disabled'):
+        """
+        Changes the availability of the widgets of the meta-data area.
+
+        :param state: State in which the widgets should be changed ('disabled' or 'enabled' available)
+        :type state: str
+        """
         self.init_person_1_name.configure(state=state)
         self.init_person_1_drill_amount.configure(state=state)
         self.init_person_1_material.configure(state=state)
@@ -830,18 +1115,37 @@ class Train_Window(Screen):
         self.init_confirm.configure(state=state)
 
     def drill_amount_change(self, amount_person_1, amount_person_2):
+        """
+        Updates the amount-label.
+
+        :param amount_person_1: Drill-Amount of Person 1 which is left.
+        :type amount_person_1: str or int
+        :param amount_person_2: Drill-Amount of Person 2 which is left.
+        :type amount_person_2: str or int
+        """
         self.train_drill_amount_person1.configure(text=f"{self.var_person1_name.get()}: {amount_person_1}")
         self.train_drill_amount_person2.configure(text=f"{self.var_person2_name.get()}: {amount_person_2}")
         if f"{amount_person_1}" != "0" or f"{amount_person_2}" != "0":
             self.train_drill_start.configure(state='enabled')
 
     def drill_starts(self):
+        """
+        Changes the start-button text to Stopp and starts the timer.
+        """
         self.train_drill_start['text'] = "Stopp"
         self.start_time = time()
         self.root.after(100, self.change_run_time)
         self.is_drilling = True
 
     def drill_ends(self, amount_person_1:int, amount_person_2:int):
+        """
+        Changes the start-button text to Start and update the drill-amount of both persons.
+
+        :param amount_person_1: Drill-Amount of Person 1 which is left
+        :type amount_person_1: int
+        :param amount_person_2: Drill-Amount of Person 2 which is left
+        :type amount_person_2: int
+        """
         self.train_drill_start['text'] = "Start"
         self.is_drilling = False
         self.train_drill_amount_person1.configure(text=f"{self.var_person1_name.get()}: {amount_person_1}")
@@ -851,29 +1155,43 @@ class Train_Window(Screen):
             self.train_predict.configure(state='enabled')
 
     def stop_time(self):
+        """
+        Stops the timer.
+        """
         self.is_drilling = False
 
     def change_run_time(self):
+        """
+        Logic of timer.
+
+        Updates runned time and calls his self in 0.1s.
+        """
         if self.is_drilling:
             runtime = time() - self.start_time
             self.train_runtime.configure(text=f"Zeit: {round(runtime, 2)}")
             self.root.after(100, self.change_run_time)
-
-    def change_frame_color(self):
-        color = self.frame_spacing['bg']
-        self.root.after(1000, self.change_frame_color)
-
-        #self.train_drill_start.configure(state=state)
-        #self.train_predict.configure(state=state)
-        self.train_delete_last.configure(state=state)
-        self.button_back.configure(state=state)
 
 
 ###############################################
 ############   Predict_Screen    ##############
 ###############################################
 class Predict_Window(Screen):
+    """
+    Contains the logic and all widgets from predict-screen. 
+
+    Included the show of results, add-drill-amount area and the ml-model-selection area.
+
+    This Screen used to collect predict-data, predict these data and show the results of them.
+
+    :param root: Root-Widget. Needed for communicate with :class:~anoog.automation.controller.Terminal.
+    :param root: tk.Tk
+    :param kwargs: Key, Value arguments for the Widget (relatively unrelevant)
+    :type kwargs: dict
+    """
     def __init__(self, root, **kwargs):
+        """
+        Constructor method
+        """
         super().__init__(root, **kwargs)
         self.min = (1200, 700)
         self.root = root
@@ -895,6 +1213,9 @@ class Predict_Window(Screen):
         self.hide()
 
     def create_widgets(self):
+        """
+        Method to create all important Widgets of the Predict-Screen.
+        """
         # Back Button
         self.button_back = ttk.Button(self, text="<", command=self.event_back, takefocus = 0)
         self.button_back.grid(row=0, column=0, sticky="nw")
@@ -910,7 +1231,6 @@ class Predict_Window(Screen):
             # model selection
         self.var_model = tk.StringVar()
         self.var_model.set(self.models[0])
-        #self.var_model.trace('w', self.model_changed)
         self.combobox_model = ttk.Combobox(self.model_frame, textvar=self.var_model, values=self.models, state="readonly", takefocus = 0)
         self.combobox_model.grid(row=1, column=1)
             # model param selection
@@ -935,7 +1255,7 @@ class Predict_Window(Screen):
         self.cg_booster_border.set_fav_color()
 
         self.predict_out_frame = ttk.Frame(self.predict_out_frame_bg)
-        self.predict_out_frame.place(relx=0.025, rely=0.05, relwidth=0.95, relheight=0.9)
+        self.predict_out_frame.place(relx=0.0125, rely=0.025, relwidth=0.975, relheight=0.95)
 
         self.predict_out_who_drilled = ttk.Label(self.predict_out_frame, text="Es hat gebohrt:", anchor='w', font='Helvetica 14')
         self.predict_out_who_drilled.grid(row=1, column=1, sticky="nwse")
@@ -951,9 +1271,6 @@ class Predict_Window(Screen):
         self.predict_out_which_algo.grid(row=3, column=1, sticky="nwse")
         self.predict_out_which_algo_answer = ttk.Label(self.predict_out_frame, text="      ?      ", anchor='center', font='Helvetica 16 bold')
         self.predict_out_which_algo_answer.grid(row=3, column=3, sticky="nwse")
-
-        #self.predict_out_bar_chart = ttk.Label(self.predict_out_frame, text="?", anchor='w', font='Helvetica 16 bold')
-        #self.predict_out_bar_chart.grid(row=1, rowspan=3, column=3, sticky="nwse")
 
         # Predict Controll Block
         self.predict_in_frame = ttk.Frame(self)
@@ -980,17 +1297,21 @@ class Predict_Window(Screen):
         self.predict_in_delete_last.configure(state='disabled')
 
     def add_padding(self):
+        """
+        Defines all paddings of the widgets.
+        """
         for child in self.winfo_children():
             child.grid_configure(padx=10, pady=10)
 
         self.combobox_model.grid_configure(pady=10)
-        self.combobox_model_norm.grid_configure(pady=10)
-
-        #self.predict_in_reset.grid_configure()   
-        #self.predict_in_start.grid_configure(pady=20, padx=35)  
-        #self.predict_in_predict.grid_configure()       
+        self.combobox_model_norm.grid_configure(pady=10)    
 
     def weighting(self):
+        """
+        Defines all weightings of the widgets.
+
+        The weighting defines, how intensive the grid-entry fit, if the size of the screen is changing.
+        """
         for n in range(self.max_rows):
             self.grid_rowconfigure(n, weight=1, minsize=20)
         self.grid_rowconfigure(1, weight=1, minsize=250)
@@ -1000,7 +1321,6 @@ class Predict_Window(Screen):
             self.grid_columnconfigure(n, weight=1, minsize=50) 
         self.grid_columnconfigure(1, weight=1, minsize=150) 
 
-        # (int(self.winfo_width()*0.35), int(self.winfo_height()*0.45)
         self.grid_columnconfigure(1, weight=1, minsize=int(self.winfo_width()*0.35)+50)
 
         # Model Selection Block
@@ -1025,27 +1345,51 @@ class Predict_Window(Screen):
             self.predict_in_frame.grid_columnconfigure(n, weight=1, minsize=50)
     
     def show(self):
+        """
+        Shows the Predict-Screen.
+
+        For that the screen will be packed and the gradient-color will be started.
+        """
         self.pack(expand=True, fill='both', side='top')
         self.label_bg.place(x=0, y=0, relwidth=1, relheight=1)
         self.cg_booster_border.start()
         self.model_frame_bg.start()
 
     def hide(self):
+        """
+        Hides the Predict-Screen.
+
+        For that the screen will be unpacked and the gradient-color will be stopped.
+        """
         self.pack_forget()
+        self.cg_booster_border.stop()
 
     def set_amount(self, amount):
+        """
+        Sets the amount to the given value.
+
+        :param amount: Amount of drills
+        :type amount: int or str
+        """
         self.predict_in_amount.configure(text=f'Amount: {amount}')
 
-    def model_changed(self):
-        pass
-
     def event_back(self):
+        """
+        Loads the Train-Screen.
+
+        Event called by clicking the back-button.
+        """
         self.root.load_screen_train(self)
         self.root.terminal.add_event("from-predict-to-train")
         self.cg_booster_border.stop()
         self.model_frame_bg.stop()
 
     def event_start_button(self):
+        """
+        Starts or stops a drill.
+
+        The method takes care of the state of the buttons. (While drilling the user should not be able to leave the screen or delete the last drill)
+        """
         if self.predict_in_start['text'] == "Start Bohrung":
             self.root.terminal.add_event("start")
             self.predict_in_delete_last.configure(state='disabled')
@@ -1058,28 +1402,43 @@ class Predict_Window(Screen):
             self.predict_in_predict.configure(state='enabled')
 
     def event_reset_button(self):
+        """
+        Prepares for a new person to predict.
+
+        Delets the old predict-data-entries and delets the old results.
+
+        Sends an Event to the Terminal.
+        """
         self.root.terminal.add_event('reset-predict')
         self.reset()
 
     def event_predict_button(self):
+        """
+        Trains the selected ML-Model with the train-data, predict the new data with the trained model and show the results of that.
+        
+        Sends an Event to the Terminal.
+        """
         self.root.terminal.add_event('predict', (self.var_model.get(), self.var_model_param.get(), self.var_model_norm.get()))
-        #if self.model_changed:
-        #    self.root.terminal.add_event('predict', (self.var_model.get(),))
-        #else:
-        #    self.root.terminal.add_event('predict', (None,))
         self.model_changed = False
 
     def event_delete_last_button(self):
+        """
+        Deletes the last predict-drill-data-entry.
+
+        Sends an Event to the Terminal.
+        """
         self.root.terminal.add_event('delete-last-predict-drill')
 
     def reset(self):
+        """
+        Sets all widgets and contents of the initilized value.
+        """
         self.predict_out_who_drilled.configure(text="Es hat gebohrt:")
         self.predict_out_who_drilled_answer.configure(text="      ?      ")
         self.predict_out_how_sure.configure(text="Genauigkeit:")
         self.predict_out_how_sure_answer.configure(text="      ?      ")
         self.predict_out_which_algo.configure(text="Verwendeter Algorithmus:")
         self.predict_out_which_algo_answer.configure(text="      ?      ")
-        #self.predict_out_bar_chart.configure(text="", image='')
 
         self.predict_in_amount.configure(text=f'Amount: 0')
         self.predict_in_time.configure(text=f"Zeit: -")
@@ -1095,29 +1454,63 @@ class Predict_Window(Screen):
         self.var_model_norm.set(self.model_norm[0])
 
     def drill_starts(self):
+        """
+        Changes the text of the start-button to Stopp Bohrung and starts the timer.
+        """
         self.predict_in_start['text'] = "Stopp Bohrung"
         self.start_time = time()
         self.root.after(100, self.change_run_time)
         self.is_drilling = True
 
     def drill_ends(self):
+        """
+        Changes the text of the start-button to Start Bohrung and stops the timer.
+        """
         self.predict_in_start['text'] = "Start Bohrung"
         self.is_drilling = False
 
     def stop_time(self):
+        """
+        Stops the timer.
+        """
         self.is_drilling = False
 
     def delete_last_btn_change(self, state):
+        """
+        Deletes the last predict-data-entry.
+
+        Sends an Event to the Terminal.
+
+        :param state: State in which the delete-last-button should be changed ('disabled' or 'enabled' available)
+        :type state: str
+        """
         self.predict_in_delete_last.configure(state=state)
 
     def show_result(self, who, how, what):
+        """
+        Shows the result of the prediction.
+
+        :param who: Who is the prediction of the 2 persons.
+        :type who: str
+        :param who: How sure is the model (percentage).
+        :type who: int
+        :param who: Which algorithm used for this prediction.
+        :type who: str
+        """
         self.predict_out_who_drilled_answer.configure(text=f"{who}")
         self.predict_out_how_sure_answer.configure(text=f"{round(how, 2)}%")
         self.predict_out_which_algo_answer.configure(text=f"{what}")
-        #self.predict_out_bar_chart.configure(text="?")
 
-    # OLD Method
     def draw_result(self, img_path):
+        """
+        Draws a plot of the result.
+
+
+        (Not in use)
+
+        :param img_path: Path to the image to load.
+        :type img_path: str
+        """
         self.image = Image.open(img_path)
         self.image = self.image.resize((int(self.winfo_width()*0.35), int(self.winfo_height()*0.45)), Image.ANTIALIAS)
 
@@ -1125,9 +1518,20 @@ class Predict_Window(Screen):
         self.predict_out_bar_chart.configure(text='', image=self.tk_image)
 
     def start_button_change(self, state):
+        """
+        Changes the state of the start-button.
+
+        :param state: State in which the start-button should be changed ('disabled' or 'enabled' available)
+        :type state: str
+        """
         self.train_drill_start.config(state=state)
 
     def change_run_time(self):
+        """
+        Logic of timer.
+
+        Updates runned time and calls his self in 0.1s.
+        """
         if self.is_drilling:
             runtime = time() - self.start_time
             self.predict_in_time.configure(text=f"Zeit: {round(runtime, 2)}")
@@ -1138,39 +1542,93 @@ class Predict_Window(Screen):
 ############   Credits_Screen    ##############
 ###############################################
 class Credits_Window(Screen):
+    """
+    Contains the logic and all widgets from credits-screen. 
+
+    This Screen used to show all contributers of this project.
+
+    :param root: Root-Widget. Needed for communicate with :class:~anoog.automation.controller.Terminal.
+    :param root: tk.Tk
+    :param kwargs: Key, Value arguments for the Widget (relatively unrelevant)
+    :type kwargs: dict
+    """
     def __init__(self, root, **kwargs):
+        """
+        Constructor method
+        """
         super().__init__(root, **kwargs)
         self.min = (1200, 700)
 
         self.max_rows = 3
         self.max_columns = 3
-
+        
+        self.startpoint = 1.3
+        
         self.create_widgets()
         self.weighting()
         self.add_padding()
         self.hide()
 
-        self.startpoint = 0.0
+        
 
     def create_widgets(self):
+        """
+        Method to create all important Widgets of the Credit-Screen.
+        """
         # Back Button
         self.button_back = ttk.Button(self, text="<", command=self.event_back, takefocus = 0)
         self.button_back.grid(row=0, column=0, sticky="nw")
 
         self.entwickler = ttk.Label(self, text="Entwickler", anchor='n', font='Helvetica 36 bold')
+        self.tobia_1 = ttk.Label(self, text="Tobia Ippolito", anchor='n', font='Helvetica 18 bold')
+        self.syon_1 = ttk.Label(self, text="Syon Kadkade", anchor='n', font='Helvetica 18 bold')
+        self.vadim_1 = ttk.Label(self, text="Vadim Korzev", anchor='n', font='Helvetica 18 bold')
 
-        self.tobia = ttk.Label(self, text="Tobia Ippolito", anchor='n', font='Helvetica 18 bold')
+        self.gui = ttk.Label(self, text="GUI", anchor='n', font='Helvetica 36 bold')
+        self.tobia_2 = ttk.Label(self, text="Tobia Ippolito", anchor='n', font='Helvetica 18 bold')
 
-        self.syon = ttk.Label(self, text="Syon kadkade", anchor='n', font='Helvetica 18 bold')
+        self.automation = ttk.Label(self, text="Automation", anchor='n', font='Helvetica 36 bold')
+        self.tobia_3 = ttk.Label(self, text="Tobia Ippolito", anchor='n', font='Helvetica 18 bold')
 
-        self.vadim = ttk.Label(self, text="Vadim Korzev", anchor='n', font='Helvetica 18 bold')
+        self.feature_extraction = ttk.Label(self, text="Feature Extraction", anchor='n', font='Helvetica 36 bold')
+        self.vadim_2 = ttk.Label(self, text="Vadim Korzev", anchor='n', font='Helvetica 18 bold')
+
+        self.feature_selection = ttk.Label(self, text="Feature Selection", anchor='n', font='Helvetica 36 bold')
+        self.syon_2 = ttk.Label(self, text="Syon Kadkade", anchor='n', font='Helvetica 18 bold')
+
+        self.ai = ttk.Label(self, text="AI-Model Expert", anchor='n', font='Helvetica 36 bold')
+        self.tobia_4 = ttk.Label(self, text="Tobia Ippolito", anchor='n', font='Helvetica 18 bold')
+
+        self.schnitt = ttk.Label(self, text="Kamera und Schnitt", anchor='n', font='Helvetica 36 bold')
+        self.matteo_1 = ttk.Label(self, text="Matteo Ippolito", anchor='n', font='Helvetica 18 bold')
+        self.vadim_3 = ttk.Label(self, text="Vadim Korzev", anchor='n', font='Helvetica 18 bold')
+
+        self.schauspieler = ttk.Label(self, text="Schauspieler", anchor='n', font='Helvetica 36 bold')
+        self.tobia_5 = ttk.Label(self, text="Tobia Ippolito", anchor='n', font='Helvetica 18 bold')
+        self.syon_3 = ttk.Label(self, text="Syon Kadkade", anchor='n', font='Helvetica 18 bold')
+
+        #self.code_doku = ttk.Label(self, text="Code-Dokumentation", anchor='n', font='Helvetica 36 bold')
+        #self.tobia_6 = ttk.Label(self, text="Tobia Ippolito", anchor='n', font='Helvetica 18 bold')
+
+        self.special_thanks = ttk.Label(self, text="Special Thanks", anchor='n', font='Helvetica 36 bold')
+        self.daniela_1 = ttk.Label(self, text="Prof. Dr. Daniela Oelke", anchor='n', font='Helvetica 18 bold')
+        self.stefan_1 = ttk.Label(self, text="Stefan Glaser", anchor='n', font='Helvetica 18 bold')
+        self.matteo_2 = ttk.Label(self, text="Matteo Ippolito", anchor='n', font='Helvetica 18 bold')
 
 
     def add_padding(self):
+        """
+        Defines all paddings of the widgets.
+        """
         for child in self.winfo_children():
             child.grid_configure(padx=10, pady=10)
 
     def weighting(self):
+        """
+        Defines all weightings of the widgets.
+
+        The weighting defines, how intensive the grid-entry fit, if the size of the screen is changing.
+        """
         for n in range(self.max_rows):
             self.grid_rowconfigure(n, weight=1, minsize=20) #20
         
@@ -1178,34 +1636,76 @@ class Credits_Window(Screen):
             self.grid_columnconfigure(n, weight=1, minsize=50) # 50
     
     def show(self):
+        """
+        Shows the Credits-Screen.
+
+        For that the screen will be packed and the animation will be started.
+        """
         self.pack(expand=True, fill='both', side='top')
         self.label_bg.place(x=0, y=0, relwidth=1, relheight=1)
         self.should_run = True
-        self.startpoint = 1.3
+        self.startpoint = 4.8
         self.update_show()
 
     def update_show(self):
-        self.startpoint -= 0.0005
-        self.entwickler.place_forget()
-        self.tobia.place_forget()
-        self.syon.place_forget()
-        self.vadim.place_forget()
-        self.entwickler.place(relx=0.42, rely=self.startpoint-0.37)
-        self.tobia.place(relx=0.45, rely=self.startpoint-0.2)
-        self.syon.place(relx=0.45, rely=self.startpoint-0.1)
-        self.vadim.place(relx=0.45, rely=self.startpoint)
+        """
+        Updates the position of the labels.
+
+        With that method called many times, ended in a flow effect.
+        """
+        self.moving = 0.00005
+        self.startpoint -= self.moving
+       
+        self.entwickler.place(relx=0.42, rely=self.startpoint-3.97)
+        self.tobia_1.place(relx=0.45, rely=self.startpoint-3.8)
+        self.syon_1.place(relx=0.45, rely=self.startpoint-3.7)
+        self.vadim_1.place(relx=0.45, rely=self.startpoint-3.6)
+
+        self.gui.place(relx=0.47, rely=self.startpoint-3.37)
+        self.tobia_2.place(relx=0.45, rely=self.startpoint-3.2)
+
+        self.automation.place(relx=0.41, rely=self.startpoint-2.97)
+        self.tobia_3.place(relx=0.45, rely=self.startpoint-2.8)
+
+        self.feature_extraction.place(relx=0.35, rely=self.startpoint-2.57)
+        self.vadim_2.place(relx=0.45, rely=self.startpoint-2.4)
+
+        self.feature_selection.place(relx=0.36, rely=self.startpoint-2.17)
+        self.syon_2.place(relx=0.45, rely=self.startpoint-2.0)
+
+        self.ai.place(relx=0.37, rely=self.startpoint-1.77)
+        self.tobia_4.place(relx=0.45, rely=self.startpoint-1.6)
+
+        self.schnitt.place(relx=0.33, rely=self.startpoint-1.37)
+        self.matteo_1.place(relx=0.44, rely=self.startpoint-1.2)
+        self.vadim_3.place(relx=0.45, rely=self.startpoint-1.1)
+        
+        self.schauspieler.place(relx=0.39, rely=self.startpoint-0.87)
+        self.tobia_5.place(relx=0.45, rely=self.startpoint-0.7)
+        self.syon_3.place(relx=0.45, rely=self.startpoint-0.6)
+
+        self.special_thanks.place(relx=0.37, rely=self.startpoint-0.37)
+        self.daniela_1.place(relx=0.4, rely=self.startpoint-0.2)
+        self.stefan_1.place(relx=0.45, rely=self.startpoint-0.1)
+        self.matteo_2.place(relx=0.44, rely=self.startpoint)
+
         if self.should_run:
-            self.root.after(10, self.update_show)
+            self.root.after(1, self.update_show)
 
     def hide(self):
+        """
+        Hides the Credits-Screen.
+
+        For that the screen will be unpacked and the animation will be stopped.
+        """
         self.pack_forget()
         self.should_run = False
 
     def event_back(self):
+        """
+        Load the start-menu.
+        """
         self.root.load_screen_main_menu(self)
-
-    def event_start_button(self):
-        pass
 
 
 ###############################################
@@ -1214,6 +1714,20 @@ class Credits_Window(Screen):
 def run(data_path="src/DrillDummy/testdata", drillcapture_path="src/DrillDummy/drillcapture.exe", 
                                 drilldriver_path="src/DrillDummy/drilldriver.exe", op=op.WINDOWS, 
                                 path_to_project="./"):
+    """
+    Creates the GUI and starts the whole Application.
+
+    :param data-path: A path to the location where the data will be stored (there will be created a new folder with the current date)
+    :type data-path: str, optional
+    :param drillcapture_path: A path to the location where the Drillcapture program executable is stored.
+    :type drillcapture_path: str, optional
+    :param drilldriver_path: A path to the location where the Drilldriver program executable is stored.
+    :type drilldriver_path: str, optional
+    :param op: Defines on which operating system the program should run.
+    :type op: :class:`~anoog.automation.py_exe_interface.op`, optional
+    :param path_to_project: A path to the location to the Project folder.
+    :type path_to_project: str, optional
+    """
     GUI_App().run(data_path, drillcapture_path, drilldriver_path, op, path_to_project)
 
 

@@ -1,3 +1,11 @@
+"""
+This module is used to applie machine-learning algorithm.
+
+Contains functions for train, predict and evaluate ai-model.
+
+Author: Tobia Ippolito
+"""
+
 import os
 from enum import Enum
 
@@ -26,6 +34,27 @@ MODELS = Enum('MODELS', 'RANDOM_FOREST SVM LOGISTIC_REGRESSION ADA_BOOST VOTING_
 
 
 def train_random_forest(X_train, y_train, auto_params=False, normalize=False, cv=3):
+    """
+    Trains a RandomForrest with the given data.
+
+    Hyperparameters are configured by Tobia Ippolito. Alternativly GridSearch can be used. But there have to be enough data.
+
+    The traindata can be normalize.
+
+    :param X_train: Features which will be used for training.
+    :type X_train: pd.DataFrame
+    :param y_train: Target-feature which will be used for training.
+    :type y_train: pd.Series
+    :param auto_params: Defines whether or not using preconfigured hyperparameter or lets GridSearch tunes the model.
+    :type auto_params: bool, optional
+    :param normalize: Defines if the data should be normalized.
+    :type normalize: bool, optional
+    :param cv: Defines the number of cross-validation-datasets by auto variable = True.
+    :type cv: int, optional
+
+    :return: Returns the trained classifier.
+    :rtype: sklearn.ensemble.RandomForestClassifier
+    """
     # Classifier Randomforest
     if normalize:
         scaler = MinMaxScaler()
@@ -43,6 +72,27 @@ def train_random_forest(X_train, y_train, auto_params=False, normalize=False, cv
 
 
 def train_svc(X_train, y_train, auto_params=False, normalize=True, cv=3):
+    """
+    Trains a SupportVectorMachine with the given data.
+
+    Hyperparameters are configured by Tobia Ippolito. Alternativly GridSearch can be used. But there have to be enough data.
+
+    The traindata can be normalize.
+
+    :param X_train: Features which will be used for training.
+    :type X_train: pd.DataFrame
+    :param y_train: Target-feature which will be used for training.
+    :type y_train: pd.Series
+    :param auto_params: Defines whether or not using preconfigured hyperparameter or lets GridSearch tunes the model.
+    :type auto_params: bool, optional
+    :param normalize: Defines if the data should be normalized.
+    :type normalize: bool, optional
+    :param cv: Defines the number of cross-validation-datasets by auto variable = True.
+    :type cv: int, optional
+
+    :return: Returns the trained classifier.
+    :rtype: sklearn.svm.SVC
+    """
     # Classifier Support Vector Machines
     #print(X_train)
     #print("nan:", np.isnan(X_train.any()))
@@ -63,6 +113,27 @@ def train_svc(X_train, y_train, auto_params=False, normalize=True, cv=3):
 
 
 def train_knn(X_train, y_train, auto_params=False, normalize=True, cv=3):
+    """
+    Trains a K-Nearest Neighbors with the given data.
+
+    Hyperparameters are configured by Tobia Ippolito. Alternativly GridSearch can be used. But there have to be enough data.
+
+    The traindata can be normalize.
+
+    :param X_train: Features which will be used for training.
+    :type X_train: pd.DataFrame
+    :param y_train: Target-feature which will be used for training.
+    :type y_train: pd.Series
+    :param auto_params: Defines whether or not using preconfigured hyperparameter or lets GridSearch tunes the model.
+    :type auto_params: bool, optional
+    :param normalize: Defines if the data should be normalized.
+    :type normalize: bool, optional
+    :param cv: Defines the number of cross-validation-datasets by auto variable = True.
+    :type cv: int, optional
+
+    :return: Returns the trained classifier.
+    :rtype: sklearn.neighbors.KNeighborsClassifier
+    """
     # Classifier K-Nearest Neighbors
     if normalize:
         scaler = MinMaxScaler()
@@ -78,6 +149,27 @@ def train_knn(X_train, y_train, auto_params=False, normalize=True, cv=3):
     return model.fit(X_train, y_train)
 
 def train_adaboost(X_train, y_train, auto_params=False, normalize=True, cv=3):
+    """
+    Trains a AdaBoost with the given data.
+
+    Hyperparameters are configured by Tobia Ippolito. Alternativly GridSearch can be used. But there have to be enough data.
+
+    The traindata can be normalize.
+
+    :param X_train: Features which will be used for training.
+    :type X_train: pd.DataFrame
+    :param y_train: Target-feature which will be used for training.
+    :type y_train: pd.Series
+    :param auto_params: Defines whether or not using preconfigured hyperparameter or lets GridSearch tunes the model.
+    :type auto_params: bool, optional
+    :param normalize: Defines if the data should be normalized.
+    :type normalize: bool, optional
+    :param cv: Defines the number of cross-validation-datasets by auto variable = True.
+    :type cv: int, optional
+
+    :return: Returns the trained classifier.
+    :rtype: sklearn.ensemble.AdaBoostClassifier
+    """
     # Classifier Ada-Boost with SVC
     if normalize:
         scaler = MinMaxScaler()
@@ -97,6 +189,27 @@ def train_adaboost(X_train, y_train, auto_params=False, normalize=True, cv=3):
     return model.fit(X_train, y_train)
 
 def train_naive_bayes(X_train, y_train, auto_params=False, normalize=True, cv=3):
+    """
+    Trains a Naive Bayes with the given data.
+
+    Hyperparameters are configured by Tobia Ippolito. Alternativly GridSearch can be used. But there have to be enough data.
+
+    The traindata can be normalize.
+
+    :param X_train: Features which will be used for training.
+    :type X_train: pd.DataFrame
+    :param y_train: Target-feature which will be used for training.
+    :type y_train: pd.Series
+    :param auto_params: Defines whether or not using preconfigured hyperparameter or lets GridSearch tunes the model.
+    :type auto_params: bool, optional
+    :param normalize: Defines if the data should be normalized.
+    :type normalize: bool, optional
+    :param cv: Defines the number of cross-validation-datasets by auto variable = True.
+    :type cv: int, optional
+
+    :return: Returns the trained classifier.
+    :rtype: sklearn.naive_bayes.GaussianNB
+    """
     # Classifier Naive Bayes
     if normalize:
         scaler = MinMaxScaler()
@@ -109,6 +222,27 @@ def train_naive_bayes(X_train, y_train, auto_params=False, normalize=True, cv=3)
     return model.fit(X_train, y_train)
 
 def train_logistic_regression(X_train, y_train, auto_params=False, normalize=True, cv=3):
+    """
+    Trains a Logistic Regression with the given data.
+
+    Hyperparameters are configured by Tobia Ippolito. Alternativly GridSearch can be used. But there have to be enough data.
+
+    The traindata can be normalize.
+
+    :param X_train: Features which will be used for training.
+    :type X_train: pd.DataFrame
+    :param y_train: Target-feature which will be used for training.
+    :type y_train: pd.Series
+    :param auto_params: Defines whether or not using preconfigured hyperparameter or lets GridSearch tunes the model.
+    :type auto_params: bool, optional
+    :param normalize: Defines if the data should be normalized.
+    :type normalize: bool, optional
+    :param cv: Defines the number of cross-validation-datasets by auto variable = True.
+    :type cv: int, optional
+
+    :return: Returns the trained classifier.
+    :rtype: sklearn.linear_model.LogisticRegression
+    """
     # Classifier Logistic Regression
     if normalize:
         scaler = MinMaxScaler()
@@ -124,6 +258,27 @@ def train_logistic_regression(X_train, y_train, auto_params=False, normalize=Tru
     return model.fit(X_train, y_train)
 
 def train_voting_classifier(X_train, y_train, auto_params=False, normalize=True, cv=3):
+    """
+    Trains a Voting Classifier with the given data.
+
+    Hyperparameters are configured by Tobia Ippolito. Alternativly GridSearch can be used. But there have to be enough data.
+
+    The traindata can be normalize.
+
+    :param X_train: Features which will be used for training.
+    :type X_train: pd.DataFrame
+    :param y_train: Target-feature which will be used for training.
+    :type y_train: pd.Series
+    :param auto_params: Defines whether or not using preconfigured hyperparameter or lets GridSearch tunes the model.
+    :type auto_params: bool, optional
+    :param normalize: Defines if the data should be normalized.
+    :type normalize: bool, optional
+    :param cv: Defines the number of cross-validation-datasets by auto variable = True.
+    :type cv: int, optional
+
+    :return: Returns the trained classifier.
+    :rtype: sklearn.ensemble.VotingClassifier
+    """
     # Classifier Logistic Regression
     if normalize:
         scaler = MinMaxScaler()
@@ -139,13 +294,45 @@ def train_voting_classifier(X_train, y_train, auto_params=False, normalize=True,
     return model.fit(X_train, y_train)
 
 def predict(model, predict_data, X_train, normalize=False):
+    """
+    Predicts new data with a model. 
+    Can normalize the data.
+
+    :param model: Model used for prediction.
+    :type model: sklearn.base.BaseEstimator
+    :param predict_data: Data which will be predict.
+    :type predict_data: pd.DataFrame
+    :param X_train: Data which will be used for normalization.
+    :type X_train: pd.DataFrame
+    :param normalize: Defines if the data should be normalize (if True, uses X_train for normalization).
+    :type normalize: bool, optional
+
+    :return: A list of predicted classes.
+    :rtype: numpy.ndarray
+    """
     if normalize:
         scaler = MinMaxScaler().fit(X_train)
         predict_data = pd.DataFrame(scaler.transform(predict_data), columns=predict_data.columns)
-    return model.predict_proba(predict_data)
+    return model.predict(predict_data)
 
 
 def predict_proba(model, predict_data, X_train, normalize=False):
+    """
+    Predicts new data with a model in percent. 
+    Can normalize the data.
+
+    :param model: Model used for prediction.
+    :type model: sklearn.base.BaseEstimator
+    :param predict_data: Data which will be predict.
+    :type predict_data: pd.DataFrame
+    :param X_train: Data which will be used for normalization.
+    :type X_train: pd.DataFrame
+    :param normalize: Defines if the data should be normalize (if True, uses X_train for normalization).
+    :type normalize: bool, optional
+
+    :return: A list of predicted classes with the 2 probabilities.
+    :rtype: numpy.ndarray
+    """
     if normalize:
         scaler = MinMaxScaler().fit(X_train)
         predict_data = pd.DataFrame(scaler.transform(predict_data), columns=predict_data.columns)
@@ -153,6 +340,25 @@ def predict_proba(model, predict_data, X_train, normalize=False):
 
 
 def evaluate_model(model, X_test, y_test, X_train, normalize=False):
+    """
+    Evaluats a model. 
+    Means predict new data and returns the accuracy and confusion-matrix. 
+    Can normalize the data.
+
+    :param model: Model used for evaluation.
+    :type model: sklearn.base.BaseEstimator
+    :param X_test: Data which will be predict.
+    :type X_test: pd.DataFrame
+    :param y_test: Target value of the test-data.
+    :type y_test: pd.Series
+    :param X_train: Data which will be used for normalization.
+    :type X_train: pd.DataFrame
+    :param normalize: Defines if the data should be normalize (if True, uses X_train for normalization).
+    :type normalize: bool, optional
+
+    :return: A list of predicted classes with the 2 probabilities.
+    :rtype: tuple of accuracy and confusion matrix.
+    """
     # normalize
     if normalize:
         scaler = MinMaxScaler().fit(X_train)
@@ -171,6 +377,22 @@ def evaluate_model(model, X_test, y_test, X_train, normalize=False):
 
 # give Enum or sklearn model in
 def evaluate_model_with_cross_validation(X, y, model=MODELS.RANDOM_FOREST, cv=5):
+    """
+    Evaluats a model with cross-validation. 
+    
+
+    :param X: Features which will be splittet in train and validation datasets.
+    :type X: pd.DataFrame
+    :param y: Target value of the data (which will be splittet in train and validation datasets).
+    :type y: pd.Series
+    :param model: Model used for evaluation.
+    :type model: :class:`~anoog.model.model.MODELS`
+    :param cv: Defines the number of cross-validation-datasets.
+    :type cv: int, optional
+
+    :return: A list of predicted classes with the 2 probabilities.
+    :rtype: tuple of accuracy and confusion matrix.
+    """
     if model == MODELS.RANDOM_FOREST:
         estimator = RandomForestClassifier(n_estimators=100, criterion='entropy', min_samples_split=5)
     elif model == MODELS.SVM:
@@ -193,6 +415,17 @@ def evaluate_model_with_cross_validation(X, y, model=MODELS.RANDOM_FOREST, cv=5)
 
 
 def get_most_important_features(model, X, n=5):
+    """
+    Calculates the n most important features of a RandomForestClassifier.
+    Prints the result. See :func:`~anoog.model.model.get_most_important_features_as_list` for getting a result returned.
+
+    :param model: Model used for feature-selection.
+    :type model: sklearn.base.BaseEstimator
+    :param X: Features which will be used for information-source by columns specifications.
+    :type X: pd.DataFrame
+    :param n: Number of Features to select.
+    :type n: int
+    """
     importance_list = np.hstack((X.columns.to_numpy().reshape(-1, 1), model.feature_importances_.reshape(-1, 1)))
     sorted_feature_importance = importance_list[importance_list[:, 1].argsort()][::-1, :] 
     for i in range(n):
@@ -200,6 +433,19 @@ def get_most_important_features(model, X, n=5):
 
 
 def get_most_important_features_as_list(model, X, n=5):
+    """
+    Calculates the n most important features of a RandomForestClassifier.
+    
+    :param model: Model used for feature-selection.
+    :type model: sklearn.base.BaseEstimator
+    :param X: Features which will be used for information-source by columns specifications.
+    :type X: pd.DataFrame
+    :param n: Number of Features to select.
+    :type n: int
+
+    :return: Most important features.
+    :rtype: list of names of selected-features.
+    """
     importance_list = np.hstack((X.columns.to_numpy().reshape(-1, 1), model.feature_importances_.reshape(-1, 1)))
     sorted_feature_importance = importance_list[importance_list[:, 1].argsort()][::-1, :] 
     result = []

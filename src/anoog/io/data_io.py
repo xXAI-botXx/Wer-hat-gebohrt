@@ -1,3 +1,15 @@
+"""
+This module used to load drill data.
+Internally this module uses the :mod:`~anoog.io.csv_io` and makes the handling lot easier and with more features.
+The user can easily say which persons, with which feature-selection, with which feature-extraction and if there shoud be a split in train and test-data.
+
+There are 2 main-functions (:func:`~anoog.io.data_io.load_data` & :func:`~anoog.io.load_single_data`), which use the other functions.
+
+Author for :func:`~anoog.io.data_io.load_data.advanced_feature_extraction`: Vadim Korzev
+Author for :func:`~anoog.io.data_io.load_data.feature_selection` & :func:`~anoog.io.data_io.load_data.rename`: Syon Kadkade
+Author for the rest: Tobia Ippolito
+"""
+
 import os
 import sys
 import csv
@@ -20,9 +32,6 @@ from sklearn.feature_selection import SelectFromModel #New Import
 # For Feature Extraction
 import tsfresh as tsf
 
-# nötig???
-# Set up system path to include our "anoog" python package
-#sys.path.append('../src')
 from . import csv_io as io
 from ..model import get_most_important_features_as_list
 
@@ -40,11 +49,38 @@ def load_data(data_path='../../../data/2021-11-09',
               save_as_csv=False,
               csv_name=None,
               normalize=False) -> pd.DataFrame:
-    """Loads Data and prepares them.
+    """
+    Loads Data and prepares them.
     Feature Extraction and Feature Selection.
     Labeling and Resampling.
+    Split in train/test or not.
 
-    Returns DataFrame"""
+    All controllable over the arguments.
+
+    :param data_path: Path to the location of the data, which should be loaded.
+    :type data_path: str, optional
+    :param persons: Names of the persons who drilled (the data of these persons will be loaded).
+    :type persons: list of str, optional
+    :param extraction: Kind of extraction, which will be used for the timerows.
+    :type extraction: :class:`~anoog.io.data_io.extraction_mode`, optional
+    :param show_extraction: If Tsfresh selected as feature-extraction-method, the output of it will be visible or not.
+    :type show_extraction: bool, optional
+    :param selection: Kind of selection, which will be used for the extracted features.
+    :type selection: :class:`~anoog.io.data_io.selection_mode`, optional
+    :param train_test_split: Defines if there should be a train-test-split
+    :type train_test_split: bool, optional
+    :param test_size: Defines the size of the split, if train-test-split is setted on True (in percentage).
+    :type test_size: float, optional
+    :param save_as_csv: Defines if the loaded data should be saved in a csv file.
+    :type save_as_csv: bool, optional
+    :param csv_name: If save_as_csv is True, this param defines, which name the file should have.
+    :type csv_name: str, optional
+    :param normlize: Decided if the data should be normalized.
+    :type normalize: bool, optional
+
+    :return: The loaded data.
+    :rtype: pd.DataFrame
+    """
 
     # Loading data and meta-data
     seriesIDs = persons
@@ -101,8 +137,35 @@ def load_single_data(person_id,
                         save_as_csv=False,
                         csv_name=None,
                         normalize=False) -> pd.DataFrame:
-    """Loading a single Drill. The last drill in the folder.
-    returns a DataFrame"""
+    """
+    Loading a single drill-data-entry. The last drill in the folder.
+
+    There are many options to set.
+    
+    :param data_path: Path to the location of the data, which should be loaded.
+    :type data_path: str, optional
+    :param persons: Names of the persons who drilled (the data of these persons will be loaded).
+    :type persons: list of str, optional
+    :param extraction: Kind of extraction, which will be used for the timerows.
+    :type extraction: :class:`~anoog.io.data_io.extraction_mode`, optional
+    :param show_extraction: If Tsfresh selected as feature-extraction-method, the output of it will be visible or not.
+    :type show_extraction: bool, optional
+    :param selection: Kind of selection, which will be used for the extracted features.
+    :type selection: :class:`~anoog.io.data_io.selection_mode`, optional
+    :param train_test_split: Defines if there should be a train-test-split
+    :type train_test_split: bool, optional
+    :param test_size: Defines the size of the split, if train-test-split is setted on True (in percentage).
+    :type test_size: float, optional
+    :param save_as_csv: Defines if the loaded data should be saved in a csv file.
+    :type save_as_csv: bool, optional
+    :param csv_name: If save_as_csv is True, this param defines, which name the file should have.
+    :type csv_name: str, optional
+    :param normlize: Decided if the data should be normalized.
+    :type normalize: bool, optional
+
+    :return: The loaded data.
+    :rtype: pd.DataFrame
+    """
 
     data = io.load_single_data(person, data_path)
     if type(data) == None:
@@ -142,6 +205,17 @@ def load_single_data(person_id,
 
 # To many data -> Resampling for few data
 def resampling(data) -> pd.DataFrame:
+    """
+    Resamples the data.
+
+    Scaled down the data-size (timerow) without loose to much informations.
+
+    :param data: The data which will be resampled.
+    :type data: pd.DataFrame
+
+    :return: The down sampled data.
+    :rtype: pd.DataFrame
+    """
     resamplingInterval = '10ms'
 
     resampled_data = data.resample(resamplingInterval, label='right', closed='right', on='Time').mean()
@@ -151,6 +225,17 @@ def resampling(data) -> pd.DataFrame:
 
 
 def y_labeling(data, meta_data, extraction):
+    """
+    Creates target-column from ID-column and persons.
+
+    :param meta_data: Data to get ID and operator.
+    :type meta_data: pd.DataFrame
+    :param extraction: Kind of extraction, which will be used for the timerows.
+    :type extraction: :class:`~anoog.io.data_io.extraction_mode`
+
+    :return: The target-column. Represents the operator.
+    :rtype: pd.Series
+    """
     labelEnc = LabelEncoder()
     y = y_target = pd.Series(labelEnc.fit_transform(meta_data['Operator'].values), index=meta_data['ID'])
 
@@ -167,17 +252,35 @@ def y_labeling(data, meta_data, extraction):
 
 # For manuel Feature
 def extract_feature(data, from_feature:str, function):
-    """Extracts Features of a drill timeseries data.
+    """
+    Extracts a Feature of a drill timeseries data with the given function for every drill.
+
+    :param data: Data for extract the feature.
+    :type data: pd.DataFrame
+    :param from_feature: The column, which will be used for extraction ('Audio', 'Current' or 'Voltage').
+    :type from_feature: str
+    :param data: Function for extract the feature (like np.mean).
+    :type data: callable
     
-    Returns a list"""
+    :return: Feature list of the given function for every drill.
+    :rtype: list
+    """
     feature_collection = []
     for id in data['ID'].unique():
-        #feature_collection += [data[data['ID'] == id][from_feature].function()]
         feature_collection += [function(data[data['ID']==id][from_feature])]
     return feature_collection
 
 
 def advanced_feature_extraction(df) -> pd.DataFrame:
+    """
+    Extracts special features like energy and resistens from timerow for every drill.
+
+    :param df: Data for extract the feature.
+    :type df: pd.DataFrame
+    
+    :return: Extracted Features.
+    :rtype: pd.DataFrame
+    """
     # Calc mean and transform time in duration
     time = []
     for i in df["Time"]:
@@ -292,6 +395,23 @@ def advanced_feature_extraction(df) -> pd.DataFrame:
 
 # data feature extraction + labeling
 def feature_extraction(data, mode, data_path, show=True) -> pd.DataFrame:
+    """
+    Applies feature-extraction on the data.
+
+    It's can be tsfresh or manuel and there are some more variations.
+
+    :param data: Data for extract the feature.
+    :type data: pd.DataFrame
+    :param mode: Feature-Extraction mode.
+    :type mode: :class:`~anoog.io.data_io.extraction_mode`
+    :param data_path: Path to the data.
+    :type data_path: str
+    :param show: Defines if the output of Tsfresh should be showed.
+    :type show: bool, optional
+    
+    :return: Extracted Features.
+    :rtype: pd.DataFrame
+    """
     if mode == extraction_mode.TSFRESH:
         # extract Features of time data
         reverse_show = not show
@@ -323,6 +443,21 @@ def feature_extraction(data, mode, data_path, show=True) -> pd.DataFrame:
 
 # data feature extraction + labeling
 def feature_selection(X, y, mode, data_path) -> pd.DataFrame:
+    """
+    Applies feature-selection on the data.
+
+    :param X: Data for select the feature.
+    :type X: pd.DataFrame
+    :param y: Target-column.
+    :type y: pd.Serie
+    :param mode: Feature-Selection mode.
+    :type mode: :class:`~anoog.io.data_io.selection_mode`
+    :param data_path: Path to the data.
+    :type data_path: str
+    
+    :return: Selected Features.
+    :rtype: pd.DataFrame
+    """
     if mode == selection_mode.TSFRESH:
         # Selecting only important Features
         X_filtered = tsf.select_features(X, y)
@@ -332,11 +467,47 @@ def feature_selection(X, y, mode, data_path) -> pd.DataFrame:
         save_features(data_path, kind_to_fc_parameters)
 
         return X_filtered
+    elif mode == selection_mode.SELECTKBEST:
+        selectKBest = SelectKBest(f_classif, k=5).fit(X, y) #default= sf_classif,  k can be changed
+        important_features = rename(selectKBest.get_support(), list(X.columns))
+        X_new = X[important_features]
+        return X_new
+    elif mode == selection_mode.VARIANCE:
+        varianceSelect = VarianceThreshold(threshold=100000) #threshold can be changed
+        varianceSelect.fit_transform(X)
+        important_features = rename(varianceSelect.get_support(), list(X.columns))
+        X_new = X[important_features]
+        return X_new
+    elif mode == selection_mode.MODEL_BASED:
+        Dtree = tree.DecisionTreeClassifier() #Default Values yet
+        SelectM = SelectFromModel(estimator=Dtree) #Classifier can be changed
+        SelectM.fit(X, y)
+        important_features = rename(SelectM.get_support(), list(X.columns))
+        X_new = X[important_features]
+        return X_new
     else:
         return X
 
 
+
 def split_data(X, y, test_size_in_percent=0.3, should_split=False) -> list:
+    """
+    Splits the data in train and testdata.
+
+    Wrapps the data in a list.
+
+    :param X: Data for select the feature.
+    :type X: pd.DataFrame
+    :param y: Target-column.
+    :type y: pd.Serie
+    :param test_size_in_percent: Größe des splits/der Testdaten.
+    :type test_size_in_percent: float
+    :param should_split: Entscheidet, ob ein split der Daten vorgenommen werden soll.
+    :type should_split: bool
+    
+    :return: Returns the splitet data as diffrent datasets.
+    :rtype: list of list which contains X and y (maybe X_train, y_train,...)
+    """
     if should_split:
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size_in_percent, stratify=y) 
         return [[X_train, y_train], [X_test, y_test]]
@@ -345,6 +516,14 @@ def split_data(X, y, test_size_in_percent=0.3, should_split=False) -> list:
 
 
 def save_features(data_path, params:dict):
+    """
+    Function to save the selected features from tsfresh.
+
+    :param data_path: Path to save the features.
+    :type data_path: str
+    :param params: Features von Tsfresh.
+    :type params: dict
+    """
     path = "/".join(data_path.split("/")[:-1])
     name = 'features_00.txt'
     files = os.listdir(path)
@@ -361,6 +540,17 @@ def save_features(data_path, params:dict):
 
 
 def load_features(data_path, name=None):
+    """
+    Function to load the saved selected features from tsfresh.
+
+    :param data_path: Path where the features are stored.
+    :type data_path: str
+    :param name: Name of the file.
+    :type name: str, optional
+
+    :return: Features from Tsfresh.
+    :rtype: dict
+    """
     # load features
     path = "/".join(data_path.split("/")[:-1])
     if name == None or not name.endswith(".txt"):
@@ -382,6 +572,16 @@ def load_features(data_path, name=None):
 
 
 def save_data(data_path, datasets, name):
+    """
+    Saves the data localy.
+
+    :param data_path: Path to save the data.
+    :type data_path: str
+    :param datasets: Data to save.
+    :type datasets: list of list of pd.DataFrames/pd.Series
+    :param name: Name of the file to save the data.
+    :type name: str
+    """
     path = "/".join(data_path.split("/")[:-1])
     files = os.listdir(path)
     i = 0
@@ -404,38 +604,33 @@ def save_data(data_path, datasets, name):
 
 
 def X_y_split(data):
+    """
+    Splits a DataFrame in X an the target column.
+
+    :param data: Data to split.
+    :type data: pd.DataFrame
+
+    :return: Splittet data.
+    :rtype: tuple of pd.DataFrame and pd.Series
+    """
     return data.iloc[:, :-1], data.loc[:, 'y']
     #or
     #return data.drop(columns=['y']), data.y
 
 
-#function for different Selection methods
-def feature_selectionMethod(X, y, mode): #New function
-    if mode == selection_mode.SELECTKBEST:
-        selectKBest = SelectKBest(f_classif, k=5).fit(X, y) #default= sf_classif,  k can be changed
-        important_features = rename(selectKBest.get_support(), list(X.columns))
-        X_new = X[important_features]
-        return X_new
-    elif mode == selection_mode.VARIANCE:
-        varianceSelect= VarianceThreshold(threshold=100000) #threshold can be changed
-        varianceSelect.fit_transform(X)
-        important_features = rename(varianceSelect.get_support(), list(X.columns))
-        X_new = X[important_features]
-        return X_new
-    elif mode == selection_mode.MODEL_BASED:
-        Dtree = tree.DecisionTreeClassifier() #Default Values yet
-        SelectM = SelectFromModel(estimator=Dtree) #Classifier can be changed
-        SelectM.fit(X, y)
-        important_features = rename(SelectM.get_support(), list(X.columns))
-        X_new = X[important_features]
-        return X_new
-
-    else:
-        return X
-
-
 #function for feature name mask
-def rename(score, list_names): #New function
+def rename(score, list_names): 
+    """
+    Masks all names, which have a True score.
+
+    :param score: Score of the features.
+    :type score: bool
+    :param list_names: List with names of the features.
+    :type list_names: list of str
+
+    :return: New selected features.
+    :rtype: list of str
+    """
     name_result = []
     for i, x in enumerate(score):
         if x == True:
@@ -444,8 +639,19 @@ def rename(score, list_names): #New function
     return name_result
 
 def model_based_feature_selection(X, y, n=5):
-    """Get the n best Features. Selected by a RandomForest.
-    Returns new X with selected Features."""
+    """
+    Get the n best Features elected by a RandomForest.
+    
+    :param X: Data for select the feature.
+    :type X: pd.DataFrame
+    :param y: Target-column.
+    :type y: pd.Serie
+    :param n: Number of features, which will take n-best features.
+    :type n: int, optional
+
+    :return: Returns new X with selected Features.
+    :rtype: pd.DataFrame
+    """
     model = RandomForestClassifier(n_estimators=100, 
                                bootstrap = True,
                                max_features = 'sqrt')
@@ -458,4 +664,13 @@ def model_based_feature_selection(X, y, n=5):
 
 # for testing
 def remove_audio_features(data) -> pd.DataFrame:
+    """
+    Removes all features with audio context.
+    
+    :param data: Data for remove the audio features.
+    :type data: pd.DataFrame
+
+    :return: Returns new data without audio features.
+    :rtype: pd.DataFrame
+    """
     return data.drop(columns=['audio_mean', 'audio_max', 'audio_min', 'audio_median', 'audio_std'])

@@ -1,3 +1,9 @@
+"""
+This module is used to hold the train/predict data and also to train/predict with a ML-Algorithm
+
+Author: Tobia Ippolito
+"""
+
 import os
 from enum import Enum
 from datetime import datetime
@@ -23,6 +29,9 @@ class AI_Model(object):
     By init or resetting it clears this protocol.
     """
     def __init__(self):
+        """
+        Constructor method
+        """
         self.train_data = pd.DataFrame()
         self.predict_data = pd.DataFrame()
         self.model = None
@@ -37,14 +46,13 @@ class AI_Model(object):
     def add_train_dataset(self, person_id:int, person:str, data_path:str):
         """
         Load last train-drill-data in DataFrame. Using buffer with 30s timeout (if the data need some time to saving).
-
-        Arguments:
-            - person_id as int (to know which person is meaned)
-            - person as str (||)
-            - data_path as str (to know where the data is stored)
         
-        --------
-        Returns None
+        :param person_id: ID of the Person who drill last time.
+        :type person_id: int
+        :param person: Name of the Person who drill last time.
+        :type person: str
+        :param data_path: Path to the data-directory. To know where collect the data.
+        :type data_path: str
         """
         now = datetime.now()
         date = f"{now.year}-{now.month}-{now.day}"
@@ -91,13 +99,12 @@ class AI_Model(object):
         """
         Load last predict-drill-data in DataFrame. Using buffer with 30s timeout (if the data need some time to saving).
 
-        Arguments:
-            - person_id as int (to know which person is meaned)
-            - person as str (||)
-            - data_path as str (to know where the data is stored)
-        
-        --------
-        Returns None
+        :param person_id: ID of the Person who drill last time.
+        :type person_id: int
+        :param person: Name of the Person who drill last time.
+        :type person: str
+        :param data_path: Path to the data-directory. To know where collect the data.
+        :type data_path: str
         """
         now = datetime.now()
         date = f"{now.year}-{now.month}-{now.day}"
@@ -144,9 +151,6 @@ class AI_Model(object):
     def remove_last_train_dataset(self):
         """
         Removes last train-data-entry from DataFrame.
-
-        --------
-        Return None
         """
         self.train_data = self.train_data.head(self.train_data.shape[0]-1)
         self.write_log("Removed Last Train Dataset")
@@ -154,9 +158,6 @@ class AI_Model(object):
     def remove_last_predict_dataset(self):
         """
         Removes last predict-data-entry from DataFrame.
-
-        --------
-        Return None
         """
         self.predict_data = self.predict_data.head(self.predict_data.shape[0]-1)
         self.write_log("Removed Last Predict Dataset")
@@ -164,9 +165,6 @@ class AI_Model(object):
     def remove_predict_dataset(self):
         """
         Removes complete predict-data from DataFrame.
-
-        --------
-        Return None
         """
         self.predict_data = pd.DataFrame()
         self.write_log("Removed Complete Predict Dataset")
@@ -180,12 +178,12 @@ class AI_Model(object):
         If there are not enough data-entries, GridSearchCV don't be choosen. 
         There have to be more than 5 entries.
 
-        Arguments:
-            - algorithm (Enum) (to which ML-Algorithmn to choose)
-            - auto_params (bool) (to know if Hyperparameter choose predefined or GridSearchCV)
-            - normalize (bool) (to know if the data should be normalized)
-        --------
-        Return None
+        :param algorithm: To know which ML-Algorithmn to choose
+        :type algorithm: int, optional
+        :param auto_params: To know if Hyperparameter choose predefined or GridSearchCV
+        :type auto_params: str, optional
+        :param normalize: To know if the data should be normalized
+        :type normalize: str, optional
         """
         # auto-params only if greater than CV*2
         if auto_params:
@@ -221,8 +219,8 @@ class AI_Model(object):
         If there are more than one predict-data-entry. Every Entry going to predict 
         and the probabilities are stacked (soft voting) and scaled to 100%.
 
-        --------
-        Returns tuple of 2 floats -> result of prediction (proba)
+        :return: Returns the prediction probability
+        :rtype: tuple(float, float)
         """
         self.write_log("Start Predict")
         X, y = X_y_split(self.train_data)    # for normalization
@@ -245,10 +243,11 @@ class AI_Model(object):
         Tries to remove some irrelevant Features, which shouldn't exist anymore.
         It's no problem, if they don't exist.
 
-        Arguments: 
-            - data (data which will be trimmed)
-        --------
-        Return new trimmed DataFrame
+        :param data: Data, which will be trimmed
+        :type data: pd.DataFrame
+
+        :return: Return new trimmed DataFrame
+        :rtype: pd.DataFrame
         """
         new_data = data.copy()
         if 'Audio' in data.columns:
@@ -271,8 +270,18 @@ class AI_Model(object):
             - person2_name as str (to plot the name)
             - person2_proba as int (to plot the probability)
             - save_path as str (to know where to save the plot)
-        --------
-        Returns None
+        
+
+        :param person1_name: Name of the first person.
+        :type person1_name: str
+        :param person1_proba: Probability of the first Person. Defines the height of one bar.
+        :type person1_proba: float or int
+        :param person2_name: Name of the second person.
+        :type person2_name: str
+        :param person2_proba: Probability of the second Person. Defines the height of one bar.
+        :type person2_proba: float or int
+        :param save_path: Path, where the plot should be saved.
+        :type save_path: str
         """
         plt.style.use('seaborn-whitegrid')
         fig = plt.figure()
@@ -290,9 +299,6 @@ class AI_Model(object):
         Clears the protocol of the AI-Model.
 
         Should be called once at the beinning of the program.
-
-        --------
-        Returns None
         """
         with open(f"{self.dir_path}/output/AI-Model-log.txt", "w") as f:
             f.write("")
@@ -301,9 +307,6 @@ class AI_Model(object):
         """
         Sets the variables (like the train and predict-DataFrame) to initial values.
         (Clears also the protocol)
-
-        --------
-        Returns None
         """
         self.train_data = pd.DataFrame()
         self.predict_data = pd.DataFrame()
@@ -319,8 +322,8 @@ class AI_Model(object):
 
         This method should be used to add a entry to the protocoll.
 
-        --------
-        Returns None
+        :param message: Message which will be saved in log.
+        :type message: str
         """
         now = datetime.now()
         date_str = f"{now.hour}:{now.minute}:{now.second}"

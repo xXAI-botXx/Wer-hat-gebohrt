@@ -1,0 +1,13 @@
+{
+    "python.autoComplete.extraPaths": [
+<<<<<<< HEAD
+        "c:\\Users\\Korzev\\.vscode\\extensions\\stefanwehr.write-your-python-program-0.13.3\\python\\src\\"
+=======
+        "c:\\Users\\user\\.vscode\\extensions\\stefanwehr.write-your-python-program-0.14.0\\python\\src\\"
+>>>>>>> dfc2df8c5c38649495b70678a9ed8da5328bd7bb
+    ],
+    "python.linting.enabled": false,
+    "python.analysis.extraPaths": [
+        "c:\\Users\\user\\.vscode\\extensions\\stefanwehr.write-your-python-program-0.13.1\\python\\src\\"
+    ]
+}

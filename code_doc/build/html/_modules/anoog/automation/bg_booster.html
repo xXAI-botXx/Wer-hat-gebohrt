@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="de" >
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>anoog.automation.bg_booster &mdash; Wer hat gebohrt? 21.01.2022 Dokumentation</title>
+  <title>anoog.automation.bg_booster &mdash; Wer hat gebohrt? 21.01.2022 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -14,10 +14,9 @@
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/translations.js"></script>
     <script src="../../../_static/js/theme.js"></script>
-    <link rel="index" title="Stichwortverzeichnis" href="../../../genindex.html" />
-    <link rel="search" title="Suche" href="../../../search.html" /> 
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -29,7 +28,7 @@
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Dokumentation durchsuchen" />
+    <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -37,7 +36,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">anoog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../anoog.html">anoog</a></li>
 </ul>
 
         </div>
@@ -54,7 +54,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../index.html">Modul-Quellcode</a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
       <li>anoog.automation.bg_booster</li>
       <li class="wy-breadcrumbs-aside">
       </li>
@@ -64,8 +64,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Quellcode für anoog.automation.bg_booster</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">abc</span>
+  <h1>Source code for anoog.automation.bg_booster</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains a Tkinter-Widget for gradient-color.</span>
+
+<span class="sd">Its runnable to test the Gradient-Color-Widget.</span>
+
+<span class="sd">Author: Tobia Ippolito</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">abc</span>
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
@@ -105,9 +113,38 @@
 <span class="c1">#    - neg = nach unten bzw. rechts bei vertikal</span>
 
 <span class="c1"># Color-Chains works not very good</span>
-<div class="viewcode-block" id="Color_Gradient_Booster"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster">[Doku]</a><span class="k">class</span> <span class="nc">Color_Gradient_Booster</span><span class="p">(</span><span class="n">tk</span><span class="o">.</span><span class="n">Canvas</span><span class="p">):</span>
+<div class="viewcode-block" id="Color_Gradient_Booster"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster">[docs]</a><span class="k">class</span> <span class="nc">Color_Gradient_Booster</span><span class="p">(</span><span class="n">tk</span><span class="o">.</span><span class="n">Canvas</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tkinter-Widget filled out with a gradient color.</span>
+
+<span class="sd">    The gradient-color can be static or dynamic (with a flow).</span>
+
+<span class="sd">    :param root: The basic widget of the gui-application.</span>
+<span class="sd">    :type root: tk.TK()</span>
+<span class="sd">    :param parent: The parent of this widget (which contains this widget).</span>
+<span class="sd">    :type parent: tk.Widget</span>
+<span class="sd">    :param mode: Defines the direction of the gradient-color. (&#39;HORIZONTAL&#39;, &#39;random&#39;, &#39;VERTICAL&#39;)</span>
+<span class="sd">    :type mode: str, optional</span>
+<span class="sd">    :param should_change_color: Defines whether or not the color changes (dynamic).</span>
+<span class="sd">    :type should_change_color: bool, optional</span>
+<span class="sd">    :param change_time: Defines how fast the colors should be changed in dynamic mode. In seconds.</span>
+<span class="sd">    :type change_time: float, optional</span>
+<span class="sd">    :param width: The width of the widget (by most of the LayoutManager it&#39;s not relevant)</span>
+<span class="sd">    :type width: int, optional</span>
+<span class="sd">    :param height: The height of the widget (by most of the LayoutManager it&#39;s not relevant)</span>
+<span class="sd">    :type height: int, optional</span>
+<span class="sd">    :param height: Activates/Deactivates a small variation of the color-values, should ended in a shiny-glimmer-effect.</span>
+<span class="sd">    :type height: bool, optional</span>
+<span class="sd">    :param color_chain: Defines the used colors.</span>
+<span class="sd">    :type color_chain: list of str, optional</span>
+<span class="sd">    :param gradient_size_tendency: Defines the direction of the flow (dynamic). (&#39;neg&#39; or &#39;pos&#39; or &#39;random&#39;)</span>
+<span class="sd">    :type gradient_size_tendency: str, optional</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;HORIZONTAL&#39;</span><span class="p">,</span> <span class="n">should_change_color</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">change_time</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> 
                  <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">shiny_flow_effect</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">color_chain</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gradient_size_tendency</span><span class="o">=</span><span class="s1">&#39;neg&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor method</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">highlightthickness</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">root</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
@@ -149,7 +186,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">change_time</span> <span class="o">=</span> <span class="n">change_time</span>
         <span class="c1"># for changing the gradient size</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size</span> <span class="o">=</span> <span class="mf">1.0</span>
-        <span class="c1">#self.gradient_size_vario = 0.02</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size_vario</span> <span class="o">=</span> <span class="mf">0.0001</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size_vario_factor</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.0001</span><span class="p">,</span> <span class="mf">0.0001</span><span class="p">)</span>
         <span class="c1"># for variate the show every time</span>
@@ -167,25 +203,19 @@
         <span class="c1"># maybe call on some later point (?)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
 
-        <span class="c1">#if should_change_color:</span>
-            <span class="c1">#self.start()</span>
-
-<div class="viewcode-block" id="Color_Gradient_Booster.run"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.run">[Doku]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Color_Gradient_Booster.run"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calls the update method and set itself to be called in some time (change_time defines that waiting time).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">should_change_color</span><span class="p">:</span>
-            <span class="c1">#self.variate_color()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">variate_gradient_size</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-            <span class="c1">#threading.Event().wait(self.change_time)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">after</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">change_time</span><span class="o">*</span><span class="mi">1000</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">)</span></div>
 
-    <span class="c1"># don&#39;t works with tkinter</span>
-    <span class="c1">#def update_in_thread(self):</span>
-    <span class="c1">#    self.should_change_color = True</span>
-    <span class="c1">#    self.color_update_thread = threading.Thread(target=self.run)</span>
-    <span class="c1">#    self.color_update_thread.start()</span>
-
-<div class="viewcode-block" id="Color_Gradient_Booster.update"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.update">[Doku]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1">#print(self.color[0][0], self.color[0][1], self.color[0][2])</span>
+<div class="viewcode-block" id="Color_Gradient_Booster.update"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates and draws the gradient color.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># get height and width</span>
         <span class="n">width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">winfo_width</span><span class="p">()</span>
         <span class="n">height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">winfo_height</span><span class="p">()</span>
@@ -233,21 +263,38 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">gradient_image</span> <span class="o">=</span> <span class="n">ImageTk</span><span class="o">.</span><span class="n">PhotoImage</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">create_image</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="s2">&quot;nw&quot;</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gradient_image</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Color_Gradient_Booster.start"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.start">[Doku]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1">#self.update_in_thread()</span>
+<div class="viewcode-block" id="Color_Gradient_Booster.start"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Starts the flow-effect.</span>
+
+<span class="sd">        So that the gradient-color moves.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">should_change_color</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Color_Gradient_Booster.stop"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.stop">[Doku]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Color_Gradient_Booster.stop"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stops the flow-effect.</span>
+
+<span class="sd">        So that the gradient-color not moves anymore.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">should_change_color</span> <span class="o">=</span> <span class="kc">False</span></div>
 
     <span class="c1"># variate colors</span>
-<div class="viewcode-block" id="Color_Gradient_Booster.variate_color"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.variate_color">[Doku]</a>    <span class="k">def</span> <span class="nf">variate_color</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Color_Gradient_Booster.variate_color"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.variate_color">[docs]</a>    <span class="k">def</span> <span class="nf">variate_color</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Brings a little variation of the colors.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">color</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span><span class="o">%</span><span class="mi">255</span></div>
 
-<div class="viewcode-block" id="Color_Gradient_Booster.variate_gradient_size"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.variate_gradient_size">[Doku]</a>    <span class="k">def</span> <span class="nf">variate_gradient_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Color_Gradient_Booster.variate_gradient_size"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.variate_gradient_size">[docs]</a>    <span class="k">def</span> <span class="nf">variate_gradient_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Variates the size of the 2 colors. </span>
+<span class="sd">        </span>
+<span class="sd">        This creates a flow-effect.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size_tendency</span> <span class="o">==</span> <span class="s1">&#39;pos&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size_vario</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size</span> <span class="o">&gt;=</span> <span class="mf">3.0</span><span class="p">:</span>
@@ -264,18 +311,32 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">variate_gradient_size_speed</span><span class="p">()</span></div>
 
     <span class="c1"># desto kleiner desto unwahrscheinlicher</span>
-<div class="viewcode-block" id="Color_Gradient_Booster.variate_gradient_size_speed"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.variate_gradient_size_speed">[Doku]</a>    <span class="k">def</span> <span class="nf">variate_gradient_size_speed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="Color_Gradient_Booster.variate_gradient_size_speed"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.variate_gradient_size_speed">[docs]</a>    <span class="k">def</span> <span class="nf">variate_gradient_size_speed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Variate the speed of the gradient-color change time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">min</span><span class="p">,</span> <span class="nb">max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size_vario_factor</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size_vario</span> <span class="o">+=</span> <span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span><span class="o">*</span><span class="p">(</span><span class="nb">max</span><span class="o">-</span><span class="nb">min</span><span class="p">))</span><span class="o">+</span><span class="nb">min</span>
         <span class="c1"># reset, if value to low or to high</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size_vario</span> <span class="o">&lt;=</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size_vario</span> <span class="o">&gt;=</span> <span class="mf">0.1</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size_vario</span> <span class="o">=</span> <span class="mf">0.02</span></div>
 
-<div class="viewcode-block" id="Color_Gradient_Booster.calc_shiny_flow_effect"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.calc_shiny_flow_effect">[Doku]</a>    <span class="k">def</span> <span class="nf">calc_shiny_flow_effect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="Color_Gradient_Booster.calc_shiny_flow_effect"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.calc_shiny_flow_effect">[docs]</a>    <span class="k">def</span> <span class="nf">calc_shiny_flow_effect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the variation of the color-value for the shiny-effect.</span>
+
+<span class="sd">        :return: Number of the variation of the normal color-point.</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">min</span><span class="p">,</span> <span class="nb">max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shiny_flow</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span><span class="o">*</span><span class="p">(</span><span class="nb">max</span><span class="o">-</span><span class="nb">min</span><span class="p">))</span><span class="o">+</span><span class="nb">min</span></div>
 
-<div class="viewcode-block" id="Color_Gradient_Booster.color_chain_change"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.color_chain_change">[Doku]</a>    <span class="k">def</span> <span class="nf">color_chain_change</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Color_Gradient_Booster.color_chain_change"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.color_chain_change">[docs]</a>    <span class="k">def</span> <span class="nf">color_chain_change</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Changes the current 2 colors using the color-chain.</span>
+
+<span class="sd">        With that, there can be many color used, but at one time can only 2 colors be activate.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># change only its over 2</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">color_chain</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
             <span class="c1"># update pointer</span>
@@ -289,7 +350,15 @@
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradient_size_tendency</span> <span class="o">==</span> <span class="s1">&#39;neg&#39;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hex2rgb</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">color_chain</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chain_pointer</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="Color_Gradient_Booster.set_random_colors"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.set_random_colors">[Doku]</a>    <span class="k">def</span> <span class="nf">set_random_colors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_colors</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<div class="viewcode-block" id="Color_Gradient_Booster.set_random_colors"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.set_random_colors">[docs]</a>    <span class="k">def</span> <span class="nf">set_random_colors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_colors</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates random colors.</span>
+
+<span class="sd">        Sets the new colors as color_chain inplace.</span>
+
+<span class="sd">        :param n_colors: Defines how many random colors should be calculated.</span>
+<span class="sd">        :type n_colors: int, optional</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">hex_codes</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;9&#39;</span><span class="p">,</span> <span class="s1">&#39;8&#39;</span><span class="p">,</span> <span class="s1">&#39;7&#39;</span><span class="p">,</span> <span class="s1">&#39;6&#39;</span><span class="p">,</span> <span class="s1">&#39;5&#39;</span><span class="p">,</span> <span class="s1">&#39;4&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">)</span>
      
         <span class="n">colors</span> <span class="o">=</span> <span class="p">[]</span>
@@ -301,14 +370,25 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">chain_pointer</span> <span class="o">=</span> <span class="mi">2</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">from_color</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_color</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="Color_Gradient_Booster.set_fav_color"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.set_fav_color">[Doku]</a>    <span class="k">def</span> <span class="nf">set_fav_color</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Color_Gradient_Booster.set_fav_color"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.set_fav_color">[docs]</a>    <span class="k">def</span> <span class="nf">set_fav_color</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Picks a random color-chain from a selection.</span>
+
+<span class="sd">        Sets the new colors as color_chain inplace.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">color</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">FAV_COLOR_MIX</span><span class="p">)</span>    <span class="c1">#+tuple(COLOR_CHAINS.values())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">from_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hex2rgb</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">color_chain</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">to_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hex2rgb</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">color_chain</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">chain_pointer</span> <span class="o">=</span> <span class="mi">2</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">from_color</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_color</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="Color_Gradient_Booster.hex2rgb"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.hex2rgb">[Doku]</a>    <span class="k">def</span> <span class="nf">hex2rgb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">str_hex</span><span class="p">):</span>
+<div class="viewcode-block" id="Color_Gradient_Booster.hex2rgb"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.hex2rgb">[docs]</a>    <span class="k">def</span> <span class="nf">hex2rgb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">str_hex</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate a hex color to an rgb color.</span>
+
+<span class="sd">        :param str_hex: A color in hex-format with # or not at the beginning.</span>
+<span class="sd">        :type str_hex: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">str_hex</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">):</span>
             <span class="n">str_hex</span> <span class="o">=</span> <span class="n">str_hex</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
         <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">str_hex</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">],</span> <span class="n">str_hex</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">],</span> <span class="n">str_hex</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span>
@@ -316,10 +396,18 @@
         <span class="c1"># transform hex in decimal with int(x, 16)</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">hex_num</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span> <span class="k">for</span> <span class="n">hex_num</span> <span class="ow">in</span> <span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Color_Gradient_Booster.set_on_screen"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.set_on_screen">[Doku]</a>    <span class="k">def</span> <span class="nf">set_on_screen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Color_Gradient_Booster.set_on_screen"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.set_on_screen">[docs]</a>    <span class="k">def</span> <span class="nf">set_on_screen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Place the Gradient-color-widget on his parent. </span>
+
+<span class="sd">        Will outfull the whole parent-widget.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">relx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">rely</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">relwidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">relheight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Color_Gradient_Booster.set_off_screen"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.set_off_screen">[Doku]</a>    <span class="k">def</span> <span class="nf">set_off_screen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Color_Gradient_Booster.set_off_screen"><a class="viewcode-back" href="../../../anoog.automation.html#anoog.automation.bg_booster.Color_Gradient_Booster.set_off_screen">[docs]</a>    <span class="k">def</span> <span class="nf">set_off_screen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Unplace the Gradient-color-widget on his parent. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">place_forget</span><span class="p">()</span></div></div>
 
 
@@ -327,6 +415,9 @@
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="k">def</span> <span class="nf">event_btn_clicked</span><span class="p">(</span><span class="n">booster</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Event for GUI-Button for stop/start the flow.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">global</span> <span class="n">change_color_activated</span><span class="p">,</span> <span class="n">start_stop_btn</span>
         <span class="k">if</span> <span class="n">change_color_activated</span><span class="p">:</span>
             <span class="n">booster</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
@@ -377,9 +468,9 @@
     <p>&#169; Copyright 2022, Tobia Ippolito, Syon Kadkade, Vadim Korzev.</p>
   </div>
 
-  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
    
 
 </footer>

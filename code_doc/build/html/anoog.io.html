@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="de" >
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>anoog.io package &mdash; Wer hat gebohrt? 21.01.2022 Dokumentation</title>
+  <title>anoog.io &mdash; Wer hat gebohrt? 21.01.2022 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -15,12 +15,11 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/translations.js"></script>
     <script src="_static/js/theme.js"></script>
-    <link rel="index" title="Stichwortverzeichnis" href="genindex.html" />
-    <link rel="search" title="Suche" href="search.html" />
-    <link rel="next" title="anoog.model package" href="anoog.model.html" />
-    <link rel="prev" title="anoog.automation package" href="anoog.automation.html" /> 
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="anoog.model" href="anoog.model.html" />
+    <link rel="prev" title="anoog.automation" href="anoog.automation.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -32,7 +31,7 @@
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Dokumentation durchsuchen" />
+    <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -40,17 +39,15 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">anoog</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="anoog.html">anoog package</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="anoog.html#subpackages">Subpackages</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="anoog.automation.html">anoog.automation package</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">anoog.io package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="anoog.model.html">anoog.model package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="anoog.html">anoog</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="anoog.automation.html">anoog.automation</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">anoog.io</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-anoog.io.csv_io">anoog.io.csv_io</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-anoog.io.data_io">anoog.io.data_io</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="anoog.html#module-src.anoog">Module contents</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="anoog.model.html">anoog.model</a></li>
 </ul>
 </li>
 </ul>
@@ -69,11 +66,10 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="modules.html">anoog</a> &raquo;</li>
-          <li><a href="anoog.html">anoog package</a> &raquo;</li>
-      <li>anoog.io package</li>
+          <li><a href="anoog.html">anoog</a> &raquo;</li>
+      <li>anoog.io</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/anoog.io.rst.txt" rel="nofollow"> Quelltext anzeigen</a>
+            <a href="_sources/anoog.io.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -81,243 +77,534 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="anoog-io-package">
-<h1>anoog.io package<a class="headerlink" href="#anoog-io-package" title="Link zu dieser Überschrift"></a></h1>
-<section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Link zu dieser Überschrift"></a></h2>
-</section>
+  <section id="anoog-io">
+<h1>anoog.io<a class="headerlink" href="#anoog-io" title="Permalink to this headline"></a></h1>
+<p>This Package has content about loading drill-data.</p>
 <section id="module-anoog.io.csv_io">
-<span id="anoog-io-csv-io-module"></span><h2>anoog.io.csv_io module<a class="headerlink" href="#module-anoog.io.csv_io" title="Link zu dieser Überschrift"></a></h2>
+<span id="anoog-io-csv-io"></span><h2>anoog.io.csv_io<a class="headerlink" href="#module-anoog.io.csv_io" title="Permalink to this headline"></a></h2>
+<p>This module used to load the drill data from csv.</p>
+<p>Contains functions to load drill-data simply and without many features, created from drillcapture.</p>
+<p>Author for <a class="reference internal" href="#anoog.io.csv_io.read_csv" title="anoog.io.csv_io.read_csv"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_csv()</span></code></a>: Syon Kadkade
+Author for <a class="reference internal" href="#anoog.io.csv_io.load_single_data" title="anoog.io.csv_io.load_single_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_single_data()</span></code></a>: Tobia Ippolito
+Author for <a class="reference internal" href="#anoog.io.csv_io.read_csv" title="anoog.io.csv_io.read_csv"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_csv()</span></code></a> and the other functions: Stefan Glaser</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="anoog.io.csv_io.loadData_mode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">anoog.io.csv_io.</span></span><span class="sig-name descname"><span class="pre">loadData_mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#anoog.io.csv_io.loadData_mode" title="Link zu dieser Definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">anoog.io.csv_io.</span></span><span class="sig-name descname"><span class="pre">loadData_mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#anoog.io.csv_io.loadData_mode" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
 <p>An enumeration.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="anoog.io.csv_io.loadData_mode.DASK">
-<span class="sig-name descname"><span class="pre">DASK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#anoog.io.csv_io.loadData_mode.DASK" title="Link zu dieser Definition"></a></dt>
+<span class="sig-name descname"><span class="pre">DASK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#anoog.io.csv_io.loadData_mode.DASK" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="anoog.io.csv_io.loadData_mode.NONE">
-<span class="sig-name descname"><span class="pre">NONE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#anoog.io.csv_io.loadData_mode.NONE" title="Link zu dieser Definition"></a></dt>
+<span class="sig-name descname"><span class="pre">NONE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#anoog.io.csv_io.loadData_mode.NONE" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="anoog.io.csv_io.load_single_data">
-<span class="sig-prename descclassname"><span class="pre">anoog.io.csv_io.</span></span><span class="sig-name descname"><span class="pre">load_single_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">person</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="_modules/anoog/io/csv_io.html#load_single_data"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#anoog.io.csv_io.load_single_data" title="Link zu dieser Definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">anoog.io.csv_io.</span></span><span class="sig-name descname"><span class="pre">load_single_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">person</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="_modules/anoog/io/csv_io.html#load_single_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#anoog.io.csv_io.load_single_data" title="Permalink to this definition"></a></dt>
+<dd><p>Loads a single drill-data created from drillcapture.</p>
+<p>Uses the last-drill.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>person</strong> (<em>str</em>) – The person, who drilled at last.</p></li>
+<li><p><strong>datasetPath</strong> (<em>str</em>) – The path to the dataset, to load it.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The measurement of one drill.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple of pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="anoog.io.csv_io.load_tsfresh">
-<span class="sig-prename descclassname"><span class="pre">anoog.io.csv_io.</span></span><span class="sig-name descname"><span class="pre">load_tsfresh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasetPath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seriesIDs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csvName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'capture.csv'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metaName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'meta.yaml'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/anoog/io/csv_io.html#load_tsfresh"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#anoog.io.csv_io.load_tsfresh" title="Link zu dieser Definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">anoog.io.csv_io.</span></span><span class="sig-name descname"><span class="pre">load_tsfresh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasetPath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seriesIDs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csvName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'capture.csv'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metaName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'meta.yaml'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/anoog/io/csv_io.html#load_tsfresh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#anoog.io.csv_io.load_tsfresh" title="Permalink to this definition"></a></dt>
+<dd><p>Loads a complete drill-data created from drillcapture.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>datasetPath</strong> (<em>str</em>) – The path to the dataset, to load it.</p></li>
+<li><p><strong>seriesIDs</strong> (<em>list of str</em>) – The operators/folder names which should be loaded.</p></li>
+<li><p><strong>csvName</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the measurement file.</p></li>
+<li><p><strong>metaName</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the measurement metadata file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The measurement and the metadata of all drills.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple of pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="anoog.io.csv_io.read_csv">
-<span class="sig-prename descclassname"><span class="pre">anoog.io.csv_io.</span></span><span class="sig-name descname"><span class="pre">read_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">csvFile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">loadData_mode.NONE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampleRate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">72000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/anoog/io/csv_io.html#read_csv"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#anoog.io.csv_io.read_csv" title="Link zu dieser Definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">anoog.io.csv_io.</span></span><span class="sig-name descname"><span class="pre">read_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">csvFile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">loadData_mode.NONE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampleRate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">72000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/anoog/io/csv_io.html#read_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#anoog.io.csv_io.read_csv" title="Permalink to this definition"></a></dt>
 <dd><p>Method to read sensor time series data from a .csv file.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameter</dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>csvFile</strong> (<em>string</em>) – The path to the .csv file to read.</p></li>
-<li><p><strong>sampleRate</strong> (<em>number</em>) – The measurement frequency.</p></li>
-<li><p><strong>mode</strong> (<em>enum</em>) – Select load method</p></li>
+<li><p><strong>mode</strong> (<a class="reference internal" href="#anoog.io.csv_io.loadData_mode" title="anoog.io.csv_io.loadData_mode"><code class="xref py py-class docutils literal notranslate"><span class="pre">loadData_mode</span></code></a>) – The path to the .csv file to read.</p></li>
+<li><p><strong>mode</strong> – The measurement frequency.</p></li>
+<li><p><strong>mode</strong> – Defines how to load the data.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Rückgabe</dt>
-<dd class="field-even"><p><strong>df</strong> – A pandas DataFrame representing the sensor data.</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A pandas DataFrame representing the sensor data.</p>
 </dd>
-<dt class="field-odd">Rückgabetyp</dt>
-<dd class="field-odd"><p>pandas.DataFrame</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="anoog.io.csv_io.read_csv_dataset">
-<span class="sig-prename descclassname"><span class="pre">anoog.io.csv_io.</span></span><span class="sig-name descname"><span class="pre">read_csv_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasetPath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csvName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'capture.csv'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metaName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'meta.yaml'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/anoog/io/csv_io.html#read_csv_dataset"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#anoog.io.csv_io.read_csv_dataset" title="Link zu dieser Definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">anoog.io.csv_io.</span></span><span class="sig-name descname"><span class="pre">read_csv_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasetPath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csvName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'capture.csv'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metaName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'meta.yaml'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/anoog/io/csv_io.html#read_csv_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#anoog.io.csv_io.read_csv_dataset" title="Permalink to this definition"></a></dt>
+<dd><p>Loads a measurement dataset and meta-data.</p>
+<p>Uses <a class="reference internal" href="#anoog.io.csv_io.read_csv" title="anoog.io.csv_io.read_csv"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_csv()</span></code></a> and <a class="reference internal" href="#anoog.io.csv_io.read_metadata" title="anoog.io.csv_io.read_metadata"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_metadata()</span></code></a> functions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>datasetPath</strong> (<em>str</em>) – The path to the dataset, to load it.</p></li>
+<li><p><strong>csvName</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the measurement file.</p></li>
+<li><p><strong>metaName</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the measurement metadata file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The measurement and the metadata of the drill.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple of pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="anoog.io.csv_io.read_metadata">
-<span class="sig-prename descclassname"><span class="pre">anoog.io.csv_io.</span></span><span class="sig-name descname"><span class="pre">read_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">yamlFile</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/anoog/io/csv_io.html#read_metadata"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#anoog.io.csv_io.read_metadata" title="Link zu dieser Definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">anoog.io.csv_io.</span></span><span class="sig-name descname"><span class="pre">read_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">yamlFile</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/anoog/io/csv_io.html#read_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#anoog.io.csv_io.read_metadata" title="Permalink to this definition"></a></dt>
 <dd><p>Method to read meta data from a .yaml file.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameter</dt>
-<dd class="field-odd"><p><strong>yamlFile</strong> (<em>string</em>) – The path to the .yaml file to read.</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>yamlFile</strong> (<em>str</em>) – The path to the .yaml file to read.</p>
 </dd>
-<dt class="field-even">Rückgabe</dt>
-<dd class="field-even"><p><strong>df</strong> – A pandas Series with the meta data information.</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A pandas Series with the meta data information.</p>
 </dd>
-<dt class="field-odd">Rückgabetyp</dt>
-<dd class="field-odd"><p>pandas.Series</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pd.Series</p>
 </dd>
 </dl>
 </dd></dl>
 
 </section>
 <section id="module-anoog.io.data_io">
-<span id="anoog-io-data-io-module"></span><h2>anoog.io.data_io module<a class="headerlink" href="#module-anoog.io.data_io" title="Link zu dieser Überschrift"></a></h2>
+<span id="anoog-io-data-io"></span><h2>anoog.io.data_io<a class="headerlink" href="#module-anoog.io.data_io" title="Permalink to this headline"></a></h2>
+<p>This module used to load drill data.
+Internally this module uses the <a class="reference internal" href="#module-anoog.io.csv_io" title="anoog.io.csv_io"><code class="xref py py-mod docutils literal notranslate"><span class="pre">csv_io</span></code></a> and makes the handling lot easier and with more features.
+The user can easily say which persons, with which feature-selection, with which feature-extraction and if there shoud be a split in train and test-data.</p>
+<p>There are 2 main-functions (<a class="reference internal" href="#anoog.io.data_io.load_data" title="anoog.io.data_io.load_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_data()</span></code></a> &amp; <code class="xref py py-func docutils literal notranslate"><span class="pre">load_single_data()</span></code>), which use the other functions.</p>
+<p>Author for <code class="xref py py-func docutils literal notranslate"><span class="pre">advanced_feature_extraction()</span></code>: Vadim Korzev
+Author for <code class="xref py py-func docutils literal notranslate"><span class="pre">feature_selection()</span></code> &amp; <code class="xref py py-func docutils literal notranslate"><span class="pre">rename()</span></code>: Syon Kadkade
+Author for the rest: Tobia Ippolito</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="anoog.io.data_io.X_y_split">
-<span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">X_y_split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/anoog/io/data_io.html#X_y_split"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#anoog.io.data_io.X_y_split" title="Link zu dieser Definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">X_y_split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/anoog/io/data_io.html#X_y_split"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#anoog.io.data_io.X_y_split" title="Permalink to this definition"></a></dt>
+<dd><p>Splits a DataFrame in X an the target column.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>pd.DataFrame</em>) – Data to split.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Splittet data.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple of pd.DataFrame and pd.Series</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="anoog.io.data_io.advanced_feature_extraction">
-<span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">advanced_feature_extraction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="_modules/anoog/io/data_io.html#advanced_feature_extraction"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#anoog.io.data_io.advanced_feature_extraction" title="Link zu dieser Definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">advanced_feature_extraction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="_modules/anoog/io/data_io.html#advanced_feature_extraction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#anoog.io.data_io.advanced_feature_extraction" title="Permalink to this definition"></a></dt>
+<dd><p>Extracts special features like energy and resistens from timerow for every drill.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>df</strong> (<em>pd.DataFrame</em>) – Data for extract the feature.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Extracted Features.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="anoog.io.data_io.extract_feature">
-<span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">extract_feature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_feature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/anoog/io/data_io.html#extract_feature"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#anoog.io.data_io.extract_feature" title="Link zu dieser Definition"></a></dt>
-<dd><p>Extracts Features of a drill timeseries data.</p>
-<p>Returns a list</p>
+<span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">extract_feature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_feature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/anoog/io/data_io.html#extract_feature"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#anoog.io.data_io.extract_feature" title="Permalink to this definition"></a></dt>
+<dd><p>Extracts a Feature of a drill timeseries data with the given function for every drill.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>callable</em>) – Data for extract the feature.</p></li>
+<li><p><strong>from_feature</strong> (<em>str</em>) – The column, which will be used for extraction (‘Audio’, ‘Current’ or ‘Voltage’).</p></li>
+<li><p><strong>data</strong> – Function for extract the feature (like np.mean).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Feature list of the given function for every drill.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="anoog.io.data_io.extraction_mode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">extraction_mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#anoog.io.data_io.extraction_mode" title="Link zu dieser Definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">extraction_mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#anoog.io.data_io.extraction_mode" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
 <p>An enumeration.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="anoog.io.data_io.extraction_mode.MANUEL">
-<span class="sig-name descname"><span class="pre">MANUEL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#anoog.io.data_io.extraction_mode.MANUEL" title="Link zu dieser Definition"></a></dt>
+<span class="sig-name descname"><span class="pre">MANUEL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#anoog.io.data_io.extraction_mode.MANUEL" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="anoog.io.data_io.extraction_mode.NONE">
-<span class="sig-name descname"><span class="pre">NONE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#anoog.io.data_io.extraction_mode.NONE" title="Link zu dieser Definition"></a></dt>
+<span class="sig-name descname"><span class="pre">NONE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#anoog.io.data_io.extraction_mode.NONE" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="anoog.io.data_io.extraction_mode.TSFRESH">
-<span class="sig-name descname"><span class="pre">TSFRESH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#anoog.io.data_io.extraction_mode.TSFRESH" title="Link zu dieser Definition"></a></dt>
+<span class="sig-name descname"><span class="pre">TSFRESH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#anoog.io.data_io.extraction_mode.TSFRESH" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="anoog.io.data_io.extraction_mode.TSFRESH_WITH_PARAMS">
-<span class="sig-name descname"><span class="pre">TSFRESH_WITH_PARAMS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#anoog.io.data_io.extraction_mode.TSFRESH_WITH_PARAMS" title="Link zu dieser Definition"></a></dt>
+<span class="sig-name descname"><span class="pre">TSFRESH_WITH_PARAMS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#anoog.io.data_io.extraction_mode.TSFRESH_WITH_PARAMS" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="anoog.io.data_io.feature_extraction">
-<span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">feature_extraction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="_modules/anoog/io/data_io.html#feature_extraction"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#anoog.io.data_io.feature_extraction" title="Link zu dieser Definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">feature_extraction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="_modules/anoog/io/data_io.html#feature_extraction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#anoog.io.data_io.feature_extraction" title="Permalink to this definition"></a></dt>
+<dd><p>Applies feature-extraction on the data.</p>
+<p>It’s can be tsfresh or manuel and there are some more variations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>pd.DataFrame</em>) – Data for extract the feature.</p></li>
+<li><p><strong>mode</strong> (<a class="reference internal" href="#anoog.io.data_io.extraction_mode" title="anoog.io.data_io.extraction_mode"><code class="xref py py-class docutils literal notranslate"><span class="pre">extraction_mode</span></code></a>) – Feature-Extraction mode.</p></li>
+<li><p><strong>data_path</strong> (<em>str</em>) – Path to the data.</p></li>
+<li><p><strong>show</strong> (<em>bool</em><em>, </em><em>optional</em>) – Defines if the output of Tsfresh should be showed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Extracted Features.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="anoog.io.data_io.feature_selection">
-<span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">feature_selection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="_modules/anoog/io/data_io.html#feature_selection"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#anoog.io.data_io.feature_selection" title="Link zu dieser Definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="anoog.io.data_io.feature_selectionMethod">
-<span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">feature_selectionMethod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/anoog/io/data_io.html#feature_selectionMethod"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#anoog.io.data_io.feature_selectionMethod" title="Link zu dieser Definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">feature_selection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="_modules/anoog/io/data_io.html#feature_selection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#anoog.io.data_io.feature_selection" title="Permalink to this definition"></a></dt>
+<dd><p>Applies feature-selection on the data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – Data for select the feature.</p></li>
+<li><p><strong>y</strong> (<em>pd.Serie</em>) – Target-column.</p></li>
+<li><p><strong>mode</strong> (<a class="reference internal" href="#anoog.io.data_io.selection_mode" title="anoog.io.data_io.selection_mode"><code class="xref py py-class docutils literal notranslate"><span class="pre">selection_mode</span></code></a>) – Feature-Selection mode.</p></li>
+<li><p><strong>data_path</strong> (<em>str</em>) – Path to the data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Selected Features.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="anoog.io.data_io.load_data">
-<span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'../../../data/2021-11-09'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">persons</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['tippolit',</span> <span class="pre">'vkorzev']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extraction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">extraction_mode.MANUEL</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_extraction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">selection_mode.NONE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_test_split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_as_csv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csv_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="_modules/anoog/io/data_io.html#load_data"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#anoog.io.data_io.load_data" title="Link zu dieser Definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'../../../data/2021-11-09'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">persons</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['tippolit',</span> <span class="pre">'vkorzev']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extraction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">extraction_mode.MANUEL</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_extraction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">selection_mode.NONE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_test_split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_as_csv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csv_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="_modules/anoog/io/data_io.html#load_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#anoog.io.data_io.load_data" title="Permalink to this definition"></a></dt>
 <dd><p>Loads Data and prepares them.
 Feature Extraction and Feature Selection.
-Labeling and Resampling.</p>
-<p>Returns DataFrame</p>
+Labeling and Resampling.
+Split in train/test or not.</p>
+<p>All controllable over the arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_path</strong> (<em>str</em><em>, </em><em>optional</em>) – Path to the location of the data, which should be loaded.</p></li>
+<li><p><strong>persons</strong> (<em>list of str</em><em>, </em><em>optional</em>) – Names of the persons who drilled (the data of these persons will be loaded).</p></li>
+<li><p><strong>extraction</strong> (<a class="reference internal" href="#anoog.io.data_io.extraction_mode" title="anoog.io.data_io.extraction_mode"><code class="xref py py-class docutils literal notranslate"><span class="pre">extraction_mode</span></code></a>, optional) – Kind of extraction, which will be used for the timerows.</p></li>
+<li><p><strong>show_extraction</strong> (<em>bool</em><em>, </em><em>optional</em>) – If Tsfresh selected as feature-extraction-method, the output of it will be visible or not.</p></li>
+<li><p><strong>selection</strong> (<a class="reference internal" href="#anoog.io.data_io.selection_mode" title="anoog.io.data_io.selection_mode"><code class="xref py py-class docutils literal notranslate"><span class="pre">selection_mode</span></code></a>, optional) – Kind of selection, which will be used for the extracted features.</p></li>
+<li><p><strong>train_test_split</strong> (<em>bool</em><em>, </em><em>optional</em>) – Defines if there should be a train-test-split</p></li>
+<li><p><strong>test_size</strong> (<em>float</em><em>, </em><em>optional</em>) – Defines the size of the split, if train-test-split is setted on True (in percentage).</p></li>
+<li><p><strong>save_as_csv</strong> (<em>bool</em><em>, </em><em>optional</em>) – Defines if the loaded data should be saved in a csv file.</p></li>
+<li><p><strong>csv_name</strong> (<em>str</em><em>, </em><em>optional</em>) – If save_as_csv is True, this param defines, which name the file should have.</p></li>
+<li><p><strong>normlize</strong> – Decided if the data should be normalized.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The loaded data.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="anoog.io.data_io.load_features">
-<span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">load_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/anoog/io/data_io.html#load_features"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#anoog.io.data_io.load_features" title="Link zu dieser Definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">load_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/anoog/io/data_io.html#load_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#anoog.io.data_io.load_features" title="Permalink to this definition"></a></dt>
+<dd><p>Function to load the saved selected features from tsfresh.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_path</strong> (<em>str</em>) – Path where the features are stored.</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Features from Tsfresh.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="anoog.io.data_io.load_single_data">
-<span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">load_single_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">person_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">person</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tippolit'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'../../../data/2021-11-09'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drill_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extraction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">extraction_mode.MANUEL</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_extraction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">selection_mode.NONE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_test_split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_as_csv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csv_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="_modules/anoog/io/data_io.html#load_single_data"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#anoog.io.data_io.load_single_data" title="Link zu dieser Definition"></a></dt>
-<dd><p>Loading a single Drill. The last drill in the folder.
-returns a DataFrame</p>
+<span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">load_single_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">person_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">person</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tippolit'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'../../../data/2021-11-09'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drill_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extraction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">extraction_mode.MANUEL</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_extraction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">selection_mode.NONE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_test_split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_as_csv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csv_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="_modules/anoog/io/data_io.html#load_single_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#anoog.io.data_io.load_single_data" title="Permalink to this definition"></a></dt>
+<dd><p>Loading a single drill-data-entry. The last drill in the folder.</p>
+<p>There are many options to set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_path</strong> (<em>str</em><em>, </em><em>optional</em>) – Path to the location of the data, which should be loaded.</p></li>
+<li><p><strong>persons</strong> (<em>list of str</em><em>, </em><em>optional</em>) – Names of the persons who drilled (the data of these persons will be loaded).</p></li>
+<li><p><strong>extraction</strong> (<a class="reference internal" href="#anoog.io.data_io.extraction_mode" title="anoog.io.data_io.extraction_mode"><code class="xref py py-class docutils literal notranslate"><span class="pre">extraction_mode</span></code></a>, optional) – Kind of extraction, which will be used for the timerows.</p></li>
+<li><p><strong>show_extraction</strong> (<em>bool</em><em>, </em><em>optional</em>) – If Tsfresh selected as feature-extraction-method, the output of it will be visible or not.</p></li>
+<li><p><strong>selection</strong> (<a class="reference internal" href="#anoog.io.data_io.selection_mode" title="anoog.io.data_io.selection_mode"><code class="xref py py-class docutils literal notranslate"><span class="pre">selection_mode</span></code></a>, optional) – Kind of selection, which will be used for the extracted features.</p></li>
+<li><p><strong>train_test_split</strong> (<em>bool</em><em>, </em><em>optional</em>) – Defines if there should be a train-test-split</p></li>
+<li><p><strong>test_size</strong> (<em>float</em><em>, </em><em>optional</em>) – Defines the size of the split, if train-test-split is setted on True (in percentage).</p></li>
+<li><p><strong>save_as_csv</strong> (<em>bool</em><em>, </em><em>optional</em>) – Defines if the loaded data should be saved in a csv file.</p></li>
+<li><p><strong>csv_name</strong> (<em>str</em><em>, </em><em>optional</em>) – If save_as_csv is True, this param defines, which name the file should have.</p></li>
+<li><p><strong>normlize</strong> – Decided if the data should be normalized.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The loaded data.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="anoog.io.data_io.model_based_feature_selection">
-<span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">model_based_feature_selection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/anoog/io/data_io.html#model_based_feature_selection"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#anoog.io.data_io.model_based_feature_selection" title="Link zu dieser Definition"></a></dt>
-<dd><p>Get the n best Features. Selected by a RandomForest.
-Returns new X with selected Features.</p>
+<span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">model_based_feature_selection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/anoog/io/data_io.html#model_based_feature_selection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#anoog.io.data_io.model_based_feature_selection" title="Permalink to this definition"></a></dt>
+<dd><p>Get the n best Features elected by a RandomForest.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – Data for select the feature.</p></li>
+<li><p><strong>y</strong> (<em>pd.Serie</em>) – Target-column.</p></li>
+<li><p><strong>n</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of features, which will take n-best features.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Returns new X with selected Features.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="anoog.io.data_io.remove_audio_features">
-<span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">remove_audio_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="_modules/anoog/io/data_io.html#remove_audio_features"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#anoog.io.data_io.remove_audio_features" title="Link zu dieser Definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">remove_audio_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="_modules/anoog/io/data_io.html#remove_audio_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#anoog.io.data_io.remove_audio_features" title="Permalink to this definition"></a></dt>
+<dd><p>Removes all features with audio context.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>pd.DataFrame</em>) – Data for remove the audio features.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Returns new data without audio features.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="anoog.io.data_io.rename">
-<span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">rename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">score</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">list_names</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/anoog/io/data_io.html#rename"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#anoog.io.data_io.rename" title="Link zu dieser Definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">rename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">score</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">list_names</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/anoog/io/data_io.html#rename"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#anoog.io.data_io.rename" title="Permalink to this definition"></a></dt>
+<dd><p>Masks all names, which have a True score.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>score</strong> (<em>bool</em>) – Score of the features.</p></li>
+<li><p><strong>list_names</strong> (<em>list of str</em>) – List with names of the features.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>New selected features.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list of str</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="anoog.io.data_io.resampling">
-<span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">resampling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="_modules/anoog/io/data_io.html#resampling"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#anoog.io.data_io.resampling" title="Link zu dieser Definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">resampling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="reference internal" href="_modules/anoog/io/data_io.html#resampling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#anoog.io.data_io.resampling" title="Permalink to this definition"></a></dt>
+<dd><p>Resamples the data.</p>
+<p>Scaled down the data-size (timerow) without loose to much informations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>pd.DataFrame</em>) – The data which will be resampled.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The down sampled data.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="anoog.io.data_io.save_data">
-<span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">save_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datasets</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/anoog/io/data_io.html#save_data"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#anoog.io.data_io.save_data" title="Link zu dieser Definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">save_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datasets</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/anoog/io/data_io.html#save_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#anoog.io.data_io.save_data" title="Permalink to this definition"></a></dt>
+<dd><p>Saves the data localy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_path</strong> (<em>str</em>) – Path to save the data.</p></li>
+<li><p><strong>datasets</strong> (<em>list of list of pd.DataFrames/pd.Series</em>) – Data to save.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – Name of the file to save the data.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="anoog.io.data_io.save_features">
-<span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">save_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/anoog/io/data_io.html#save_features"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#anoog.io.data_io.save_features" title="Link zu dieser Definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">save_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/anoog/io/data_io.html#save_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#anoog.io.data_io.save_features" title="Permalink to this definition"></a></dt>
+<dd><p>Function to save the selected features from tsfresh.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_path</strong> (<em>str</em>) – Path to save the features.</p></li>
+<li><p><strong>params</strong> (<em>dict</em>) – Features von Tsfresh.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="anoog.io.data_io.selection_mode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">selection_mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#anoog.io.data_io.selection_mode" title="Link zu dieser Definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">selection_mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#anoog.io.data_io.selection_mode" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
 <p>An enumeration.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="anoog.io.data_io.selection_mode.MODEL_BASED">
-<span class="sig-name descname"><span class="pre">MODEL_BASED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#anoog.io.data_io.selection_mode.MODEL_BASED" title="Link zu dieser Definition"></a></dt>
+<span class="sig-name descname"><span class="pre">MODEL_BASED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#anoog.io.data_io.selection_mode.MODEL_BASED" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="anoog.io.data_io.selection_mode.NONE">
-<span class="sig-name descname"><span class="pre">NONE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#anoog.io.data_io.selection_mode.NONE" title="Link zu dieser Definition"></a></dt>
+<span class="sig-name descname"><span class="pre">NONE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#anoog.io.data_io.selection_mode.NONE" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="anoog.io.data_io.selection_mode.SELECTKBEST">
-<span class="sig-name descname"><span class="pre">SELECTKBEST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#anoog.io.data_io.selection_mode.SELECTKBEST" title="Link zu dieser Definition"></a></dt>
+<span class="sig-name descname"><span class="pre">SELECTKBEST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#anoog.io.data_io.selection_mode.SELECTKBEST" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="anoog.io.data_io.selection_mode.TSFRESH">
-<span class="sig-name descname"><span class="pre">TSFRESH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#anoog.io.data_io.selection_mode.TSFRESH" title="Link zu dieser Definition"></a></dt>
+<span class="sig-name descname"><span class="pre">TSFRESH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#anoog.io.data_io.selection_mode.TSFRESH" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="anoog.io.data_io.selection_mode.VARIANCE">
-<span class="sig-name descname"><span class="pre">VARIANCE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#anoog.io.data_io.selection_mode.VARIANCE" title="Link zu dieser Definition"></a></dt>
+<span class="sig-name descname"><span class="pre">VARIANCE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#anoog.io.data_io.selection_mode.VARIANCE" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="anoog.io.data_io.split_data">
-<span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">split_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_size_in_percent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">should_split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="_modules/anoog/io/data_io.html#split_data"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#anoog.io.data_io.split_data" title="Link zu dieser Definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">split_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_size_in_percent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">should_split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="_modules/anoog/io/data_io.html#split_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#anoog.io.data_io.split_data" title="Permalink to this definition"></a></dt>
+<dd><p>Splits the data in train and testdata.</p>
+<p>Wrapps the data in a list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – Data for select the feature.</p></li>
+<li><p><strong>y</strong> (<em>pd.Serie</em>) – Target-column.</p></li>
+<li><p><strong>test_size_in_percent</strong> (<em>float</em>) – Größe des splits/der Testdaten.</p></li>
+<li><p><strong>should_split</strong> (<em>bool</em>) – Entscheidet, ob ein split der Daten vorgenommen werden soll.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Returns the splitet data as diffrent datasets.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list of list which contains X and y (maybe X_train, y_train,…)</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="anoog.io.data_io.y_labeling">
-<span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">y_labeling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extraction</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/anoog/io/data_io.html#y_labeling"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#anoog.io.data_io.y_labeling" title="Link zu dieser Definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">y_labeling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extraction</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/anoog/io/data_io.html#y_labeling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#anoog.io.data_io.y_labeling" title="Permalink to this definition"></a></dt>
+<dd><p>Creates target-column from ID-column and persons.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>meta_data</strong> (<em>pd.DataFrame</em>) – Data to get ID and operator.</p></li>
+<li><p><strong>extraction</strong> (<a class="reference internal" href="#anoog.io.data_io.extraction_mode" title="anoog.io.data_io.extraction_mode"><code class="xref py py-class docutils literal notranslate"><span class="pre">extraction_mode</span></code></a>) – Kind of extraction, which will be used for the timerows.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The target-column. Represents the operator.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pd.Series</p>
+</dd>
+</dl>
+</dd></dl>
 
-</section>
-<section id="module-anoog.io">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-anoog.io" title="Link zu dieser Überschrift"></a></h2>
 </section>
 </section>
 
@@ -325,8 +612,8 @@ Returns new X with selected Features.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="anoog.automation.html" class="btn btn-neutral float-left" title="anoog.automation package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Zurück</a>
-        <a href="anoog.model.html" class="btn btn-neutral float-right" title="anoog.model package" accesskey="n" rel="next">Weiter <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="anoog.automation.html" class="btn btn-neutral float-left" title="anoog.automation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="anoog.model.html" class="btn btn-neutral float-right" title="anoog.model" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
@@ -335,9 +622,9 @@ Returns new X with selected Features.</p>
     <p>&#169; Copyright 2022, Tobia Ippolito, Syon Kadkade, Vadim Korzev.</p>
   </div>
 
-  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
    
 
 </footer>

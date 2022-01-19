@@ -1,5 +1,9 @@
 <img src="images/label_titel.jpg">
-
+<br>
+<br>
+[Click here and check out our website for our library!](https://xxai-botxx.github.io/Wer-hat-gebohrt/)
+<br>
+<br>
 <img src="images/label_kurzbeschreibung.jpg">
 
 Wer hat gebohrt? Ist ein Projekt von Studierenden des Studiegangs 'Angewandte Künstliche Intelligenz' im 3. Semester der Hochschule Offenburg.<br>Dabei geht es darum, dass der Computer 2 Bohrende unterschieden kann. Hierfür bohren beide mindestends ein Mal und anschließend bohrt einer von Beiden und ein MachineLearning-Algorithmus versucht mit einem gelerntem Muster aus den Daten den richtigen Bohrenden zu bestimmen.<br>Dabei gibt es eine Anwendung mit grafischer Benutzeroberfläche welche zum Bohren und zum Vorhersagen verwendet werden kann.
