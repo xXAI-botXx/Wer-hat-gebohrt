@@ -10,7 +10,7 @@
 \indexentry{remove\_last\_train\_dataset() (anoog.automation.ai\_model.AI\_Model method)@\spxentry{remove\_last\_train\_dataset()}\spxextra{anoog.automation.ai\_model.AI\_Model method}|hyperpage}{14}
 \indexentry{remove\_predict\_dataset() (anoog.automation.ai\_model.AI\_Model method)@\spxentry{remove\_predict\_dataset()}\spxextra{anoog.automation.ai\_model.AI\_Model method}|hyperpage}{14}
 \indexentry{remove\_unused\_columns() (anoog.automation.ai\_model.AI\_Model method)@\spxentry{remove\_unused\_columns()}\spxextra{anoog.automation.ai\_model.AI\_Model method}|hyperpage}{14}
-\indexentry{reset() (anoog.automation.ai\_model.AI\_Model method)@\spxentry{reset()}\spxextra{anoog.automation.ai\_model.AI\_Model method}|hyperpage}{14}
+\indexentry{reset() (anoog.automation.ai\_model.AI\_Model method)@\spxentry{reset()}\spxextra{anoog.automation.ai\_model.AI\_Model method}|hyperpage}{15}
 \indexentry{train() (anoog.automation.ai\_model.AI\_Model method)@\spxentry{train()}\spxextra{anoog.automation.ai\_model.AI\_Model method}|hyperpage}{15}
 \indexentry{write\_log() (anoog.automation.ai\_model.AI\_Model method)@\spxentry{write\_log()}\spxextra{anoog.automation.ai\_model.AI\_Model method}|hyperpage}{15}
 \indexentry{ALGORITHM (class in anoog.automation.ai\_model)@\spxentry{ALGORITHM}\spxextra{class in anoog.automation.ai\_model}|hyperpage}{15}
@@ -41,7 +41,7 @@
 \indexentry{module@\spxentry{module}!anoog.automation.controller@\spxentry{anoog.automation.controller}|hyperpage}{17}
 \indexentry{anoog.automation.controller@\spxentry{anoog.automation.controller}!module@\spxentry{module}|hyperpage}{17}
 \indexentry{Terminal (class in anoog.automation.controller)@\spxentry{Terminal}\spxextra{class in anoog.automation.controller}|hyperpage}{17}
-\indexentry{add\_amount() (anoog.automation.controller.Terminal method)@\spxentry{add\_amount()}\spxextra{anoog.automation.controller.Terminal method}|hyperpage}{17}
+\indexentry{add\_amount() (anoog.automation.controller.Terminal method)@\spxentry{add\_amount()}\spxextra{anoog.automation.controller.Terminal method}|hyperpage}{18}
 \indexentry{clean\_output() (anoog.automation.controller.Terminal method)@\spxentry{clean\_output()}\spxextra{anoog.automation.controller.Terminal method}|hyperpage}{18}
 \indexentry{delete\_last() (anoog.automation.controller.Terminal method)@\spxentry{delete\_last()}\spxextra{anoog.automation.controller.Terminal method}|hyperpage}{18}
 \indexentry{delete\_last\_predict\_drill() (anoog.automation.controller.Terminal method)@\spxentry{delete\_last\_predict\_drill()}\spxextra{anoog.automation.controller.Terminal method}|hyperpage}{18}
@@ -50,7 +50,7 @@
 \indexentry{init\_drill() (anoog.automation.controller.Terminal method)@\spxentry{init\_drill()}\spxextra{anoog.automation.controller.Terminal method}|hyperpage}{18}
 \indexentry{init\_predict() (anoog.automation.controller.Terminal method)@\spxentry{init\_predict()}\spxextra{anoog.automation.controller.Terminal method}|hyperpage}{18}
 \indexentry{init\_train\_drilling() (anoog.automation.controller.Terminal method)@\spxentry{init\_train\_drilling()}\spxextra{anoog.automation.controller.Terminal method}|hyperpage}{18}
-\indexentry{load\_predict() (anoog.automation.controller.Terminal method)@\spxentry{load\_predict()}\spxextra{anoog.automation.controller.Terminal method}|hyperpage}{18}
+\indexentry{load\_predict() (anoog.automation.controller.Terminal method)@\spxentry{load\_predict()}\spxextra{anoog.automation.controller.Terminal method}|hyperpage}{19}
 \indexentry{predict() (anoog.automation.controller.Terminal method)@\spxentry{predict()}\spxextra{anoog.automation.controller.Terminal method}|hyperpage}{19}
 \indexentry{reset\_predict() (anoog.automation.controller.Terminal method)@\spxentry{reset\_predict()}\spxextra{anoog.automation.controller.Terminal method}|hyperpage}{19}
 \indexentry{reset\_train() (anoog.automation.controller.Terminal method)@\spxentry{reset\_train()}\spxextra{anoog.automation.controller.Terminal method}|hyperpage}{19}

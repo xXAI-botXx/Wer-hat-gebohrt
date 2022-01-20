@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.23 (MiKTeX 21.10) (preloaded format=pdflatex 2021.10.6)  20 JAN 2022 00:47
+This is pdfTeX, Version 3.141592653-2.6-1.40.23 (MiKTeX 21.10) (preloaded format=pdflatex 2021.10.6)  20 JAN 2022 01:03
 entering extended mode
 **./werhatgebohrt.tex
 (werhatgebohrt.tex
@@ -896,67 +896,67 @@ Package pdftex.def Info: feature-extraction.png  used on input line 422.
 ]
 Chapter 4.
 [13] [14] [15] [16] [17] [18] [19]
-Underfull \hbox (badness 10000) in paragraph at lines 1482--1484
+Underfull \hbox (badness 10000) in paragraph at lines 1493--1495
 []\T1/txtt/bx/n/10 root \T1/qtm/m/n/10  Root-Widget. Needed for com-mu-ni-cate
  with
  []
 
 [20]
-Underfull \hbox (badness 7012) in paragraph at lines 1652--1655
+Underfull \hbox (badness 7012) in paragraph at lines 1663--1666
 []\T1/txtt/bx/n/10 from_widget \T1/qtm/m/n/10 (\T1/txtt/m/sl/10 :class:~anoog.a
 utomation.graphical_user_interface.
  []
 
 
-Underfull \hbox (badness 7012) in paragraph at lines 1667--1670
+Underfull \hbox (badness 7012) in paragraph at lines 1678--1681
 []\T1/txtt/bx/n/10 from_widget \T1/qtm/m/n/10 (\T1/txtt/m/sl/10 :class:~anoog.a
 utomation.graphical_user_interface.
  []
 
 [21]
-Underfull \hbox (badness 7012) in paragraph at lines 1682--1685
+Underfull \hbox (badness 7012) in paragraph at lines 1693--1696
 []\T1/txtt/bx/n/10 from_widget \T1/qtm/m/n/10 (\T1/txtt/m/sl/10 :class:~anoog.a
 utomation.graphical_user_interface.
  []
 
 
-Underfull \hbox (badness 7012) in paragraph at lines 1697--1700
+Underfull \hbox (badness 7012) in paragraph at lines 1708--1711
 []\T1/txtt/bx/n/10 from_widget \T1/qtm/m/n/10 (\T1/txtt/m/sl/10 :class:~anoog.a
 utomation.graphical_user_interface.
  []
 
 
-Overfull \hbox (106.63832pt too wide) in paragraph at lines 1727--1729
+Overfull \hbox (106.63832pt too wide) in paragraph at lines 1738--1740
 []\T1/qtm/m/n/10 Re-sets the Predict-Screen. Uses in-ter-naly the :meth:~anoog.
 automation.graphical_user_interface.Predict_Window.event_reset_button
  []
 
 [22]
-Underfull \hbox (badness 10000) in paragraph at lines 1868--1870
+Underfull \hbox (badness 10000) in paragraph at lines 1879--1881
 []\T1/txtt/bx/n/10 root \T1/qtm/m/n/10  Root-Widget. Needed for com-mu-ni-cate
  with
  []
 
 [23]
-Underfull \hbox (badness 10000) in paragraph at lines 2011--2013
+Underfull \hbox (badness 10000) in paragraph at lines 2022--2024
 []\T1/txtt/bx/n/10 root \T1/qtm/m/n/10  Root-Widget. Needed for com-mu-ni-cate
  with
  []
 
 [24] [25]
-Underfull \hbox (badness 10000) in paragraph at lines 2301--2303
+Underfull \hbox (badness 10000) in paragraph at lines 2312--2314
 []\T1/txtt/bx/n/10 root \T1/qtm/m/n/10  Root-Widget. Needed for com-mu-ni-cate
  with
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2366--2368
+Underfull \hbox (badness 10000) in paragraph at lines 2377--2379
 []\T1/txtt/bx/n/10 root \T1/qtm/m/n/10  Root-Widget. Needed for com-mu-ni-cate
  with
  []
 
 [26] [27] [28] [29] [30] [31] [32] [33] [34] [35] [36] [37]
-Underfull \hbox (badness 6032) in paragraph at lines 4050--4053
+Underfull \hbox (badness 6032) in paragraph at lines 4061--4064
 []\T1/qtm/m/n/10 Cal-cu-lates the n most im-por-tant fea-tures of a Ran-dom-For
 est-Clas-si-fier. Prints the re-sult. See
  []
@@ -983,7 +983,7 @@ Here is how much of TeX's memory you used:
  31698 multiletter control sequences out of 15000+600000
  458406 words of font info for 74 fonts, out of 8000000 for 9000
  1142 hyphenation exceptions out of 8191
- 72i,12n,80p,1294b,680s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 72i,12n,80p,1294b,672s stack positions out of 5000i,500n,10000p,200000b,80000s
 {C:/Users/tobia/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/tex-gyre/q-ec.e
 nc}{C:/Users/tobia/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/tex-gyre/q-ts1
 .enc}{C:/Users/tobia/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/base/8r.enc}
@@ -1000,7 +1000,7 @@ MiKTeX/fonts/type1/public/txfonts/t1xtt.pfb><C:/Users/tobia/AppData/Local/Progr
 ams/MiKTeX/fonts/type1/public/txfonts/t1xtt.pfb><C:/Users/tobia/AppData/Local/P
 rograms/MiKTeX/fonts/type1/public/txfonts/tcxtt.pfb><C:/Users/tobia/AppData/Loc
 al/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb>
-Output written on werhatgebohrt.pdf (49 pages, 823806 bytes).
+Output written on werhatgebohrt.pdf (49 pages, 824249 bytes).
 PDF statistics:
  757 PDF objects out of 1000 (max. 8388607)
  302 named destinations out of 1000 (max. 500000)
