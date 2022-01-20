@@ -2,9 +2,11 @@ anoog.automation
 ================
 
 This Package contains all components for the live-application.
-- GUI (& bg_booster)
-- Controller/Terminal (& ai_model for holding logic)
-- Subprocess-Interface
+
+* GUI (& bg_booster)
+* Controller/Terminal (& ai_model for holding logic)
+* Subprocess-Interface
+
 
 anoog.automation.ai\_model
 --------------------------
