@@ -15,6 +15,15 @@ Our application have following features:
 * Stunning graphics
 * Easy to use
 
+
+Description:
+============
+First the application collects drill-data from both persons. The data will be used to train a machine-learning algorithm.
+After that the machine-learning algorithmn should be able to decide which person drilled by a new drill.
+If all going right, the algorithm should be choosen correct.
+
+The drill-data are 3 values measured from sensors while drilling. Current, Voltage and the Audio.
+
 Possibilities of our future:
 ============================
 We have imagined a field of use, which can transfer to many other ideas.
@@ -39,6 +48,7 @@ The follwoing image describes that, graphically.
 
 .. image:: Future-Copy-Tool.jpeg
    :width: 600
+
 
 Author's:
 =========
