@@ -40,6 +40,8 @@
               <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="explain.html">Explanation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="anoog.html">anoog</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="anoog.automation.html">anoog.automation</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">anoog.io</a><ul>
@@ -84,9 +86,11 @@
 <span id="anoog-io-csv-io"></span><h2>anoog.io.csv_io<a class="headerlink" href="#module-anoog.io.csv_io" title="Permalink to this headline"></a></h2>
 <p>This module used to load the drill data from csv.</p>
 <p>Contains functions to load drill-data simply and without many features, created from drillcapture.</p>
-<p>Author for <a class="reference internal" href="#anoog.io.csv_io.read_csv" title="anoog.io.csv_io.read_csv"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_csv()</span></code></a>: Syon Kadkade
-Author for <a class="reference internal" href="#anoog.io.csv_io.load_single_data" title="anoog.io.csv_io.load_single_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_single_data()</span></code></a>: Tobia Ippolito
-Author for <a class="reference internal" href="#anoog.io.csv_io.read_csv" title="anoog.io.csv_io.read_csv"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_csv()</span></code></a> and the other functions: Stefan Glaser</p>
+<div class="line-block">
+<div class="line">Author for <a class="reference internal" href="#anoog.io.csv_io.read_csv" title="anoog.io.csv_io.read_csv"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_csv()</span></code></a>: Syon Kadkade</div>
+<div class="line">Author for <a class="reference internal" href="#anoog.io.csv_io.load_single_data" title="anoog.io.csv_io.load_single_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_single_data()</span></code></a>: Tobia Ippolito</div>
+<div class="line">Author for <a class="reference internal" href="#anoog.io.csv_io.read_csv" title="anoog.io.csv_io.read_csv"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_csv()</span></code></a> and the other functions: Stefan Glaser</div>
+</div>
 <dl class="py class">
 <dt class="sig sig-object py" id="anoog.io.csv_io.loadData_mode">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">anoog.io.csv_io.</span></span><span class="sig-name descname"><span class="pre">loadData_mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#anoog.io.csv_io.loadData_mode" title="Permalink to this definition"></a></dt>
@@ -214,9 +218,11 @@ Author for <a class="reference internal" href="#anoog.io.csv_io.read_csv" title=
 Internally this module uses the <a class="reference internal" href="#module-anoog.io.csv_io" title="anoog.io.csv_io"><code class="xref py py-mod docutils literal notranslate"><span class="pre">csv_io</span></code></a> and makes the handling lot easier and with more features.
 The user can easily say which persons, with which feature-selection, with which feature-extraction and if there shoud be a split in train and test-data.</p>
 <p>There are 2 main-functions (<a class="reference internal" href="#anoog.io.data_io.load_data" title="anoog.io.data_io.load_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_data()</span></code></a> &amp; <code class="xref py py-func docutils literal notranslate"><span class="pre">load_single_data()</span></code>), which use the other functions.</p>
-<p>Author for <code class="xref py py-func docutils literal notranslate"><span class="pre">advanced_feature_extraction()</span></code>: Vadim Korzev
-Author for <code class="xref py py-func docutils literal notranslate"><span class="pre">feature_selection()</span></code> &amp; <code class="xref py py-func docutils literal notranslate"><span class="pre">rename()</span></code>: Syon Kadkade
-Author for the rest: Tobia Ippolito</p>
+<div class="line-block">
+<div class="line">Author for <code class="xref py py-func docutils literal notranslate"><span class="pre">advanced_feature_extraction()</span></code>: Vadim Korzev</div>
+<div class="line">Author for <code class="xref py py-func docutils literal notranslate"><span class="pre">feature_selection()</span></code> &amp; <code class="xref py py-func docutils literal notranslate"><span class="pre">rename()</span></code>: Syon Kadkade</div>
+<div class="line">Author for the rest: Tobia Ippolito</div>
+</div>
 <dl class="py function">
 <dt class="sig sig-object py" id="anoog.io.data_io.X_y_split">
 <span class="sig-prename descclassname"><span class="pre">anoog.io.data_io.</span></span><span class="sig-name descname"><span class="pre">X_y_split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/anoog/io/data_io.html#X_y_split"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#anoog.io.data_io.X_y_split" title="Permalink to this definition"></a></dt>
